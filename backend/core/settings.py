@@ -67,13 +67,35 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'core.wsgi.application'
 
-DATABASES = {
-    'default': dj_database_url.config(
-        default=config('DATABASE_URL', default='postgres://localhost:5432/postgres'),
-        conn_max_age=600,
-        ssl_require=not DEBUG,
-    )
-}
+# Database configuration: prefer `DATABASE_URL` (Render), but allow
+# explicit DB_* environment variables (used by some deploy setups).
+if config('DATABASE_URL', default=None):
+    DATABASES = {
+        'default': dj_database_url.config(
+            default=config('DATABASE_URL'),
+            conn_max_age=600,
+            ssl_require=not DEBUG,
+        )
+    }
+elif config('DB_NAME', default=''):
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.postgresql',
+            'NAME': config('DB_NAME'),
+            'USER': config('DB_USER'),
+            'PASSWORD': config('DB_PASSWORD'),
+            'HOST': config('DB_HOST'),
+            'PORT': config('DB_PORT', default='5432'),
+        }
+    }
+else:
+    DATABASES = {
+        'default': dj_database_url.config(
+            default='postgres://localhost:5432/postgres',
+            conn_max_age=600,
+            ssl_require=not DEBUG,
+        )
+    }
 
 AUTH_USER_MODEL = 'accounts.User'
 
