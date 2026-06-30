@@ -1,0 +1,34 @@
+services:
+  - type: web
+    name: university-dms-backend
+    runtime: python
+    repo: https://github.com/zablon105/university-dms
+    rootDir: backend
+    buildCommand: "pip install -r requirements.txt && python manage.py migrate && python manage.py collectstatic --noinput"
+    startCommand: "gunicorn config.wsgi:application"
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.11.0
+      - key: SECRET_KEY
+        generateValue: true
+      - key: DEBUG
+        value: false
+      - key: DATABASE_URL
+        fromDatabase:
+          name: university-dms-db
+          property: connectionString
+
+  - type: web
+    name: university-dms-frontend
+    runtime: static
+    repo: https://github.com/zablon105/university-dms
+    rootDir: frontend
+    buildCommand: "npm install && npm run build"
+    staticPublishPath: dist
+    envVars:
+      - key: VITE_API_URL
+        sync: false
+
+databases:
+  - name: university-dms-db
+    plan: free
