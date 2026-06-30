@@ -132,7 +132,7 @@ class LoginView(APIView):
     permission_classes = [permissions.AllowAny]
 
     def post(self, request):
-        username = request.data.get('username', '').upper().strip()
+        username = request.data.get('username', '').strip()
         password = request.data.get('password', '')
 
         if not username or not password:
@@ -141,7 +141,17 @@ class LoginView(APIView):
                 status=status.HTTP_400_BAD_REQUEST
             )
 
+        # Try direct authenticate first (exact match). If it fails,
+        # attempt a case-insensitive lookup and authenticate using
+        # the actual stored username. This preserves existing admin
+        # accounts created with different casing.
         user = authenticate(username=username, password=password)
+        if not user:
+            try:
+                actual_user = User.objects.get(username__iexact=username)
+                user = authenticate(username=actual_user.username, password=password)
+            except User.DoesNotExist:
+                user = None
 
         if not user:
             return Response(
