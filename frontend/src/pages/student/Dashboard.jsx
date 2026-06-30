@@ -1,0 +1,396 @@
+import { useState, useEffect } from 'react'
+import { Routes, Route, useNavigate } from 'react-router-dom'
+import DashboardLayout from '../../layouts/DashboardLayout'
+import useAuthStore from '../../store/authStore'
+import api from '../../api/axios'
+
+// ─── Sub-pages (placeholders we'll fill later) ───────────────────
+function AcademicDocuments() {
+  const [docs, setDocs] = useState([])
+  const [search, setSearch] = useState('')
+  const [activeCategory, setActiveCategory] = useState('All')
+  const [categories, setCategories] = useState([])
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    Promise.all([api.get('/documents/'), api.get('/categories/')]).then(([d, c]) => {
+      setDocs(d.data)
+      setCategories(['All', ...c.data.map(cat => cat.name)])
+      setLoading(false)
+    })
+  }, [])
+
+  const filtered = docs.filter(d => {
+    const matchCat = activeCategory === 'All' || d.category_detail?.name === activeCategory
+    const matchSearch = d.title.toLowerCase().includes(search.toLowerCase())
+    return matchCat && matchSearch
+  })
+
+  return (
+    <DashboardLayout searchPlaceholder="Search files, records...">
+      <div className="page-header">
+        <h1 className="page-title">Academic Documents</h1>
+        <p className="page-subtitle">Browse and download course materials, syllabi, and official department resources.</p>
+      </div>
+      <div style={{ display: 'flex', gap: 12, marginBottom: 20, alignItems: 'center', flexWrap: 'wrap' }}>
+        <div style={{ position: 'relative', flex: 1, maxWidth: 380 }}>
+          <span style={{ position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)', color: 'var(--gray-400)' }}>🔍</span>
+          <input className="input-field" style={{ paddingLeft: 36 }}
+            placeholder="Search documents by name or department..."
+            value={search} onChange={e => setSearch(e.target.value)} />
+        </div>
+        <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+          {categories.map(cat => (
+            <button key={cat} onClick={() => setActiveCategory(cat)}
+              style={{
+                padding: '7px 16px', borderRadius: 20, fontSize: 13, cursor: 'pointer',
+                border: `1.5px solid ${activeCategory === cat ? 'var(--primary)' : 'var(--gray-300)'}`,
+                background: activeCategory === cat ? 'var(--primary)' : 'white',
+                color: activeCategory === cat ? 'white' : 'var(--gray-600)',
+                fontWeight: activeCategory === cat ? 600 : 400
+              }}>{cat}</button>
+          ))}
+        </div>
+      </div>
+      <div style={{ background: 'white', borderRadius: 12, border: '1px solid var(--border)', overflow: 'hidden' }}>
+        {loading ? <div style={{ padding: 40, textAlign: 'center', color: 'var(--gray-400)' }}>Loading...</div>
+          : filtered.length === 0 ? <div style={{ padding: 40, textAlign: 'center', color: 'var(--gray-400)' }}>No documents found</div>
+          : filtered.map((doc, i) => (
+            <div key={doc.id} style={{
+              display: 'flex', alignItems: 'center', gap: 14,
+              padding: '16px 20px',
+              borderBottom: i < filtered.length - 1 ? '1px solid var(--gray-100)' : 'none',
+            }}
+              onMouseEnter={e => e.currentTarget.style.background = 'var(--gray-50)'}
+              onMouseLeave={e => e.currentTarget.style.background = 'white'}
+            >
+              <div style={{ width: 40, height: 40, borderRadius: 10, background: 'var(--primary-light)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 20 }}>
+                {doc.file_type === 'pdf' ? '📄' : doc.file_type === 'docx' ? '📝' : '📁'}
+              </div>
+              <div style={{ flex: 1 }}>
+                <div style={{ fontSize: 14, fontWeight: 500, color: 'var(--gray-800)' }}>{doc.title}</div>
+                <div style={{ fontSize: 12, color: 'var(--gray-400)', marginTop: 2 }}>
+                  <span style={{ background: 'var(--primary-light)', color: 'var(--primary)', padding: '2px 8px', borderRadius: 20, fontSize: 11, fontWeight: 500, marginRight: 8 }}>
+                    {doc.category_detail?.name || 'General'}
+                  </span>
+                  Uploaded: {new Date(doc.created_at).toLocaleDateString()}
+                </div>
+              </div>
+              <a href={doc.file} target="_blank" rel="noreferrer">
+                <button className="btn btn-outline btn-sm">📥 Download</button>
+              </a>
+            </div>
+          ))}
+      </div>
+    </DashboardLayout>
+  )
+}
+
+function Assignments() {
+  return (
+    <DashboardLayout searchPlaceholder="Search assignments...">
+      <div className="page-header">
+        <h1 className="page-title">Assignments</h1>
+        <p className="page-subtitle">Submit and track your assignment documents.</p>
+      </div>
+      <div style={{ background: 'white', borderRadius: 12, border: '1px solid var(--border)', padding: 40, textAlign: 'center' }}>
+        <div style={{ fontSize: 48, marginBottom: 12 }}>📝</div>
+        <p style={{ color: 'var(--gray-500)' }}>Assignment submissions coming soon.</p>
+      </div>
+    </DashboardLayout>
+  )
+}
+
+function InstitutionalRecords() {
+  return (
+    <DashboardLayout searchPlaceholder="Search records...">
+      <div className="page-header">
+        <h1 className="page-title">Institutional Records</h1>
+        <p className="page-subtitle">View and manage your official academic documents.</p>
+      </div>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 16, marginBottom: 24 }}>
+        {[
+          { icon: '🎓', title: 'Official Transcripts', sub: 'Current Cumulative GPA: 3.8', badge: 'Verified', badgeColor: '#16A34A', badgeBg: '#DCFCE7' },
+          { icon: '📋', title: 'Enrollment Letters', sub: 'Proof of current registration', badge: 'Active', badgeColor: '#0047AB', badgeBg: '#EBF2FF' },
+          { icon: '🏅', title: 'Degree Certificates', sub: 'Awaiting graduation clearance', badge: 'Pending', badgeColor: '#D97706', badgeBg: '#FEF3C7' },
+        ].map(item => (
+          <div key={item.title} style={{ background: 'white', borderRadius: 12, border: '1px solid var(--border)', padding: 20 }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 12 }}>
+              <span style={{ fontSize: 28 }}>{item.icon}</span>
+              <span style={{ background: item.badgeBg, color: item.badgeColor, padding: '3px 10px', borderRadius: 20, fontSize: 11, fontWeight: 600 }}>{item.badge}</span>
+            </div>
+            <div style={{ fontSize: 14, fontWeight: 600, color: 'var(--gray-800)', marginBottom: 4 }}>{item.title}</div>
+            <div style={{ fontSize: 12, color: 'var(--gray-500)' }}>{item.sub}</div>
+            <button className="btn btn-outline btn-sm" style={{ marginTop: 14, width: '100%', justifyContent: 'center' }}>View →</button>
+          </div>
+        ))}
+      </div>
+    </DashboardLayout>
+  )
+}
+
+function SharedFiles() {
+  const [docs, setDocs] = useState([])
+  useEffect(() => { api.get('/documents/').then(r => setDocs(r.data)) }, [])
+  return (
+    <DashboardLayout searchPlaceholder="Search shared files...">
+      <div className="page-header">
+        <h1 className="page-title">Shared Files</h1>
+        <p className="page-subtitle">Files shared with you by staff and faculty.</p>
+      </div>
+      <div style={{ background: 'white', borderRadius: 12, border: '1px solid var(--border)', overflow: 'hidden' }}>
+        {docs.length === 0
+          ? <div style={{ padding: 40, textAlign: 'center', color: 'var(--gray-400)' }}>No shared files yet</div>
+          : docs.map((doc, i) => (
+            <div key={doc.id} style={{
+              display: 'flex', alignItems: 'center', gap: 14,
+              padding: '14px 20px',
+              borderBottom: i < docs.length - 1 ? '1px solid var(--gray-100)' : 'none'
+            }}>
+              <span style={{ fontSize: 24 }}>📄</span>
+              <div style={{ flex: 1 }}>
+                <div style={{ fontSize: 14, fontWeight: 500 }}>{doc.title}</div>
+                <div style={{ fontSize: 12, color: 'var(--gray-400)' }}>
+                  Shared by {doc.uploaded_by?.username} · {new Date(doc.created_at).toLocaleDateString()}
+                </div>
+              </div>
+              <a href={doc.file} target="_blank" rel="noreferrer">
+                <button className="btn btn-outline btn-sm">📥 Download</button>
+              </a>
+            </div>
+          ))}
+      </div>
+    </DashboardLayout>
+  )
+}
+
+// ─── Main Dashboard ───────────────────────────────────────────────
+function StudentHome() {
+  const { user } = useAuthStore()
+  const navigate = useNavigate()
+  const [docs, setDocs] = useState([])
+  const [myDocs, setMyDocs] = useState([])
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    Promise.all([
+      api.get('/documents/'),
+      api.get('/documents/my/'),
+    ]).then(([all, my]) => {
+      setDocs(all.data)
+      setMyDocs(my.data)
+      setLoading(false)
+    }).catch(() => setLoading(false))
+  }, [])
+
+  const pendingDocs = myDocs.filter(d => d.status === 'pending')
+  const firstName = user?.first_name || user?.username || 'Student'
+
+  const getFileIcon = (type) => {
+    if (type === 'pdf') return { icon: '📄', bg: '#FEE2E2', color: '#DC2626' }
+    if (type === 'docx' || type === 'doc') return { icon: '📝', bg: '#DBEAFE', color: '#1D4ED8' }
+    if (type === 'xlsx') return { icon: '📊', bg: '#DCFCE7', color: '#16A34A' }
+    return { icon: '📁', bg: '#F3F4F6', color: '#6B7280' }
+  }
+
+  const deadlines = [
+    { title: 'Data Structures Essay', course: 'CS202 · Prof. Smith', time: '11:59 PM', urgency: 'today', color: '#DC2626', bg: '#FEE2E2' },
+    { title: 'Lab Report 3', course: 'PHY101 · TA Johnson', time: 'Tomorrow', urgency: 'tomorrow', color: '#D97706', bg: '#FEF3C7' },
+    { title: 'Weekly Quiz', course: 'MATH210', time: 'Oct 18', urgency: 'later', color: 'var(--gray-500)', bg: 'var(--gray-100)' },
+  ]
+
+  return (
+    <DashboardLayout searchPlaceholder="Search files, records...">
+      {/* Welcome banner */}
+      <div style={{
+        background: 'white', borderRadius: 12,
+        border: '1px solid var(--border)',
+        padding: '20px 24px', marginBottom: 20
+      }}>
+        <h2 style={{ fontSize: 20, fontWeight: 700, color: 'var(--gray-900)' }}>
+          Welcome back, {firstName} 👋
+        </h2>
+        <p style={{ color: 'var(--gray-500)', fontSize: 14, marginTop: 4 }}>
+          You have{' '}
+          <span style={{ color: 'var(--primary)', fontWeight: 600 }}>
+            {pendingDocs.length} pending documents
+          </span>{' '}
+          and{' '}
+          <span style={{ color: 'var(--primary)', fontWeight: 600 }}>
+            {docs.length} files
+          </span>{' '}
+          shared with you.
+        </p>
+      </div>
+
+      {/* Stat cards */}
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 16, marginBottom: 24 }}>
+        {[
+          { label: 'TOTAL DOCS', value: docs.length, sub: '+12%', icon: '📁', color: 'var(--primary)' },
+          { label: 'PENDING', value: pendingDocs.length, sub: 'Due soon', icon: '⏳', color: 'var(--danger)' },
+          { label: 'NEW SHARED', value: docs.filter(d => d.visibility === 'public').length, sub: 'This week', icon: '🤝', color: 'var(--success)' },
+        ].map(s => (
+          <div key={s.label} style={{
+            background: 'white', borderRadius: 12,
+            border: '1px solid var(--border)', padding: 20
+          }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <div>
+                <div style={{ fontSize: 11, fontWeight: 600, color: 'var(--gray-400)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>{s.label}</div>
+                <div style={{ fontSize: 32, fontWeight: 700, color: 'var(--gray-900)', marginTop: 4 }}>{s.value}</div>
+                <div style={{ fontSize: 12, color: s.color, marginTop: 2 }}>{s.sub}</div>
+              </div>
+              <span style={{ fontSize: 28 }}>{s.icon}</span>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      {/* Main grid */}
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 320px', gap: 20 }}>
+
+        {/* Recent Documents */}
+        <div style={{ background: 'white', borderRadius: 12, border: '1px solid var(--border)', padding: 20 }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
+            <h3 style={{ fontSize: 15, fontWeight: 600 }}>Recent Documents</h3>
+            <button onClick={() => navigate('/student/academic')}
+              style={{ fontSize: 13, color: 'var(--primary)', background: 'none', border: 'none', cursor: 'pointer', fontWeight: 500 }}>
+              View All
+            </button>
+          </div>
+
+          {loading ? <div style={{ padding: 20, textAlign: 'center', color: 'var(--gray-400)' }}>Loading...</div>
+            : docs.length === 0 ? (
+              <div style={{ padding: 20, textAlign: 'center', color: 'var(--gray-400)' }}>
+                <div style={{ fontSize: 32, marginBottom: 8 }}>📂</div>
+                No documents yet
+              </div>
+            ) : (
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
+                {docs.slice(0, 4).map(doc => {
+                  const fi = getFileIcon(doc.file_type)
+                  return (
+                    <div key={doc.id} style={{
+                      padding: 14, borderRadius: 10,
+                      border: '1px solid var(--gray-100)',
+                      cursor: 'pointer', transition: 'all 0.15s'
+                    }}
+                      onMouseEnter={e => e.currentTarget.style.background = 'var(--gray-50)'}
+                      onMouseLeave={e => e.currentTarget.style.background = 'white'}
+                    >
+                      <div style={{ width: 36, height: 36, borderRadius: 8, background: fi.bg, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 18, marginBottom: 8 }}>
+                        {fi.icon}
+                      </div>
+                      <div style={{ fontSize: 13, fontWeight: 500, color: 'var(--gray-800)', marginBottom: 4, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                        {doc.title}
+                      </div>
+                      <div style={{ fontSize: 11, color: 'var(--gray-400)' }}>
+                        Modified {new Date(doc.updated_at).toLocaleDateString()}
+                      </div>
+                      {doc.category_detail && (
+                        <span style={{ display: 'inline-block', marginTop: 6, background: 'var(--primary-light)', color: 'var(--primary)', padding: '2px 8px', borderRadius: 20, fontSize: 10, fontWeight: 500 }}>
+                          {doc.category_detail.name}
+                        </span>
+                      )}
+                    </div>
+                  )
+                })}
+              </div>
+            )}
+
+          {/* Download Files button */}
+          <button className="btn btn-primary" style={{ marginTop: 16, width: '100%', justifyContent: 'center' }}
+            onClick={() => navigate('/student/academic')}>
+            📥 Download Files
+          </button>
+        </div>
+
+        {/* Right column */}
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+
+          {/* Upcoming Deadlines */}
+          <div style={{ background: 'white', borderRadius: 12, border: '1px solid var(--border)', padding: 20 }}>
+            <h3 style={{ fontSize: 15, fontWeight: 600, marginBottom: 14 }}>📅 Upcoming Deadlines</h3>
+            {deadlines.map((d, i) => (
+              <div key={i} style={{
+                display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start',
+                padding: '10px 0', borderBottom: i < deadlines.length - 1 ? '1px solid var(--gray-100)' : 'none'
+              }}>
+                <div style={{ display: 'flex', gap: 10, alignItems: 'flex-start' }}>
+                  <div style={{ width: 3, height: 40, background: d.color, borderRadius: 2, flexShrink: 0 }} />
+                  <div>
+                    <div style={{ fontSize: 13, fontWeight: 500, color: 'var(--gray-800)' }}>{d.title}</div>
+                    <div style={{ fontSize: 11, color: 'var(--gray-400)', marginTop: 2 }}>{d.course}</div>
+                  </div>
+                </div>
+                <div style={{ textAlign: 'right' }}>
+                  <span style={{ background: d.bg, color: d.color, padding: '2px 8px', borderRadius: 20, fontSize: 10, fontWeight: 700, display: 'block', marginBottom: 4 }}>
+                    {d.urgency === 'today' ? 'DUE TODAY' : d.urgency === 'tomorrow' ? 'TOMORROW' : d.time}
+                  </span>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {/* Quick Actions */}
+          <div style={{ background: 'white', borderRadius: 12, border: '1px solid var(--border)', padding: 20 }}>
+            <h3 style={{ fontSize: 15, fontWeight: 600, marginBottom: 14 }}>⚡ Quick Actions</h3>
+            {[
+              { label: 'Request Transcript', icon: '🎓', onClick: () => navigate('/student/records') },
+              { label: 'Contact Support', icon: '💬', onClick: () => {} },
+            ].map(a => (
+              <div key={a.label} onClick={a.onClick} style={{
+                display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+                padding: '10px 12px', borderRadius: 8, cursor: 'pointer',
+                marginBottom: 6, border: '1px solid var(--gray-200)'
+              }}
+                onMouseEnter={e => e.currentTarget.style.background = 'var(--gray-50)'}
+                onMouseLeave={e => e.currentTarget.style.background = 'white'}
+              >
+                <div style={{ display: 'flex', gap: 10, alignItems: 'center', fontSize: 13, color: 'var(--gray-700)' }}>
+                  <span>{a.icon}</span>{a.label}
+                </div>
+                <span style={{ color: 'var(--gray-400)' }}>›</span>
+              </div>
+            ))}
+          </div>
+
+          {/* Drag & Drop upload */}
+          <div style={{
+            background: 'white', borderRadius: 12,
+            border: '2px dashed var(--gray-300)', padding: 24,
+            textAlign: 'center', cursor: 'pointer'
+          }}
+            onMouseEnter={e => e.currentTarget.style.borderColor = 'var(--primary)'}
+            onMouseLeave={e => e.currentTarget.style.borderColor = 'var(--gray-300)'}
+            onClick={() => navigate('/student/academic')}
+          >
+            <div style={{ fontSize: 28, marginBottom: 8 }}>📤</div>
+            <div style={{ fontSize: 14, fontWeight: 600, color: 'var(--gray-700)', marginBottom: 4 }}>
+              Download Resources
+            </div>
+            <div style={{ fontSize: 12, color: 'var(--gray-400)', lineHeight: 1.5 }}>
+              Access course materials and shared files.<br />
+              View all available formats.
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </DashboardLayout>
+  )
+}
+
+// ─── Router ───────────────────────────────────────────────────────
+export default function StudentDashboard() {
+  return (
+    <Routes>
+      <Route path="dashboard" element={<StudentHome />} />
+      <Route path="academic" element={<AcademicDocuments />} />
+      <Route path="assignments" element={<Assignments />} />
+      <Route path="records" element={<InstitutionalRecords />} />
+      <Route path="shared" element={<SharedFiles />} />
+      <Route path="*" element={<StudentHome />} />
+    </Routes>
+  )
+}
