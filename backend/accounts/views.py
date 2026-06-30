@@ -52,7 +52,7 @@ Registered At:    {user.created_at.strftime('%d %b %Y, %I:%M %p')}
 
 Please log in to the DocLibrary Admin portal to approve or deny this account.
 
-→ Login at: https://your-app.vercel.app/admin-login
+→ Login at: https://university-dms.vercel.app/admin-login
 
 This is an automated notification from DocLibrary KAFU.
         """.strip()
@@ -250,7 +250,7 @@ Great news! Your DocLibrary KAFU account has been approved.
 
 You can now log in using:
 → Registration Number: {user.username}
-→ Login at: https://your-app.vercel.app/login
+→ Login at: https://university-dms.vercel.app/login
 
 Welcome to DocLibrary KAFU!
                     """.strip(),

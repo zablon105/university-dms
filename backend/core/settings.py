@@ -123,8 +123,7 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 # CORS — add your future Vercel URL (update after deployment)
 CORS_ALLOWED_ORIGINS = [
     'http://localhost:5173',
-    'http://localhost:3000',
-    # 'https://your-app.vercel.app',  # add after Vercel deploy
+    'https://university-dms.vercel.app/',
 ]
 
 CORS_ALLOW_CREDENTIALS = True
