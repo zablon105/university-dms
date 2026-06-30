@@ -1,0 +1,21 @@
+# Normalize text files to use LF in the repository and allow Git to auto-convert
+# to the appropriate OS line endings on checkout.
+* text=auto
+
+# Keep shell scripts with LF endings
+*.sh text eol=lf
+
+# Treat common binary files as binary (no EOL conversion)
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.ico binary
+*.pdf binary
+*.zip binary
+*.gz binary
+*.exe binary
+*.dll binary
+
+# Lock files and package manager files - let core.autocrlf handle these
+package-lock.json text
