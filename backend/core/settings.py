@@ -2,6 +2,7 @@ from pathlib import Path
 from decouple import config
 from datetime import timedelta
 import cloudinary
+import dj_database_url
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -67,14 +68,11 @@ TEMPLATES = [
 WSGI_APPLICATION = 'core.wsgi.application'
 
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': config('DB_NAME'),
-        'USER': config('DB_USER'),
-        'PASSWORD': config('DB_PASSWORD'),
-        'HOST': config('DB_HOST'),
-        'PORT': config('DB_PORT', default='5432'),
-    }
+    'default': dj_database_url.config(
+        default=config('DATABASE_URL', default='postgres://localhost:5432/postgres'),
+        conn_max_age=600,
+        ssl_require=not DEBUG,
+    )
 }
 
 AUTH_USER_MODEL = 'accounts.User'
@@ -123,7 +121,7 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 # CORS — add your future Vercel URL (update after deployment)
 CORS_ALLOWED_ORIGINS = [
     'http://localhost:5173',
-    'https://university-dms.vercel.app/',
+    'https://university-dms.vercel.app',
 ]
 
 CORS_ALLOW_CREDENTIALS = True
