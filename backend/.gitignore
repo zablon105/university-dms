@@ -6,3 +6,8 @@ __pycache__/
 db.sqlite3
 staticfiles/
 media/
+
+# Node modules (if any) and alternative virtualenv name
+node_modules/
+.venv/
+.env.*
