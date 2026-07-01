@@ -6,12 +6,31 @@ from django.contrib.auth import authenticate
 from django.core.mail import send_mail
 from django.conf import settings
 from django.utils import timezone
+import threading
+import logging
 from .models import User, OTPCode
 from .serializers import (
     RegisterSerializer, UserSerializer,
     ChangePasswordSerializer, OTPRequestSerializer,
     OTPVerifySerializer
 )
+
+logger = logging.getLogger(__name__)
+
+def send_mail_async(**kwargs):
+    """Fire-and-forget email send so it never blocks the HTTP response."""
+    subject = kwargs.get('subject')
+    recipients = kwargs.get('recipient_list')
+    logger.info('Queued async email %r to %s', subject, recipients)
+
+    def _send():
+        try:
+            send_mail(**kwargs)
+            logger.info('Async email sent: %r to %s', subject, recipients)
+        except Exception as e:
+            logger.error('Async email send failed for %r to %s: %s', subject, recipients, e)
+
+    threading.Thread(target=_send, daemon=True).start()
 
 
 def send_admin_notification(user):
@@ -57,7 +76,7 @@ Please log in to the DocLibrary Admin portal to approve or deny this account.
 This is an automated notification from DocLibrary KAFU.
         """.strip()
 
-        send_mail(
+        send_mail_async(
             subject=subject,
             message=message,
             from_email=settings.DEFAULT_FROM_EMAIL,
@@ -65,7 +84,7 @@ This is an automated notification from DocLibrary KAFU.
             fail_silently=True
         )
     except Exception as e:
-        print(f"Email notification error: {e}")
+        logger.error('Email notification error: %s', e)
 
 
 def send_otp_email(user, otp_code):
@@ -94,7 +113,7 @@ or contact support immediately.
 DocLibrary KAFU Security Team
         """.strip()
 
-        send_mail(
+        send_mail_async(
             subject=subject,
             message=message,
             from_email=settings.DEFAULT_FROM_EMAIL,
@@ -102,7 +121,7 @@ DocLibrary KAFU Security Team
             fail_silently=False
         )
     except Exception as e:
-        print(f"OTP email error: {e}")
+        logger.error('OTP email error: %s', e)
 
 
 class RegisterView(generics.CreateAPIView):
@@ -250,10 +269,9 @@ class ApproveUserView(APIView):
             user.save()
 
             # Notify user their account is approved
-            try:
-                send_mail(
-                    subject='[DocLibrary KAFU] Account Approved!',
-                    message=f"""
+            send_mail_async(
+            subject='[DocLibrary KAFU] Account Approved!',
+            message=f"""
 Hello {user.get_full_name() or user.username},
 
 Great news! Your DocLibrary KAFU account has been approved.
@@ -263,13 +281,11 @@ You can now log in using:
 → Login at: https://university-dms.vercel.app/login
 
 Welcome to DocLibrary KAFU!
-                    """.strip(),
-                    from_email=settings.DEFAULT_FROM_EMAIL,
-                    recipient_list=[user.email],
-                    fail_silently=True
-                )
-            except Exception:
-                pass
+            """.strip(),
+            from_email=settings.DEFAULT_FROM_EMAIL,
+            recipient_list=[user.email],
+            fail_silently=True
+        )
 
             return Response({
                 'message': f'{user.get_full_name() or user.username} approved successfully.'
