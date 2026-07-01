@@ -54,6 +54,33 @@ export default function AdminDocuments() {
     return { icon: '📁', color: '#6B7280' }
   }
 
+  const handleGenerateReport = () => {
+    if (!filtered.length) {
+      return alert('No documents available to export.')
+    }
+    const csvRows = [
+      ['Title', 'Submitter', 'Category', 'Status', 'Uploaded At', 'File Type']
+    ]
+    filtered.forEach(doc => {
+      csvRows.push([
+        doc.title,
+        doc.uploaded_by?.username || 'Unknown',
+        doc.category_detail?.name || 'Uncategorized',
+        doc.status,
+        new Date(doc.created_at).toLocaleString(),
+        doc.file_type || 'Unknown'
+      ])
+    })
+    const csvContent = csvRows.map(r => r.map(v => `"${String(v).replace(/"/g, '""')}"`).join(',')).join('\n')
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' })
+    const link = document.createElement('a')
+    link.href = URL.createObjectURL(blob)
+    link.setAttribute('download', 'kafu-document-report.csv')
+    document.body.appendChild(link)
+    link.click()
+    link.remove()
+  }
+
   return (
     <DashboardLayout searchPlaceholder="Search documents, users, or logs...">
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 24 }}>
@@ -61,7 +88,7 @@ export default function AdminDocuments() {
           <h1 className="page-title">Document History</h1>
           <p className="page-subtitle">Review and manage the KAFU Staff Archive activity logs.</p>
         </div>
-        <button className="btn btn-primary btn-sm">➕ Generate Report</button>
+        <button className="btn btn-primary btn-sm" onClick={handleGenerateReport}>➕ Generate Report</button>
       </div>
 
       {/* Stat cards */}

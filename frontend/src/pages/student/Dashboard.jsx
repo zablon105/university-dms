@@ -102,6 +102,7 @@ function Assignments() {
 }
 
 function InstitutionalRecords() {
+  const navigate = useNavigate()
   return (
     <DashboardLayout searchPlaceholder="Search records...">
       <div className="page-header">
@@ -110,9 +111,9 @@ function InstitutionalRecords() {
       </div>
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 16, marginBottom: 24 }}>
         {[
-          { icon: '🎓', title: 'Official Transcripts', sub: 'Current Cumulative GPA: 3.8', badge: 'Verified', badgeColor: '#16A34A', badgeBg: '#DCFCE7' },
-          { icon: '📋', title: 'Enrollment Letters', sub: 'Proof of current registration', badge: 'Active', badgeColor: '#0047AB', badgeBg: '#EBF2FF' },
-          { icon: '🏅', title: 'Degree Certificates', sub: 'Awaiting graduation clearance', badge: 'Pending', badgeColor: '#D97706', badgeBg: '#FEF3C7' },
+          { icon: '🎓', title: 'Official Transcripts', sub: 'Current Cumulative GPA: 3.8', badge: 'Verified', badgeColor: '#16A34A', badgeBg: '#DCFCE7', link: '/student/records' },
+          { icon: '📋', title: 'Enrollment Letters', sub: 'Proof of current registration', badge: 'Active', badgeColor: '#0047AB', badgeBg: '#EBF2FF', link: '/student/academic' },
+          { icon: '🏅', title: 'Degree Certificates', sub: 'Awaiting graduation clearance', badge: 'Pending', badgeColor: '#D97706', badgeBg: '#FEF3C7', link: '/student/shared' },
         ].map(item => (
           <div key={item.title} style={{ background: 'white', borderRadius: 12, border: '1px solid var(--border)', padding: 20 }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 12 }}>
@@ -121,7 +122,7 @@ function InstitutionalRecords() {
             </div>
             <div style={{ fontSize: 14, fontWeight: 600, color: 'var(--gray-800)', marginBottom: 4 }}>{item.title}</div>
             <div style={{ fontSize: 12, color: 'var(--gray-500)' }}>{item.sub}</div>
-            <button className="btn btn-outline btn-sm" style={{ marginTop: 14, width: '100%', justifyContent: 'center' }}>View →</button>
+            <button className="btn btn-outline btn-sm" style={{ marginTop: 14, width: '100%', justifyContent: 'center' }} onClick={() => navigate(item.link)}>View →</button>
           </div>
         ))}
       </div>
@@ -337,7 +338,7 @@ function StudentHome() {
             <h3 style={{ fontSize: 15, fontWeight: 600, marginBottom: 14 }}>⚡ Quick Actions</h3>
             {[
               { label: 'Request Transcript', icon: '🎓', onClick: () => navigate('/student/records') },
-              { label: 'Contact Support', icon: '💬', onClick: () => {} },
+              { label: 'Contact Support', icon: '💬', onClick: () => window.location.href = 'mailto:support@kaimu.edu?subject=KAFU%20Support' },
             ].map(a => (
               <div key={a.label} onClick={a.onClick} style={{
                 display: 'flex', justifyContent: 'space-between', alignItems: 'center',

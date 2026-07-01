@@ -14,6 +14,81 @@ export default function AdminDashboard() {
   const [recentActivity, setRecentActivity] = useState([])
   const [pendingUsers, setPendingUsers] = useState([])
   const [loading, setLoading] = useState(true)
+  const [selectedDepartment, setSelectedDepartment] = useState('All Departments')
+  const [selectedType, setSelectedType] = useState('All Types')
+  const [selectedRange, setSelectedRange] = useState('Last 30 Days')
+
+  const handleExportLogs = async () => {
+    try {
+      const res = await api.get('/workflows/all/')
+      if (!res.data.length) {
+        return alert('No workflow logs available to export.')
+      }
+      const csvRows = [
+        ['Request ID', 'Document', 'Requested By', 'Status', 'Reviewed By', 'Requested At', 'Reviewed At']
+      ]
+      res.data.forEach(item => {
+        csvRows.push([
+          item.id,
+          item.document_detail?.title || 'Unknown',
+          item.requested_by?.username || 'Unknown',
+          item.status,
+          item.reviewed_by?.username || 'Unassigned',
+          new Date(item.created_at).toLocaleString(),
+          item.reviewed_at ? new Date(item.reviewed_at).toLocaleString() : 'N/A'
+        ])
+      })
+      const csvContent = csvRows.map(r => r.map(v => `"${String(v).replace(/"/g, '""')}"`).join(',')).join('\n')
+      const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' })
+      const link = document.createElement('a')
+      link.href = URL.createObjectURL(blob)
+      link.setAttribute('download', 'kafu-approval-logs.csv')
+      document.body.appendChild(link)
+      link.click()
+      link.remove()
+    } catch (err) {
+      console.error(err)
+      alert('Unable to export logs. Please try again later.')
+    }
+  }
+
+  const handleSystemBackup = async () => {
+    try {
+      const [usersRes, docsRes, workflowsRes, categoriesRes] = await Promise.all([
+        api.get('/auth/users/'),
+        api.get('/documents/'),
+        api.get('/workflows/all/'),
+        api.get('/categories/')
+      ])
+      const backup = {
+        generatedAt: new Date().toISOString(),
+        users: usersRes.data,
+        documents: docsRes.data,
+        workflows: workflowsRes.data,
+        categories: categoriesRes.data,
+      }
+      const blob = new Blob([JSON.stringify(backup, null, 2)], { type: 'application/json' })
+      const link = document.createElement('a')
+      link.href = URL.createObjectURL(blob)
+      link.setAttribute('download', `kafu-backup-${new Date().toISOString().slice(0,10)}.json`)
+      document.body.appendChild(link)
+      link.click()
+      link.remove()
+    } catch (err) {
+      console.error(err)
+      alert('Unable to generate backup. Please try again later.')
+    }
+  }
+
+  const handleClearFilters = () => {
+    setSelectedDepartment('All Departments')
+    setSelectedType('All Types')
+    setSelectedRange('Last 30 Days')
+  }
+
+  const handleViewAllActivity = () => {
+    navigate('/admin/documents')
+  }
 
   useEffect(() => {
     fetchDashboardData()
@@ -145,8 +220,8 @@ export default function AdminDashboard() {
             </p>
           </div>
           <div style={{ display: 'flex', gap: 10 }}>
-            <button className="btn btn-outline btn-sm">📤 Export Logs</button>
-            <button className="btn btn-primary btn-sm">💾 System Backup</button>
+            <button className="btn btn-outline btn-sm" onClick={handleExportLogs}>📤 Export Logs</button>
+            <button className="btn btn-primary btn-sm" onClick={handleSystemBackup}>💾 System Backup</button>
           </div>
         </div>
 
@@ -155,17 +230,37 @@ export default function AdminDashboard() {
           display: 'flex', gap: 12, marginTop: 16,
           flexWrap: 'wrap', alignItems: 'center'
         }}>
-          {['All Departments', 'All Types', 'Last 30 Days'].map(f => (
-            <select key={f} style={{
-              padding: '7px 12px', borderRadius: 8,
-              border: '1px solid var(--gray-300)',
-              fontSize: 13, color: 'var(--gray-700)',
-              background: 'white', cursor: 'pointer'
-            }}>
-              <option>{f}</option>
-            </select>
-          ))}
-          <button style={{
+          <select value={selectedDepartment} onChange={e => setSelectedDepartment(e.target.value)} style={{
+            padding: '7px 12px', borderRadius: 8,
+            border: '1px solid var(--gray-300)',
+            fontSize: 13, color: 'var(--gray-700)',
+            background: 'white', cursor: 'pointer'
+          }}>
+            {['All Departments', 'Science', 'Arts & Humanities', 'Mathematics', 'Computer Science', 'Engineering'].map(option => (
+              <option key={option}>{option}</option>
+            ))}
+          </select>
+          <select value={selectedType} onChange={e => setSelectedType(e.target.value)} style={{
+            padding: '7px 12px', borderRadius: 8,
+            border: '1px solid var(--gray-300)',
+            fontSize: 13, color: 'var(--gray-700)',
+            background: 'white', cursor: 'pointer'
+          }}>
+            {['All Types', 'Reports', 'Policies', 'Forms', 'Archives'].map(option => (
+              <option key={option}>{option}</option>
+            ))}
+          </select>
+          <select value={selectedRange} onChange={e => setSelectedRange(e.target.value)} style={{
+            padding: '7px 12px', borderRadius: 8,
+            border: '1px solid var(--gray-300)',
+            fontSize: 13, color: 'var(--gray-700)',
+            background: 'white', cursor: 'pointer'
+          }}>
+            {['Last 30 Days', 'Last 7 Days', 'Last 90 Days', 'Year to Date'].map(option => (
+              <option key={option}>{option}</option>
+            ))}
+          </select>
+          <button onClick={handleClearFilters} style={{
             padding: '7px 14px', borderRadius: 8,
             border: '1px solid var(--gray-300)',
             fontSize: 13, color: 'var(--primary)',
@@ -418,7 +513,7 @@ export default function AdminDashboard() {
               alignItems: 'center', marginBottom: 14
             }}>
               <h3 style={{ fontSize: 15, fontWeight: 600 }}>Recent Activity</h3>
-              <button style={{
+              <button onClick={handleViewAllActivity} style={{
                 fontSize: 12, color: 'var(--primary)',
                 background: 'none', border: 'none', cursor: 'pointer'
               }}>View All</button>

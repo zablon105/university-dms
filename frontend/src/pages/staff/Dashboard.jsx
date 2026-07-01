@@ -3,6 +3,7 @@ import { Routes, Route, useNavigate } from 'react-router-dom'
 import DashboardLayout from '../../layouts/DashboardLayout'
 import useAuthStore from '../../store/authStore'
 import api from '../../api/axios'
+import Reports from './Reports'
 
 // ─── Upload Document Page ─────────────────────────────────────────
 function UploadDocument() {
@@ -480,7 +481,10 @@ function StaffHome() {
           <div style={{ display: 'flex', gap: 8 }}>
             {['Inbox', 'My Files', 'Shared', 'Archive'].map(tab => (
               <button key={tab}
-                onClick={() => tab === 'Archive' ? navigate('/staff/archive') : null}
+                onClick={() => {
+                  if (tab === 'Archive') return navigate('/staff/archive')
+                  return navigate('/staff/dashboard')
+                }}
                 style={{
                   padding: '7px 14px', borderRadius: 8, fontSize: 13,
                   border: '1px solid var(--gray-300)',
@@ -534,7 +538,7 @@ function StaffHome() {
           <div style={{ fontSize: 12, color: 'var(--gray-400)', lineHeight: 1.5 }}>
             Drag and drop curriculum files, rubrics, or departmental notices here.
           </div>
-          <button className="btn btn-outline btn-sm" style={{ marginTop: 4 }}>Select Files</button>
+          <button className="btn btn-outline btn-sm" style={{ marginTop: 4 }} onClick={() => navigate('/staff/upload')}>Select Files</button>
         </div>
       </div>
 
@@ -646,6 +650,7 @@ export default function StaffDashboard() {
       <Route path="approvals" element={<ApprovalQueue />} />
       <Route path="upload" element={<UploadDocument />} />
       <Route path="archive" element={<Archive />} />
+      <Route path="reports" element={<Reports />} />
       <Route path="*" element={<StaffHome />} />
     </Routes>
   )

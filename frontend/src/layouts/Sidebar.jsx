@@ -40,6 +40,20 @@ export default function Sidebar() {
     user?.role === 'staff' ? 'Staff Portal' :
     'Student Portal'
 
+  const handleGenerateReport = () => {
+    if (user?.role === 'admin') return navigate('/admin/documents')
+    if (user?.role === 'staff') return navigate('/staff/upload')
+    return navigate('/student/academic')
+  }
+
+  const handleOpenSettings = () => {
+    navigate('/settings')
+  }
+
+  const handleOpenSupport = () => {
+    window.location.href = 'mailto:support@kaimu.edu?subject=KAFU%20Portal%20Support'
+  }
+
   const portalSub =
     user?.role === 'admin' ? 'System Oversight' :
     user?.role === 'staff' ? 'Administrative Unit' :
@@ -131,20 +145,8 @@ export default function Sidebar() {
 
       {/* Bottom section */}
       <div style={{ padding: '12px', borderTop: '1px solid var(--border)' }}>
-        {/* Generate Report button */}
-        <button style={{
-          width: '100%', padding: '10px',
-          background: 'var(--primary)', color: 'white',
-          border: 'none', borderRadius: 8, fontSize: 13,
-          fontWeight: 600, cursor: 'pointer', marginBottom: 8,
-          display: 'flex', alignItems: 'center',
-          justifyContent: 'center', gap: 6
-        }}>
-          📊 Generate Report
-        </button>
-
         {/* Settings */}
-        <div style={{
+        <div onClick={handleOpenSettings} style={{
           display: 'flex', alignItems: 'center', gap: 8,
           padding: '8px 10px', borderRadius: 8, cursor: 'pointer',
           color: 'var(--gray-600)', fontSize: 13,
@@ -157,7 +159,7 @@ export default function Sidebar() {
         </div>
 
         {/* Support */}
-        <div style={{
+        <div onClick={handleOpenSupport} style={{
           display: 'flex', alignItems: 'center', gap: 8,
           padding: '8px 10px', borderRadius: 8, cursor: 'pointer',
           color: 'var(--gray-600)', fontSize: 13,

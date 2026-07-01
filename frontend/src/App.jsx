@@ -15,6 +15,9 @@ import AdminDashboard from './pages/admin/Dashboard'
 // Admin pages
 import UserManagement from './pages/admin/UserManagement'
 import AdminDocuments from './pages/admin/Documents'
+import AdminCompliance from './pages/admin/Compliance'
+import AdminLogs from './pages/admin/Logs'
+import Settings from './pages/Settings'
 
 // Protected route component
 const ProtectedRoute = ({ children, allowedRoles }) => {
@@ -68,8 +71,16 @@ export default function App() {
             <Route path="dashboard" element={<AdminDashboard />} />
             <Route path="users" element={<UserManagement />} />
             <Route path="documents" element={<AdminDocuments />} />
+            <Route path="compliance" element={<AdminCompliance />} />
+            <Route path="logs" element={<AdminLogs />} />
             <Route path="*" element={<AdminDashboard />} />
           </Routes>
+        </ProtectedRoute>
+      } />
+
+      <Route path="/settings" element={
+        <ProtectedRoute allowedRoles={['student', 'staff', 'admin']}>
+          <Settings />
         </ProtectedRoute>
       } />
 
