@@ -94,24 +94,29 @@ export default function Register() {
 
           {/* Role selector */}
           <div className="input-group">
-            <label className="input-label">I am a...</label>
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
-              {[
-                { val: 'student', icon: '🎓', label: 'Student', desc: 'Undergraduate / Postgraduate' },
-                { val: 'staff', icon: '💼', label: 'Staff Member', desc: 'Faculty / Administrative' },
-              ].map(r => (
-                <div key={r.val} onClick={() => setRole(r.val)}
-                  style={{
-                    padding: '16px', borderRadius: 10, cursor: 'pointer', textAlign: 'center',
-                    border: `2px solid ${role === r.val ? '#0047AB' : '#e2e8f0'}`,
-                    background: role === r.val ? '#EBF2FF' : 'white',
-                    transition: 'all 0.2s'
-                  }}>
-                  <div style={{ fontSize: 28, marginBottom: 6 }}>{r.icon}</div>
-                  <div style={{ fontSize: 14, fontWeight: 700, color: role === r.val ? '#0047AB' : '#374151' }}>{r.label}</div>
-                  <div style={{ fontSize: 11, color: '#94a3b8', marginTop: 2 }}>{r.desc}</div>
-                </div>
-              ))}
+            <label className="input-label">I am registering as</label>
+            <div style={{ position: 'relative' }}>
+              <span style={{
+                position: 'absolute', left: 12, top: '50%',
+                transform: 'translateY(-50%)', color: '#94a3b8', fontSize: 15
+              }}>👤</span>
+              <select
+                className="input-field"
+                style={{ paddingLeft: 36, appearance: 'none', cursor: 'pointer' }}
+                value={role}
+                onChange={e => setRole(e.target.value)}
+              >
+                <option value="student">🎓 Student — Undergraduate / Postgraduate</option>
+                <option value="staff">💼 Staff Member — Faculty / Administrative</option>
+              </select>
+              <span style={{
+                position: 'absolute', right: 12, top: '50%',
+                transform: 'translateY(-50%)', color: '#94a3b8',
+                pointerEvents: 'none'
+              }}>▼</span>
+            </div>
+            <div style={{ fontSize: 11, color: '#94a3b8', marginTop: 4 }}>
+              Your role determines what you can access in the system
             </div>
           </div>
 
@@ -203,7 +208,7 @@ export default function Register() {
 
             <button type="submit" className="btn btn-primary btn-lg" disabled={loading}
               style={{ marginTop: 4, opacity: loading ? 0.7 : 1 }}>
-              {loading ? 'Creating account...' : 'Register Account →'}
+              {loading ? 'Creating account...' : 'Create Account →'}
             </button>
           </form>
 
