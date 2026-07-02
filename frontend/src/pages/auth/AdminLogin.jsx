@@ -2,10 +2,12 @@ import { useState } from 'react'
 import { Link, useNavigate, useLocation } from 'react-router-dom'
 import api from '../../api/axios'
 import useAuthStore from '../../store/authStore'
-import { MdClose, MdArrowBack
-, 
-MdRefresh, MdVisibility, MdKey, MdCheck, 
-MdAdminPanelSettings, MdBarChart, MdShield, MdLock, MdWarning, MdVisibilityOff } from 'react-icons/md'
+import {
+  MdClose, MdArrowBack
+  ,
+  MdRefresh, MdVisibility, MdKey, MdCheck,
+  MdAdminPanelSettings, MdBarChart, MdShield, MdLock, MdWarning, MdVisibilityOff
+} from 'react-icons/md'
 
 const generateQuestion = () => {
   const ops = ['+', '-']
@@ -65,7 +67,7 @@ export default function AdminLogin() {
   ]
 
   return (
-    <div className={isFlipping ? 'flip-page-in' : ''} style={{ minHeight: '100vh', display: 'flex' }}>
+    <div className={isFlipping ? 'flip-page-in' : ''} style={{ height: '100vh', display: 'flex', overflow: 'hidden' }}>
 
       {/* ── Left panel ───────────────────────────────────────── */}
       <div style={{

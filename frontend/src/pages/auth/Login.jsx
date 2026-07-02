@@ -2,10 +2,12 @@ import { useState } from 'react'
 import { Link, useNavigate, useLocation } from 'react-router-dom'
 import api from '../../api/axios'
 import useAuthStore from '../../store/authStore'
-import { MdClose, 
-MdRefresh, MdSchool
-, MdVisibility, MdCheck, 
-MdPerson, MdShield, MdLogin, MdLock, MdWarning, MdVisibilityOff, MdBolt } from 'react-icons/md'
+import {
+  MdClose,
+  MdRefresh, MdSchool
+  , MdVisibility, MdCheck,
+  MdPerson, MdShield, MdLogin, MdLock, MdWarning, MdVisibilityOff, MdBolt
+} from 'react-icons/md'
 
 const generateQuestion = () => {
   const ops = ['+', '-']
@@ -82,7 +84,7 @@ export default function Login() {
   }
 
   return (
-    <div className={`${isFlippingIn && !isFlipping ? 'flip-page-in' : ''} ${isFlipping ? 'flip-page-out' : ''}`.trim()} style={{ minHeight: '100vh', display: 'flex' }}>
+    <div className={`${isFlippingIn && !isFlipping ? 'flip-page-in' : ''} ${isFlipping ? 'flip-page-out' : ''}`.trim()} style={{ height: '100vh', display: 'flex', overflow: 'hidden' }}>
 
       {/* ── Left hero panel ──────────────────────────────────── */}
       <div style={{

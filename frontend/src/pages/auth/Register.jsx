@@ -1,11 +1,13 @@
 import { useState } from 'react'
 import { Link, useNavigate, useLocation } from 'react-router-dom'
 import api from '../../api/axios'
-import { MdClose, MdEmail, 
-MdArrowBack, MdWork, MdInfo, MdCheckCircle, 
-MdShield, 
-MdPerson, MdSchool, MdAppRegistration
-, MdLock, MdRefresh, MdWarning, MdBolt } from 'react-icons/md'
+import {
+  MdClose, MdEmail,
+  MdArrowBack, MdWork, MdInfo, MdCheckCircle,
+  MdShield,
+  MdPerson, MdSchool, MdAppRegistration
+  , MdLock, MdRefresh, MdWarning, MdBolt
+} from 'react-icons/md'
 
 const generateQuestion = () => {
   const ops = ['+', '-']
@@ -92,7 +94,7 @@ export default function Register() {
   )
 
   return (
-    <div className={`${isFlippingIn && !isFlipping ? 'flip-page-in' : ''} ${isFlipping ? 'flip-page-out' : ''}`.trim()} style={{ minHeight: '100vh', display: 'flex' }}>
+    <div className={`${isFlippingIn && !isFlipping ? 'flip-page-in' : ''} ${isFlipping ? 'flip-page-out' : ''}`.trim()} style={{ height: '100vh', display: 'flex', overflow: 'hidden' }}>
 
       {/* ── Left hero panel ──────────────────────────────────── */}
       <div style={{
