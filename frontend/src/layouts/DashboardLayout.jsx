@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import Sidebar from './Sidebar'
 import TopBar from './TopBar'
 import BottomNav from './BottomNav'
+import Footer from './Footer'
 import IdleWarningModal from '../components/IdleWarningModal'
 import useIdleTimer from '../hooks/useIdleTimer'
 import useAuthStore from '../store/authStore'
@@ -20,7 +21,7 @@ export default function DashboardLayout({ children, searchPlaceholder }) {
       await api.post('/auth/logout/', {
         refresh: localStorage.getItem('refresh_token')
       })
-    } catch {}
+    } catch { }
     logout()
     navigate('/login?reason=idle')
   }, [logout, navigate])
@@ -55,9 +56,10 @@ export default function DashboardLayout({ children, searchPlaceholder }) {
           searchPlaceholder={searchPlaceholder}
           onMenuClick={() => setSidebarOpen(true)}
         />
-        <div className="page-body" style={{ paddingBottom: 80 }}>
+        <div className="page-body bg-mesh animate-fade-in" style={{ paddingBottom: 160 }}>
           {children}
         </div>
+        <Footer />
         <BottomNav />
       </div>
     </div>

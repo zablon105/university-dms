@@ -209,7 +209,7 @@ export default function UserManagement() {
   }
 
   return (
-    <DashboardLayout searchPlaceholder="Search users, roles, or departments...">
+    <>
       <div className="page-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 16, marginBottom: 24, flexWrap: 'wrap' }}>
         <div>
           <h1 className="page-title">User Management</h1>
@@ -500,6 +500,6 @@ registration_number,email,first_name,last_name,role,department,phone,password
           </div>
         </div>
       )}
-    </DashboardLayout>
+    </>
   )
 }

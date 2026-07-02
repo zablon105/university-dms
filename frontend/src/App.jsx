@@ -6,6 +6,7 @@ import Login from './pages/auth/Login'
 import Register from './pages/auth/Register'
 import ForgotPassword from './pages/auth/ForgotPassword'
 import AdminLogin from './pages/auth/AdminLogin'
+import AdminRegister from './pages/auth/AdminRegister'
 
 // Dashboards
 import StudentDashboard from './pages/student/Dashboard'
@@ -18,6 +19,7 @@ import AdminDocuments from './pages/admin/Documents'
 import AdminCompliance from './pages/admin/Compliance'
 import AdminLogs from './pages/admin/Logs'
 import Settings from './pages/Settings'
+import DashboardLayout from './layouts/DashboardLayout'
 
 // Protected route component
 const ProtectedRoute = ({ children, allowedRoles }) => {
@@ -46,6 +48,7 @@ export default function App() {
       <Route path="/register" element={<Register />} />
       <Route path="/forgot-password" element={<ForgotPassword />} />
       <Route path="/admin-login" element={<AdminLogin />} />
+      <Route path="/admin-register" element={<AdminRegister />} />
 
       {/* Role redirect */}
       <Route path="/" element={<RoleRedirect />} />
@@ -67,14 +70,16 @@ export default function App() {
       {/* Admin routes — admin only */}
       <Route path="/admin/*" element={
         <ProtectedRoute allowedRoles={['admin']}>
-          <Routes>
-            <Route path="dashboard" element={<AdminDashboard />} />
-            <Route path="users" element={<UserManagement />} />
-            <Route path="documents" element={<AdminDocuments />} />
-            <Route path="compliance" element={<AdminCompliance />} />
-            <Route path="logs" element={<AdminLogs />} />
-            <Route path="*" element={<AdminDashboard />} />
-          </Routes>
+          <DashboardLayout searchPlaceholder="Search users, documents...">
+            <Routes>
+              <Route path="dashboard" element={<AdminDashboard />} />
+              <Route path="users" element={<UserManagement />} />
+              <Route path="documents" element={<AdminDocuments />} />
+              <Route path="compliance" element={<AdminCompliance />} />
+              <Route path="logs" element={<AdminLogs />} />
+              <Route path="*" element={<AdminDashboard />} />
+            </Routes>
+          </DashboardLayout>
         </ProtectedRoute>
       } />
 

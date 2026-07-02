@@ -1,12 +1,49 @@
-import { useState } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import useAuthStore from '../store/authStore'
-import { MdMenu, MdSearch, MdNotifications, MdKeyboardArrowDown } from 'react-icons/md'
+import useToast from '../hooks/useToast'
+import api from '../api/axios'
+import {
+  MdMenu, MdSearch, MdNotifications, MdKeyboardArrowDown,
+  MdSettings, MdLogout, MdPerson, MdClose, MdInfoOutline,
+  MdCheckCircleOutline, MdWarningAmber,
+} from 'react-icons/md'
+
+const MOCK_NOTIFICATIONS = [
+  { id: 1, type: 'info', read: false, title: 'Document Pending Approval', body: 'Your transcript request is awaiting staff review.', time: '2 min ago' },
+  { id: 2, type: 'success', read: false, title: 'Upload Successful', body: 'Assignment_03.pdf has been uploaded successfully.', time: '15 min ago' },
+  { id: 3, type: 'warning', read: true, title: 'Compliance Check Due', body: 'Annual compliance review is due in 3 days.', time: '1 hr ago' },
+  { id: 4, type: 'info', read: true, title: 'System Maintenance', body: 'Scheduled maintenance on July 5 at 02:00 UTC.', time: '3 hr ago' },
+]
+
+const notifIcon = { info: <MdInfoOutline size={14} />, success: <MdCheckCircleOutline size={14} />, warning: <MdWarningAmber size={14} /> }
+const notifColor = {
+  info: { bg: '#eff6ff', color: '#1d4ed8', border: '#bfdbfe' },
+  success: { bg: '#f0fdf4', color: '#16a34a', border: '#bbf7d0' },
+  warning: { bg: '#fffbeb', color: '#d97706', border: '#fde68a' },
+}
 
 export default function TopBar({ searchPlaceholder, onMenuClick }) {
   const navigate = useNavigate()
-  const { user } = useAuthStore()
+  const { user, logout } = useAuthStore()
+  const toast = useToast()
   const [notifOpen, setNotifOpen] = useState(false)
+  const [userMenuOpen, setUserMenuOpen] = useState(false)
+  const [notifications, setNotifications] = useState(MOCK_NOTIFICATIONS)
+  const [searchVal, setSearchVal] = useState('')
+
+  const notifRef = useRef(null)
+  const userRef = useRef(null)
+  const unread = notifications.filter(n => !n.read).length
+
+  useEffect(() => {
+    const close = (e) => {
+      if (notifRef.current && !notifRef.current.contains(e.target)) setNotifOpen(false)
+      if (userRef.current && !userRef.current.contains(e.target)) setUserMenuOpen(false)
+    }
+    document.addEventListener('mousedown', close)
+    return () => document.removeEventListener('mousedown', close)
+  }, [])
 
   const initials = user
     ? `${user.first_name?.[0] || ''}${user.last_name?.[0] || ''}`.toUpperCase() || user.username?.[0]?.toUpperCase()
@@ -14,140 +51,376 @@ export default function TopBar({ searchPlaceholder, onMenuClick }) {
 
   const today = new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'short', day: 'numeric' })
 
+  const handleMarkAllRead = () => {
+    setNotifications(ns => ns.map(n => ({ ...n, read: true })))
+    toast.success('All notifications marked as read')
+  }
+  const handleMarkRead = (id) => setNotifications(ns => ns.map(n => n.id === id ? { ...n, read: true } : n))
+
+  const handleLogout = async () => {
+    setUserMenuOpen(false)
+    try { await api.post('/auth/logout/', { refresh: localStorage.getItem('refresh_token') }) } catch { }
+    toast.success('Signed out successfully')
+    setTimeout(() => { logout(); navigate('/login') }, 900)
+  }
+
   return (
-    <header style={{
-      height: 'var(--topbar-height)',
-      background: 'white',
-      borderBottom: '1px solid var(--border)',
-      display: 'flex', alignItems: 'center',
-      padding: '0 18px', gap: 12,
-      position: 'sticky', top: 0, zIndex: 50,
-      boxShadow: '0 1px 4px rgba(0,0,0,0.06)',
-    }}>
+    <header className="topbar animate-fade-in-down">
+
       {/* Hamburger — mobile only */}
-      <button
-        id="hamburger-btn"
-        onClick={onMenuClick}
-        className="hamburger-btn"
-        style={{
-          background: 'var(--gray-100)', border: '1px solid var(--gray-200)',
-          borderRadius: 'var(--radius-md)', fontSize: 20,
-          cursor: 'pointer', color: 'var(--gray-600)',
-          display: 'none', flexShrink: 0,
-          width: 38, height: 38,
-          alignItems: 'center', justifyContent: 'center',
-          transition: 'var(--transition)',
-        }}
-        onMouseEnter={e => e.currentTarget.style.background = 'var(--gray-200)'}
-        onMouseLeave={e => e.currentTarget.style.background = 'var(--gray-100)'}
-      >
+      <button id="hamburger-btn" onClick={onMenuClick} className="hamburger-btn tb-icon-btn" aria-label="Open navigation">
         <MdMenu size={20} />
       </button>
 
+      {/* Brand pill — mobile only */}
+      <div className="tb-brand-mobile">
+        <span className="tb-brand-text">DocLibrary</span>
+      </div>
+
       {/* Search */}
-      <div className="topbar-search" style={{ flex: 1, position: 'relative', maxWidth: 400 }}>
-        <MdSearch style={{
-          position: 'absolute', left: 10, top: '50%',
-          transform: 'translateY(-50%)',
-          color: 'var(--gray-400)', fontSize: 17, pointerEvents: 'none'
-        }} />
+      <div className="tb-search-wrap">
+        <MdSearch className="tb-search-icon" />
         <input
-          style={{
-            width: '100%', padding: '8px 12px 8px 34px',
-            border: '1.5px solid var(--gray-200)',
-            borderRadius: 'var(--radius-md)', fontSize: '0.85rem',
-            background: 'var(--gray-50)', color: 'var(--gray-700)',
-            outline: 'none', transition: 'var(--transition)',
-          }}
+          className="tb-search-input"
           placeholder={searchPlaceholder || 'Search documents, users…'}
-          onFocus={e => { e.target.style.borderColor = 'var(--primary)'; e.target.style.background = 'white'; e.target.style.boxShadow = '0 0 0 3px rgba(26,86,219,0.08)' }}
-          onBlur={e => { e.target.style.borderColor = 'var(--gray-200)'; e.target.style.background = 'var(--gray-50)'; e.target.style.boxShadow = 'none' }}
+          value={searchVal}
+          onChange={e => setSearchVal(e.target.value)}
+          onKeyDown={e => e.key === 'Escape' && setSearchVal('')}
         />
+        {searchVal && (
+          <button className="tb-search-clear" onClick={() => setSearchVal('')} aria-label="Clear">
+            <MdClose size={13} />
+          </button>
+        )}
       </div>
 
-      {/* Spacer */}
-      <div style={{ flex: 1 }} />
+      <div className="tb-spacer" />
 
-      {/* Date — desktop only */}
-      <div className="topbar-date" style={{ fontSize: '0.78rem', color: 'var(--gray-400)', whiteSpace: 'nowrap', fontFamily: 'Oswald, sans-serif', letterSpacing: '0.03em' }}>
-        {today}
-      </div>
+      {/* Date */}
+      <div className="tb-date">{today}</div>
 
-      {/* Right side */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexShrink: 0 }}>
+      {/* Right actions */}
+      <div className="tb-actions">
+
         {/* Notification bell */}
-        <div
-          style={{
-            width: 36, height: 36, borderRadius: 'var(--radius-md)',
-            background: 'var(--gray-100)',
-            border: '1px solid var(--gray-200)',
-            display: 'flex', alignItems: 'center',
-            justifyContent: 'center', cursor: 'pointer',
-            position: 'relative', flexShrink: 0,
-            transition: 'var(--transition)',
-          }}
-          onMouseEnter={e => { e.currentTarget.style.background = 'var(--gray-200)'; e.currentTarget.style.borderColor = 'var(--gray-300)' }}
-          onMouseLeave={e => { e.currentTarget.style.background = 'var(--gray-100)'; e.currentTarget.style.borderColor = 'var(--gray-200)' }}
-          onClick={() => setNotifOpen(!notifOpen)}
-        >
-          <MdNotifications size={18} color="var(--gray-600)" />
-          <span style={{
-            position: 'absolute', top: 5, right: 5,
-            width: 7, height: 7, borderRadius: '50%',
-            background: 'var(--danger)',
-            border: '1.5px solid white',
-          }} />
+        <div ref={notifRef} style={{ position: 'relative' }}>
+          <button className="tb-icon-btn" onClick={() => { setNotifOpen(o => !o); setUserMenuOpen(false) }} aria-label="Notifications">
+            <MdNotifications size={19} />
+            {unread > 0 && <span className="tb-badge">{unread}</span>}
+          </button>
+
+          {notifOpen && (
+            <div className="tb-dropdown notif-dd animate-scale-in">
+              <div className="dd-head">
+                <span className="dd-title">Notifications</span>
+                {unread > 0 && <button className="dd-mark-btn" onClick={handleMarkAllRead}>Mark all read</button>}
+              </div>
+              <div className="notif-list">
+                {notifications.map(n => {
+                  const c = notifColor[n.type]
+                  return (
+                    <div key={n.id} className={`notif-item ${n.read ? 'notif-read' : ''}`} onClick={() => handleMarkRead(n.id)}>
+                      <div className="notif-icon" style={{ background: c.bg, color: c.color, border: `1px solid ${c.border}` }}>
+                        {notifIcon[n.type]}
+                      </div>
+                      <div className="notif-body">
+                        <div className="notif-title">{n.title}</div>
+                        <div className="notif-text">{n.body}</div>
+                        <div className="notif-time">{n.time}</div>
+                      </div>
+                      {!n.read && <div className="notif-dot" />}
+                    </div>
+                  )
+                })}
+              </div>
+              <div className="dd-foot">
+                <button className="dd-foot-btn" onClick={() => setNotifOpen(false)}>View all notifications</button>
+              </div>
+            </div>
+          )}
         </div>
 
-        {/* Divider */}
-        <div style={{ width: 1, height: 24, background: 'var(--gray-200)' }} />
+        <div className="tb-divider" />
 
-        {/* User avatar */}
-        <div
-          role="button"
-          tabIndex={0}
-          onClick={() => navigate('/settings')}
-          onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') navigate('/settings') }}
-          style={{
-            display: 'flex', alignItems: 'center', gap: 8,
-            cursor: 'pointer', padding: '5px 8px',
-            border: '1px solid transparent',
-            borderRadius: 'var(--radius-md)',
-            transition: 'var(--transition)',
-          }}
-          onMouseEnter={e => { e.currentTarget.style.background = 'var(--gray-100)'; e.currentTarget.style.borderColor = 'var(--gray-200)' }}
-          onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.borderColor = 'transparent' }}
-          title="Open settings"
-        >
-          <div style={{
-            width: 32, height: 32, borderRadius: 'var(--radius-md)',
-            background: 'linear-gradient(135deg, #1a56db 0%, #60a5fa 100%)',
-            display: 'flex', alignItems: 'center', justifyContent: 'center',
-            color: 'white', fontSize: 12, fontWeight: 700,
-            flexShrink: 0, overflow: 'hidden',
-            boxShadow: '0 2px 8px rgba(26,86,219,0.25)',
-          }}>
-            {user?.profile_picture
-              ? <img src={user.profile_picture} alt="Profile" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-              : initials}
-          </div>
-          <div className="user-info-text" style={{ display: 'flex', flexDirection: 'column' }}>
-            <span style={{ fontFamily: 'Oswald, sans-serif', fontSize: 13, fontWeight: 600, color: 'var(--gray-800)', whiteSpace: 'nowrap', letterSpacing: '0.03em' }}>
-              {user?.first_name ? `${user.first_name} ${user.last_name}` : user?.username}
-            </span>
-            <span style={{ fontSize: 10, color: 'var(--gray-500)', textTransform: 'capitalize', whiteSpace: 'nowrap' }}>
-              {user?.role} · {user?.department || 'KAFU'}
-            </span>
-          </div>
-          <MdKeyboardArrowDown size={15} color="var(--gray-400)" className="user-info-text" />
+        {/* User menu */}
+        <div ref={userRef} style={{ position: 'relative' }}>
+          <button className="tb-user-btn" onClick={() => { setUserMenuOpen(o => !o); setNotifOpen(false) }} aria-label="User menu">
+            <div className="tb-avatar">
+              {user?.profile_picture
+                ? <img src={user.profile_picture} alt="Profile" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                : initials}
+            </div>
+            <div className="tb-user-info user-info-text">
+              <span className="tb-user-name">{user?.first_name ? `${user.first_name} ${user.last_name}` : user?.username}</span>
+              <span className="tb-user-role">{user?.role} · {user?.department || 'KAFU'}</span>
+            </div>
+            <MdKeyboardArrowDown size={15} className={`user-info-text tb-chevron ${userMenuOpen ? 'tb-chevron-open' : ''}`} />
+          </button>
+
+          {userMenuOpen && (
+            <div className="tb-dropdown user-dd animate-scale-in">
+              <div className="dd-user-head">
+                <div className="dd-user-avatar">{initials}</div>
+                <div>
+                  <div className="dd-user-name">{user?.first_name ? `${user.first_name} ${user.last_name}` : user?.username}</div>
+                  <div className="dd-user-email">{user?.email || (user?.role + '@kafu.ac.ke')}</div>
+                </div>
+              </div>
+              <div className="dd-sep" />
+              <button className="dd-item" onClick={() => { navigate('/settings'); setUserMenuOpen(false) }}><MdPerson size={15} /> Profile & Settings</button>
+              <button className="dd-item" onClick={() => { navigate('/settings'); setUserMenuOpen(false) }}><MdSettings size={15} /> Preferences</button>
+              <div className="dd-sep" />
+              <button className="dd-item dd-item-danger" onClick={handleLogout}><MdLogout size={15} /> Sign Out</button>
+            </div>
+          )}
         </div>
       </div>
 
       <style>{`
+        /* ═══ TOPBAR — SKY BLUE THEME ═══════════════════════════════ */
+        .topbar {
+          height: var(--topbar-height);
+          background: linear-gradient(135deg, #0ea5e9 0%, #0284c7 100%);
+          border-bottom: 1px solid rgba(255,255,255,0.2);
+          display: flex; align-items: center;
+          padding: 0 20px; gap: 12px;
+          position: sticky; top: 0; z-index: 50;
+          box-shadow: 0 2px 16px rgba(2,132,199,0.25), 0 1px 4px rgba(2,132,199,0.15);
+        }
+
+        /* Icon buttons */
+        .tb-icon-btn {
+          position: relative;
+          width: 36px; height: 36px;
+          display: flex; align-items: center; justify-content: center;
+          background: rgba(255,255,255,0.1);
+          border: 1px solid rgba(255,255,255,0.18);
+          border-radius: var(--radius-md);
+          cursor: pointer; color: rgba(255,255,255,0.85);
+          transition: var(--transition); flex-shrink: 0;
+        }
+        .tb-icon-btn:hover {
+          background: rgba(255,255,255,0.2);
+          color: white;
+          border-color: rgba(255,255,255,0.3);
+          transform: translateY(-1px);
+          box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+        }
+
+        /* Badge */
+        .tb-badge {
+          position: absolute; top: -4px; right: -4px;
+          min-width: 17px; height: 17px;
+          background: #f87171; color: white;
+          border-radius: 10px; font-size: 0.6rem; font-weight: 700;
+          display: flex; align-items: center; justify-content: center;
+          border: 2px solid #0284c7; padding: 0 3px;
+          font-family: var(--font-body);
+        }
+
+        /* Search */
+        .tb-search-wrap {
+          position: relative; flex: 1; max-width: 630px;
+        }
+        .tb-search-icon {
+          position: absolute; left: 11px; top: 50%;
+          transform: translateY(-50%);
+          color: rgba(255,255,255,0.45); font-size: 17px; pointer-events: none;
+        }
+        .tb-search-input {
+          width: 100%;
+          padding: 9px 34px 9px 36px;
+          border: 1.5px solid rgba(255,255,255,0.18);
+          border-radius: var(--radius-md);
+          font-size: 0.845rem;
+          background: rgba(255,255,255,0.1);
+          color: white;
+          transition: var(--transition);
+          font-family: var(--font-body);
+        }
+        .tb-search-input::placeholder { color: rgba(255,255,255,0.4); }
+        .tb-search-input:focus {
+          border-color: rgba(255,255,255,0.5);
+          background: rgba(255,255,255,0.18);
+          box-shadow: 0 0 0 3px rgba(255,255,255,0.1);
+          outline: none;
+        }
+        .tb-search-clear {
+          position: absolute; right: 9px; top: 50%;
+          transform: translateY(-50%);
+          background: rgba(255,255,255,0.2);
+          border: none; border-radius: 50%;
+          width: 18px; height: 18px;
+          display: flex; align-items: center; justify-content: center;
+          cursor: pointer; color: rgba(255,255,255,0.8);
+          transition: var(--transition-fast); padding: 0;
+        }
+        .tb-search-clear:hover { background: rgba(255,255,255,0.35); }
+
+        /* Spacer / date */
+        .tb-spacer { flex: 1; }
+        .tb-date {
+          font-size: 0.78rem;
+          color: rgba(255,255,255,0.5);
+          white-space: nowrap;
+          font-family: var(--font-heading);
+          letter-spacing: 0.04em;
+        }
+
+        /* Actions row */
+        .tb-actions { display: flex; align-items: center; gap: 6px; flex-shrink: 0; }
+        .tb-divider { width: 1px; height: 24px; background: rgba(255,255,255,0.18); margin: 0 4px; }
+
+        /* User button */
+        .tb-user-btn {
+          display: flex; align-items: center; gap: 8px;
+          padding: 5px 10px 5px 5px;
+          background: transparent;
+          border: 1px solid transparent;
+          border-radius: var(--radius-md);
+          cursor: pointer; transition: var(--transition);
+        }
+        .tb-user-btn:hover {
+          background: rgba(255,255,255,0.12);
+          border-color: rgba(255,255,255,0.2);
+        }
+        .tb-avatar {
+          width: 32px; height: 32px;
+          border-radius: var(--radius-md);
+          background: white;
+          display: flex; align-items: center; justify-content: center;
+          color: #0284c7; font-size: 14px; font-weight: 800;
+          flex-shrink: 0; overflow: hidden;
+          box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+        }
+        .tb-user-info { display: flex; flex-direction: column; text-align: left; }
+        .tb-user-name {
+          font-family: var(--font-heading);
+          font-size: 13px; font-weight: 600;
+          color: white; white-space: nowrap; letter-spacing: 0.03em;
+        }
+        .tb-user-role {
+          font-size: 10px; color: rgba(255,255,255,0.55);
+          text-transform: capitalize; white-space: nowrap;
+        }
+        .tb-chevron { color: rgba(255,255,255,0.5); transition: transform 0.2s; }
+        .tb-chevron-open { transform: rotate(180deg); }
+
+        /* Mobile brand */
+        .tb-brand-mobile { display: none; align-items: center; flex-shrink: 0; }
+        .tb-brand-text {
+          font-family: var(--font-heading);
+          font-size: 16px; font-weight: 700;
+          color: white; letter-spacing: 0.06em; text-transform: uppercase;
+        }
+
+        /* ── Dropdown shell ── */
+        .tb-dropdown {
+          position: absolute; top: calc(100% + 10px); right: 0;
+          background: white;
+          border: 1px solid var(--border);
+          border-radius: var(--radius-xl);
+          box-shadow: 0 24px 60px rgba(0,0,0,0.18), 0 8px 16px rgba(0,0,0,0.1);
+          z-index: 200; overflow: hidden;
+        }
+
+        /* Notification dropdown */
+        .notif-dd { width: 360px; }
+        .dd-head {
+          display: flex; align-items: center; justify-content: space-between;
+          padding: 14px 16px 10px;
+          background: linear-gradient(135deg, #0ea5e9 0%, #0284c7 100%);
+          border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+        .dd-title {
+          font-family: var(--font-heading);
+          font-size: 12px; font-weight: 700;
+          color: white; letter-spacing: 0.08em; text-transform: uppercase;
+        }
+        .dd-mark-btn {
+          font-size: 11.5px; color: #93c5fd;
+          background: rgba(255,255,255,0.1);
+          border: 1px solid rgba(255,255,255,0.2);
+          border-radius: var(--radius-sm);
+          cursor: pointer; font-family: var(--font-body); font-weight: 500;
+          padding: 3px 9px; transition: background 0.15s;
+        }
+        .dd-mark-btn:hover { background: rgba(255,255,255,0.2); }
+        .notif-list { max-height: 320px; overflow-y: auto; }
+        .notif-item {
+          display: flex; align-items: flex-start; gap: 10px;
+          padding: 11px 16px; cursor: pointer;
+          transition: background 0.15s; position: relative;
+          border-bottom: 1px solid var(--gray-50);
+        }
+        .notif-item:last-child { border-bottom: none; }
+        .notif-item:hover { background: var(--gray-50); }
+        .notif-read { opacity: 0.6; }
+        .notif-icon {
+          width: 28px; height: 28px; border-radius: 50%;
+          display: flex; align-items: center; justify-content: center;
+          flex-shrink: 0; margin-top: 1px;
+        }
+        .notif-body { flex: 1; min-width: 0; }
+        .notif-title { font-size: 12.5px; font-weight: 600; color: var(--gray-800); margin-bottom: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .notif-text  { font-size: 11.5px; color: var(--gray-500); line-height: 1.4; }
+        .notif-time  { font-size: 10.5px; color: var(--gray-400); margin-top: 3px; }
+        .notif-dot   { width: 7px; height: 7px; border-radius: 50%; background: #3b82f6; flex-shrink: 0; margin-top: 6px; }
+        .dd-foot {
+          border-top: 1px solid var(--gray-100);
+          padding: 10px 16px;
+        }
+        .dd-foot-btn {
+          width: 100%; padding: 8px;
+          background: linear-gradient(135deg, #0ea5e9 0%, #0284c7 100%);
+          border: none; border-radius: var(--radius-md);
+          font-size: 12px; color: white;
+          font-family: var(--font-body); cursor: pointer; font-weight: 500;
+          transition: opacity 0.15s;
+        }
+        .dd-foot-btn:hover { opacity: 0.85; }
+
+        /* User dropdown */
+        .user-dd { width: 240px; }
+        .dd-user-head {
+          display: flex; align-items: center; gap: 10px; padding: 14px 16px 12px;
+          background: linear-gradient(135deg, #0ea5e9 0%, #0284c7 100%);
+          border-bottom: 1px solid rgba(255,255,255,0.2);
+        }
+        .dd-user-avatar {
+          width: 36px; height: 36px; border-radius: var(--radius-md);
+          background: white;
+          display: flex; align-items: center; justify-content: center;
+          color: #0284c7; font-size: 15px; font-weight: 800; flex-shrink: 0;
+        }
+        .dd-user-name { font-family: var(--font-heading); font-size: 13px; font-weight: 600; color: white; letter-spacing: 0.03em; }
+        .dd-user-email { font-size: 11px; color: rgba(255,255,255,0.55); margin-top: 1px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 160px; }
+        .dd-sep { height: 1px; background: var(--gray-100); margin: 4px 0; }
+        .dd-item {
+          display: flex; align-items: center; gap: 9px;
+          width: 100%; padding: 9px 16px;
+          background: none; border: none; cursor: pointer;
+          font-size: 13px; font-family: var(--font-body);
+          color: var(--gray-700); text-align: left;
+          transition: background 0.15s, color 0.15s;
+        }
+        .dd-item:hover { background: #eff6ff; color: #1d4ed8; }
+        .dd-item-danger { color: var(--danger) !important; }
+        .dd-item-danger:hover { background: #fef2f2 !important; color: #b91c1c !important; }
+
+        /* Hamburger hidden on desktop */
+        .hamburger-btn { display: none !important; }
+
         @media (max-width: 768px) {
           .hamburger-btn { display: flex !important; }
+          .tb-brand-mobile { display: flex !important; }
+          .tb-date { display: none !important; }
           .user-info-text { display: none !important; }
-          .topbar-date { display: none !important; }
+          .tb-search-wrap { max-width: none; }
+        }
+        @media (max-width: 480px) {
+          .topbar { padding: 0 12px; gap: 8px; }
+          .tb-search-wrap { display: none; }
         }
       `}</style>
     </header>

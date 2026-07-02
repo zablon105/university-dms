@@ -27,7 +27,7 @@ export default function AdminLogs() {
     : logs.filter(log => log.status === statusFilter.toLowerCase())
 
   return (
-    <DashboardLayout searchPlaceholder="Search logs...">
+    <>
       <div className="page-header">
         <h1 className="page-title">Logs</h1>
         <p className="page-subtitle">Review audit history, approval decisions, and user activity.</p>
@@ -96,6 +96,6 @@ export default function AdminLogs() {
           </tbody>
         </table>
       </div>
-    </DashboardLayout>
+    </>
   )
 }

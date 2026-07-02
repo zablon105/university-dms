@@ -3,9 +3,10 @@ import { Routes, Route, useNavigate } from 'react-router-dom'
 import DashboardLayout from '../../layouts/DashboardLayout'
 import useAuthStore from '../../store/authStore'
 import api from '../../api/axios'
+import useScrollReveal from '../../hooks/useScrollReveal'
 import { MdInsertChart, MdChat, MdDownload, MdHourglassEmpty, MdSchool, MdDescription, MdStars, MdSearch, MdAssignment, MdBolt, MdWavingHand, MdFolderOpen, MdCalendarToday, MdUpload, MdHandshake, MdEditDocument, MdFolder } from 'react-icons/md';
 
-// ─── Sub-pages (placeholders we'll fill later) ───────────────────
+// ─── Sub-pages ───────────────────
 function AcademicDocuments() {
   const [docs, setDocs] = useState([])
   const [search, setSearch] = useState('')
@@ -28,7 +29,7 @@ function AcademicDocuments() {
   })
 
   return (
-    <DashboardLayout searchPlaceholder="Search files, records...">
+    <>
       <div className="page-header">
         <h1 className="page-title">Academic Documents</h1>
         <p className="page-subtitle">Browse and download course materials, syllabi, and official department resources.</p>
@@ -56,40 +57,40 @@ function AcademicDocuments() {
       <div style={{ background: 'white', borderRadius: 12, border: '1px solid var(--border)', overflow: 'hidden' }}>
         {loading ? <div style={{ padding: 40, textAlign: 'center', color: 'var(--gray-400)' }}>Loading...</div>
           : filtered.length === 0 ? <div style={{ padding: 40, textAlign: 'center', color: 'var(--gray-400)' }}>No documents found</div>
-          : filtered.map((doc, i) => (
-            <div key={doc.id} style={{
-              display: 'flex', alignItems: 'center', gap: 14,
-              padding: '16px 20px',
-              borderBottom: i < filtered.length - 1 ? '1px solid var(--gray-100)' : 'none',
-            }}
-              onMouseEnter={e => e.currentTarget.style.background = 'var(--gray-50)'}
-              onMouseLeave={e => e.currentTarget.style.background = 'white'}
-            >
-              <div style={{ width: 40, height: 40, borderRadius: 10, background: 'var(--primary-light)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 20 }}>
-                {doc.file_type === 'pdf' ? <MdDescription /> : doc.file_type === 'docx' ? <MdEditDocument /> : <MdFolder />}
-              </div>
-              <div style={{ flex: 1 }}>
-                <div style={{ fontSize: 14, fontWeight: 500, color: 'var(--gray-800)' }}>{doc.title}</div>
-                <div style={{ fontSize: 12, color: 'var(--gray-400)', marginTop: 2 }}>
-                  <span style={{ background: 'var(--primary-light)', color: 'var(--primary)', padding: '2px 8px', borderRadius: 20, fontSize: 11, fontWeight: 500, marginRight: 8 }}>
-                    {doc.category_detail?.name || 'General'}
-                  </span>
-                  Uploaded: {new Date(doc.created_at).toLocaleDateString()}
+            : filtered.map((doc, i) => (
+              <div key={doc.id} style={{
+                display: 'flex', alignItems: 'center', gap: 14,
+                padding: '16px 20px',
+                borderBottom: i < filtered.length - 1 ? '1px solid var(--gray-100)' : 'none',
+              }}
+                onMouseEnter={e => e.currentTarget.style.background = 'var(--gray-50)'}
+                onMouseLeave={e => e.currentTarget.style.background = 'white'}
+              >
+                <div style={{ width: 40, height: 40, borderRadius: 10, background: 'var(--primary-light)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 20 }}>
+                  {doc.file_type === 'pdf' ? <MdDescription /> : doc.file_type === 'docx' ? <MdEditDocument /> : <MdFolder />}
                 </div>
+                <div style={{ flex: 1 }}>
+                  <div style={{ fontSize: 14, fontWeight: 500, color: 'var(--gray-800)' }}>{doc.title}</div>
+                  <div style={{ fontSize: 12, color: 'var(--gray-400)', marginTop: 2 }}>
+                    <span style={{ background: 'var(--primary-light)', color: 'var(--primary)', padding: '2px 8px', borderRadius: 20, fontSize: 11, fontWeight: 500, marginRight: 8 }}>
+                      {doc.category_detail?.name || 'General'}
+                    </span>
+                    Uploaded: {new Date(doc.created_at).toLocaleDateString()}
+                  </div>
+                </div>
+                <a href={doc.file} target="_blank" rel="noreferrer">
+                  <button className="btn btn-outline btn-sm"><MdDownload /> Download</button>
+                </a>
               </div>
-              <a href={doc.file} target="_blank" rel="noreferrer">
-                <button className="btn btn-outline btn-sm"><MdDownload /> Download</button>
-              </a>
-            </div>
-          ))}
+            ))}
       </div>
-    </DashboardLayout>
+    </>
   )
 }
 
 function Assignments() {
   return (
-    <DashboardLayout searchPlaceholder="Search assignments...">
+    <>
       <div className="page-header">
         <h1 className="page-title">Assignments</h1>
         <p className="page-subtitle">Submit and track your assignment documents.</p>
@@ -98,14 +99,14 @@ function Assignments() {
         <div style={{ fontSize: 48, marginBottom: 12 }}><MdEditDocument /></div>
         <p style={{ color: 'var(--gray-500)' }}>Assignment submissions coming soon.</p>
       </div>
-    </DashboardLayout>
+    </>
   )
 }
 
 function InstitutionalRecords() {
   const navigate = useNavigate()
   return (
-    <DashboardLayout searchPlaceholder="Search records...">
+    <>
       <div className="page-header">
         <h1 className="page-title">Institutional Records</h1>
         <p className="page-subtitle">View and manage your official academic documents.</p>
@@ -127,7 +128,7 @@ function InstitutionalRecords() {
           </div>
         ))}
       </div>
-    </DashboardLayout>
+    </>
   )
 }
 
@@ -135,7 +136,7 @@ function SharedFiles() {
   const [docs, setDocs] = useState([])
   useEffect(() => { api.get('/documents/').then(r => setDocs(r.data)) }, [])
   return (
-    <DashboardLayout searchPlaceholder="Search shared files...">
+    <>
       <div className="page-header">
         <h1 className="page-title">Shared Files</h1>
         <p className="page-subtitle">Files shared with you by staff and faculty.</p>
@@ -162,7 +163,7 @@ function SharedFiles() {
             </div>
           ))}
       </div>
-    </DashboardLayout>
+    </>
   )
 }
 
@@ -200,11 +201,13 @@ function StudentHome() {
     { title: 'Lab Report 3', course: 'PHY101 · TA Johnson', time: 'Tomorrow', urgency: 'tomorrow', color: '#D97706', bg: '#FEF3C7' },
     { title: 'Weekly Quiz', course: 'MATH210', time: 'Oct 18', urgency: 'later', color: 'var(--gray-500)', bg: 'var(--gray-100)' },
   ]
+  const revealRef = useScrollReveal({ stagger: false })
+  const statsReveal = useScrollReveal({ stagger: true })
 
   return (
-    <DashboardLayout searchPlaceholder="Search files, records...">
+    <div ref={revealRef}>
       {/* Welcome banner */}
-      <div style={{
+      <div className="reveal" style={{
         background: 'white', borderRadius: 12,
         border: '1px solid var(--border)',
         padding: '20px 24px', marginBottom: 20
@@ -226,30 +229,27 @@ function StudentHome() {
       </div>
 
       {/* Stat cards */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 16, marginBottom: 24 }}>
+      <div ref={statsReveal} className="stagger-children" style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 16, marginBottom: 24 }}>
         {[
           { label: 'TOTAL DOCS', value: docs.length, sub: '+12%', icon: <MdFolder />, color: 'var(--primary)' },
           { label: 'PENDING', value: pendingDocs.length, sub: 'Due soon', icon: <MdHourglassEmpty />, color: 'var(--danger)' },
           { label: 'NEW SHARED', value: docs.filter(d => d.visibility === 'public').length, sub: 'This week', icon: <MdHandshake />, color: 'var(--success)' },
         ].map(s => (
-          <div key={s.label} style={{
-            background: 'white', borderRadius: 12,
-            border: '1px solid var(--border)', padding: 20
-          }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <div key={s.label} className="reveal stat-card">
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
               <div>
-                <div style={{ fontSize: 11, fontWeight: 600, color: 'var(--gray-400)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>{s.label}</div>
-                <div style={{ fontSize: 32, fontWeight: 700, color: 'var(--gray-900)', marginTop: 4 }}>{s.value}</div>
-                <div style={{ fontSize: 12, color: s.color, marginTop: 2 }}>{s.sub}</div>
+                <div className="stat-label">{s.label}</div>
+                <div className="stat-value" style={{ marginTop: 8 }}>{s.value}</div>
+                <div className="stat-change" style={{ color: s.color, marginTop: 4 }}>{s.sub}</div>
               </div>
-              <span style={{ fontSize: 28 }}>{s.icon}</span>
+              <div className="stat-icon">{s.icon}</div>
             </div>
           </div>
         ))}
       </div>
 
       {/* Main grid */}
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 320px', gap: 20 }}>
+      <div className="reveal" style={{ display: 'grid', gridTemplateColumns: '1fr 320px', gap: 20 }}>
 
         {/* Recent Documents */}
         <div style={{ background: 'white', borderRadius: 12, border: '1px solid var(--border)', padding: 20 }}>
@@ -379,20 +379,22 @@ function StudentHome() {
 
         </div>
       </div>
-    </DashboardLayout>
+    </div>
   )
 }
 
 // ─── Router ───────────────────────────────────────────────────────
 export default function StudentDashboard() {
   return (
-    <Routes>
-      <Route path="dashboard" element={<StudentHome />} />
-      <Route path="academic" element={<AcademicDocuments />} />
-      <Route path="assignments" element={<Assignments />} />
-      <Route path="records" element={<InstitutionalRecords />} />
-      <Route path="shared" element={<SharedFiles />} />
-      <Route path="*" element={<StudentHome />} />
-    </Routes>
+    <DashboardLayout searchPlaceholder="Search files, records...">
+      <Routes>
+        <Route path="dashboard" element={<StudentHome />} />
+        <Route path="academic" element={<AcademicDocuments />} />
+        <Route path="assignments" element={<Assignments />} />
+        <Route path="records" element={<InstitutionalRecords />} />
+        <Route path="shared" element={<SharedFiles />} />
+        <Route path="*" element={<StudentHome />} />
+      </Routes>
+    </DashboardLayout>
   )
 }

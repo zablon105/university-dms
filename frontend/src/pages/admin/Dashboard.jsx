@@ -1,11 +1,13 @@
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
-import DashboardLayout from '../../layouts/DashboardLayout'
 import api from '../../api/axios'
+import useScrollReveal from '../../hooks/useScrollReveal'
 import { MdInsertChart, MdHourglassEmpty, MdWarning, MdDescription, MdPeople, MdStorage, MdSave, MdCalendarToday, MdShield, MdEditDocument, MdFolder } from 'react-icons/md';
 
 export default function AdminDashboard() {
   const navigate = useNavigate()
+  const revealRef = useScrollReveal({ stagger: false })
+  const statsReveal = useScrollReveal({ stagger: true })
   const [stats, setStats] = useState({
     totalUsers: 0,
     totalDocuments: 0,
@@ -82,7 +84,7 @@ export default function AdminDashboard() {
       const blob = new Blob([JSON.stringify(backup, null, 2)], { type: 'application/json' })
       const link = document.createElement('a')
       link.href = URL.createObjectURL(blob)
-      link.setAttribute('download', `kafu-backup-${new Date().toISOString().slice(0,10)}.json`)
+      link.setAttribute('download', `kafu-backup-${new Date().toISOString().slice(0, 10)}.json`)
       document.body.appendChild(link)
       link.click()
       link.remove()
@@ -229,8 +231,8 @@ export default function AdminDashboard() {
   const getStatusBadge = (status) => {
     const map = {
       approved: { bg: '#DCFCE7', color: '#16A34A', label: 'Verified' },
-      pending:  { bg: '#FEF3C7', color: '#D97706', label: 'Pending' },
-      draft:    { bg: '#F1F5F9', color: '#64748B', label: 'Draft' },
+      pending: { bg: '#FEF3C7', color: '#D97706', label: 'Pending' },
+      draft: { bg: '#F1F5F9', color: '#64748B', label: 'Draft' },
       rejected: { bg: '#FEE2E2', color: '#DC2626', label: 'Rejected' },
     }
     const s = map[status] || map.draft
@@ -244,19 +246,19 @@ export default function AdminDashboard() {
   }
 
   if (loading) return (
-    <DashboardLayout searchPlaceholder="Search records...">
+    <>
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: 400 }}>
         <div style={{ textAlign: 'center', color: 'var(--gray-500)' }}>
           <div style={{ fontSize: 32, marginBottom: 12 }}><MdHourglassEmpty /></div>
           <p>Loading dashboard...</p>
         </div>
       </div>
-    </DashboardLayout>
+    </>
   )
 
   return (
-    <DashboardLayout searchPlaceholder="Search records...">
-      <div className="page-header" style={{ marginBottom: 28 }}>
+    <div ref={revealRef}>
+      <div className="page-header reveal" style={{ marginBottom: 28 }}>
         <div>
           <h1 className="page-title">Admin Dashboard</h1>
           <p className="page-subtitle">Monitor institutional archive health and approval workflows.</p>
@@ -265,62 +267,58 @@ export default function AdminDashboard() {
           <button className="btn btn-primary btn-sm" onClick={handleExportLogs}>Generate Report</button>
         </div>
       </div>
-        {/* Filters row */}
-        <div style={{
-          display: 'grid',
-          gridTemplateColumns: 'repeat(4, minmax(160px, 1fr))',
-          gap: 12, marginTop: 16
+      {/* Filters row */}
+      <div className="reveal" style={{
+        display: 'grid',
+        gridTemplateColumns: 'repeat(4, minmax(160px, 1fr))',
+        gap: 12, marginTop: 16
+      }}>
+        <select value={selectedDepartment} onChange={e => setSelectedDepartment(e.target.value)} style={{
+          padding: '10px 14px', borderRadius: 12,
+          border: '1px solid var(--gray-200)',
+          fontSize: 13, color: 'var(--gray-700)',
+          background: 'white', cursor: 'pointer'
         }}>
-          <select value={selectedDepartment} onChange={e => setSelectedDepartment(e.target.value)} style={{
-            padding: '10px 14px', borderRadius: 12,
-            border: '1px solid var(--gray-200)',
-            fontSize: 13, color: 'var(--gray-700)',
-            background: 'white', cursor: 'pointer'
-          }}>
-            {['All Departments', 'Science', 'Arts & Humanities', 'Mathematics', 'Computer Science', 'Engineering'].map(option => (
-              <option key={option}>{option}</option>
-            ))}
-          </select>
-          <select value={selectedType} onChange={e => setSelectedType(e.target.value)} style={{
-            padding: '10px 14px', borderRadius: 12,
-            border: '1px solid var(--gray-200)',
-            fontSize: 13, color: 'var(--gray-700)',
-            background: 'white', cursor: 'pointer'
-          }}>
-            {['All Types', 'Reports', 'Policies', 'Forms', 'Archives'].map(option => (
-              <option key={option}>{option}</option>
-            ))}
-          </select>
-          <select value={selectedRange} onChange={e => setSelectedRange(e.target.value)} style={{
-            padding: '10px 14px', borderRadius: 12,
-            border: '1px solid var(--gray-200)',
-            fontSize: 13, color: 'var(--gray-700)',
-            background: 'white', cursor: 'pointer'
-          }}>
-            {['Last 30 Days', 'Last 7 Days', 'Last 90 Days', 'Year to Date'].map(option => (
-              <option key={option}>{option}</option>
-            ))}
-          </select>
-          <button onClick={handleClearFilters} style={{
-            padding: '10px 14px', borderRadius: 12,
-            border: '1px solid var(--primary)',
-            fontSize: 13, color: 'var(--primary)',
-            background: 'white', cursor: 'pointer', fontWeight: 600
-          }}>Reset Filters</button>
-        </div>
+          {['All Departments', 'Science', 'Arts & Humanities', 'Mathematics', 'Computer Science', 'Engineering'].map(option => (
+            <option key={option}>{option}</option>
+          ))}
+        </select>
+        <select value={selectedType} onChange={e => setSelectedType(e.target.value)} style={{
+          padding: '10px 14px', borderRadius: 12,
+          border: '1px solid var(--gray-200)',
+          fontSize: 13, color: 'var(--gray-700)',
+          background: 'white', cursor: 'pointer'
+        }}>
+          {['All Types', 'Reports', 'Policies', 'Forms', 'Archives'].map(option => (
+            <option key={option}>{option}</option>
+          ))}
+        </select>
+        <select value={selectedRange} onChange={e => setSelectedRange(e.target.value)} style={{
+          padding: '10px 14px', borderRadius: 12,
+          border: '1px solid var(--gray-200)',
+          fontSize: 13, color: 'var(--gray-700)',
+          background: 'white', cursor: 'pointer'
+        }}>
+          {['Last 30 Days', 'Last 7 Days', 'Last 90 Days', 'Year to Date'].map(option => (
+            <option key={option}>{option}</option>
+          ))}
+        </select>
+        <button onClick={handleClearFilters} style={{
+          padding: '10px 14px', borderRadius: 12,
+          border: '1px solid var(--primary)',
+          fontSize: 13, color: 'var(--primary)',
+          background: 'white', cursor: 'pointer', fontWeight: 600
+        }}>Reset Filters</button>
+      </div>
 
       {/* Stat cards */}
-      <div style={{
+      <div ref={statsReveal} className="stagger-children" style={{
         display: 'grid',
         gridTemplateColumns: 'repeat(4, 1fr)',
-        gap: 16, marginBottom: 24
+        gap: 16, marginBottom: 24, marginTop: 16
       }}>
         {statCards.map((card) => (
-          <div key={card.label} style={{
-            background: 'white', borderRadius: 12,
-            border: '1px solid var(--border)',
-            padding: '20px', boxShadow: 'var(--shadow-sm)'
-          }}>
+          <div key={card.label} className="reveal stat-card">
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
               <div>
                 <div style={{
@@ -348,7 +346,7 @@ export default function AdminDashboard() {
       </div>
 
       {/* Department & storage summary */}
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 360px', gap: 20, marginBottom: 24 }}>
+      <div className="reveal" style={{ display: 'grid', gridTemplateColumns: '1fr 360px', gap: 20, marginBottom: 24 }}>
         <div style={{ background: 'white', borderRadius: 12, border: '1px solid var(--border)', padding: 20, boxShadow: 'var(--shadow-sm)' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
             <div>
@@ -406,7 +404,7 @@ export default function AdminDashboard() {
       </div>
 
       {/* Main content grid */}
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 340px', gap: 20 }}>
+      <div className="reveal" style={{ display: 'grid', gridTemplateColumns: '1fr 340px', gap: 20 }}>
 
         {/* Left: Recent Documents */}
         <div style={{
@@ -644,6 +642,6 @@ export default function AdminDashboard() {
 
         </div>
       </div>
-    </DashboardLayout>
+    </div>
   )
 }

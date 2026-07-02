@@ -36,7 +36,7 @@ export default function AdminCompliance() {
   const approvalCoverage = workflows.length
 
   return (
-    <DashboardLayout searchPlaceholder="Search compliance...">
+    <>
       <div className="page-header">
         <h1 className="page-title">Compliance</h1>
         <p className="page-subtitle">Monitor policy status, audit findings, and control compliance for KAFU records.</p>
@@ -122,6 +122,6 @@ export default function AdminCompliance() {
           </div>
         </div>
       </div>
-    </DashboardLayout>
+    </>
   )
 }

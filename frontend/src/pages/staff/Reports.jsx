@@ -1,9 +1,8 @@
-import DashboardLayout from '../../layouts/DashboardLayout'
 import { MdInsertChart } from 'react-icons/md';
 
 export default function Reports() {
   return (
-    <DashboardLayout searchPlaceholder="Search reports...">
+    <>
       <div className="page-header">
         <h1 className="page-title">Reports</h1>
         <p className="page-subtitle">Generate staff activity and document archive insights.</p>
@@ -15,6 +14,6 @@ export default function Reports() {
           Create exportable performance summaries, approval throughput, and file metrics here.
         </div>
       </div>
-    </DashboardLayout>
+    </>
   )
 }

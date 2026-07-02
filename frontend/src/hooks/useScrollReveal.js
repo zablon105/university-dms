@@ -1,46 +1,52 @@
 import { useEffect, useRef } from 'react'
 
 /**
- * Attach scroll-reveal animation via IntersectionObserver.
- * Usage:
- *   const ref = useScrollReveal()
- *   <div ref={ref} className="reveal">...</div>
+ * useScrollReveal — observes elements with .reveal / .reveal-left / .reveal-right /
+ * .reveal-scale / .reveal-blur classes and adds .visible when they enter the viewport.
  *
- * Or for a container whose children should stagger:
- *   const ref = useScrollReveal({ stagger: true })
- *   <div ref={ref} className="stagger-children">...</div>
+ * Usage:  const containerRef = useScrollReveal()
+ *         <div ref={containerRef}> ... elements with .reveal class ... </div>
  */
-export default function useScrollReveal({ threshold = 0.12, stagger = false } = {}) {
+export default function useScrollReveal(options = {}) {
     const ref = useRef(null)
 
     useEffect(() => {
-        const el = ref.current
-        if (!el) return
+        const root = ref.current || document.body
 
-        const targets = stagger
-            ? Array.from(el.children)
-            : [el]
+        let targets = []
 
-        // Pre-add reveal class to children when staggering
-        if (stagger) {
+        if (options.stagger && ref.current) {
+            targets = Array.from(ref.current.children)
             targets.forEach(t => t.classList.add('reveal'))
+        } else {
+            const revealClasses = ['.reveal', '.reveal-left', '.reveal-right', '.reveal-scale', '.reveal-blur']
+            targets = root.querySelectorAll(revealClasses.join(','))
+            if (targets.length === 0 && ref.current && ref.current.classList.contains('reveal')) {
+                targets = [ref.current]
+            }
         }
+
+        if (!targets || targets.length === 0) return
 
         const observer = new IntersectionObserver(
             (entries) => {
-                entries.forEach(entry => {
+                entries.forEach((entry) => {
                     if (entry.isIntersecting) {
                         entry.target.classList.add('visible')
                         observer.unobserve(entry.target)
                     }
                 })
             },
-            { threshold, rootMargin: '0px 0px -40px 0px' }
+            {
+                threshold: options.threshold ?? 0.12,
+                rootMargin: options.rootMargin ?? '0px 0px -40px 0px',
+            }
         )
 
-        targets.forEach(t => observer.observe(t))
+        targets.forEach((el) => observer.observe(el))
+
         return () => observer.disconnect()
-    }, [threshold, stagger])
+    }, [options.threshold, options.rootMargin, options.stagger])
 
     return ref
 }

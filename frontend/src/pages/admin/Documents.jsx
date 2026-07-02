@@ -99,7 +99,7 @@ export default function AdminDocuments() {
   }
 
   return (
-    <DashboardLayout searchPlaceholder="Search storage overview...">
+    <>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 20, marginBottom: 24, flexWrap: 'wrap' }}>
         <div>
           <h1 className="page-title">Storage Overview</h1>
@@ -257,6 +257,6 @@ export default function AdminDocuments() {
           </tbody>
         </table>
       </div>
-    </DashboardLayout>
+    </>
   )
 }

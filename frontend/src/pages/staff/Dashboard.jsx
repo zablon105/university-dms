@@ -3,8 +3,9 @@ import { Routes, Route, useNavigate } from 'react-router-dom'
 import DashboardLayout from '../../layouts/DashboardLayout'
 import useAuthStore from '../../store/authStore'
 import api from '../../api/axios'
+import useScrollReveal from '../../hooks/useScrollReveal'
 import Reports from './Reports'
-import { MdCheckCircle, MdCloud, MdDownload, MdSchool, MdDescription, MdTheaterComedy, MdAssignment, MdSquareFoot, MdAccessTime, MdSave, MdScience, MdVisibility, MdLoop, MdTrendingUp, MdHome, MdUpload, MdEditDocument } from 'react-icons/md';
+import { MdCheckCircle, MdCloud, MdDownload, MdSchool, MdDescription, MdTheaterComedy, MdAssignment, MdSquareFoot, MdAccessTime, MdSave, MdScience, MdVisibility, MdLoop, MdTrendingUp, MdHome, MdUpload, MdEditDocument, MdFolder, MdPeople } from 'react-icons/md';
 
 // ─── Upload Document Page ─────────────────────────────────────────
 function UploadDocument() {
@@ -39,7 +40,7 @@ function UploadDocument() {
   }
 
   if (success) return (
-    <DashboardLayout searchPlaceholder="Search archives...">
+    <>
       <div style={{ maxWidth: 480, margin: '80px auto', textAlign: 'center' }}>
         <div className="card">
           <div style={{ fontSize: 56, marginBottom: 16 }}><MdCheckCircle /></div>
@@ -74,11 +75,11 @@ function UploadDocument() {
           </div>
         </div>
       </div>
-    </DashboardLayout>
+    </>
   )
 
   return (
-    <DashboardLayout searchPlaceholder="Search archives...">
+    <>
       <div className="page-header">
         <h1 className="page-title">Staff Document Submission</h1>
         <p className="page-subtitle">Archive official records, syllabi, and departmental notices to the central KAFU repository.</p>
@@ -217,7 +218,7 @@ function UploadDocument() {
           </div>
         </div>
       </div>
-    </DashboardLayout>
+    </>
   )
 }
 
@@ -255,7 +256,7 @@ function ApprovalQueue() {
   const displayed = activeTab === 'pending' ? approvals : allApprovals
 
   return (
-    <DashboardLayout searchPlaceholder="Search staff queue...">
+    <>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 24 }}>
         <div>
           <h1 className="page-title">Approval Queue</h1>
@@ -376,7 +377,7 @@ function ApprovalQueue() {
           </table>
         )}
       </div>
-    </DashboardLayout>
+    </>
   )
 }
 
@@ -390,7 +391,7 @@ function Archive() {
   }, [])
 
   return (
-    <DashboardLayout searchPlaceholder="Search archive...">
+    <>
       <div className="page-header">
         <h1 className="page-title">Document Archive</h1>
         <p className="page-subtitle">Browse and manage all departmental documents.</p>
@@ -436,7 +437,7 @@ function Archive() {
           </tbody>
         </table>
       </div>
-    </DashboardLayout>
+    </>
   )
 }
 
@@ -467,32 +468,39 @@ function StaffHome() {
     { name: 'Arts & Humanities', count: 18, icon: <MdTheaterComedy /> },
     { name: 'Mathematics', count: 29, icon: <MdSquareFoot /> },
   ]
+  const revealRef = useScrollReveal({ stagger: false })
+  const statsReveal = useScrollReveal({ stagger: true })
 
   return (
-    <DashboardLayout searchPlaceholder="Search documents...">
-      <div className="page-header" style={{ marginBottom: 24 }}>
+    <div ref={revealRef}>
+      <div className="page-header reveal" style={{ marginBottom: 24 }}>
         <div>
           <h1 className="page-title">Staff Dashboard</h1>
           <p className="page-subtitle">Manage approvals, departmental archives, and workflow priorities.</p>
         </div>
       </div>
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, minmax(160px, 1fr))', gap: 12, marginBottom: 24 }}>
+      <div ref={statsReveal} className="stagger-children" style={{ display: 'grid', gridTemplateColumns: 'repeat(4, minmax(160px, 1fr))', gap: 12, marginBottom: 24 }}>
         {[
-          { label: 'Pending Reviews', value: pending.length, subtitle: 'Need action', color: 'var(--warning)' },
-          { label: 'Live Documents', value: docs.length, subtitle: 'In archive', color: 'var(--primary)' },
-          { label: 'Teams', value: 3, subtitle: 'Departments supported', color: 'var(--success)' },
-          { label: 'Average SLA', value: '14.2 hrs', subtitle: 'Response time', color: 'var(--gray-500)' }
+          { label: 'Pending Reviews', value: pending.length, subtitle: 'Need action', color: 'var(--warning)', icon: <MdAccessTime /> },
+          { label: 'Live Documents', value: docs.length, subtitle: 'In archive', color: 'var(--primary)', icon: <MdFolder /> },
+          { label: 'Teams', value: 3, subtitle: 'Departments supported', color: 'var(--success)', icon: <MdPeople /> },
+          { label: 'Average SLA', value: '14.2 hrs', subtitle: 'Response time', color: 'var(--gray-500)', icon: <MdLoop /> }
         ].map(card => (
-          <div key={card.label} className="card" style={{ padding: 20 }}>
-            <div style={{ fontSize: 11, color: 'var(--gray-500)', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.5px' }}>{card.label}</div>
-            <div style={{ fontSize: 28, fontWeight: 700, color: 'var(--gray-900)', marginTop: 8 }}>{card.value}</div>
-            <div style={{ fontSize: 12, color: card.color, marginTop: 6 }}>{card.subtitle}</div>
+          <div key={card.label} className="reveal stat-card">
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+              <div>
+                <div className="stat-label">{card.label}</div>
+                <div className="stat-value" style={{ marginTop: 8 }}>{card.value}</div>
+                <div className="stat-change" style={{ color: card.color, marginTop: 4 }}>{card.subtitle}</div>
+              </div>
+              <div className="stat-icon">{card.icon}</div>
+            </div>
           </div>
         ))}
       </div>
 
       {/* Main grid */}
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 300px', gap: 20, marginBottom: 20 }}>
+      <div className="reveal" style={{ display: 'grid', gridTemplateColumns: '1fr 300px', gap: 20, marginBottom: 20 }}>
 
         {/* Workflow Efficiency */}
         <div className="card">
@@ -633,20 +641,22 @@ function StaffHome() {
           ))}
         </div>
       </div>
-    </DashboardLayout>
+    </div>
   )
 }
 
 // ─── Router ───────────────────────────────────────────────────────
 export default function StaffDashboard() {
   return (
-    <Routes>
-      <Route path="dashboard" element={<StaffHome />} />
-      <Route path="approvals" element={<ApprovalQueue />} />
-      <Route path="upload" element={<UploadDocument />} />
-      <Route path="archive" element={<Archive />} />
-      <Route path="reports" element={<Reports />} />
-      <Route path="*" element={<StaffHome />} />
-    </Routes>
+    <DashboardLayout searchPlaceholder="Search archives...">
+      <Routes>
+        <Route path="dashboard" element={<StaffHome />} />
+        <Route path="approvals" element={<ApprovalQueue />} />
+        <Route path="upload" element={<UploadDocument />} />
+        <Route path="archive" element={<Archive />} />
+        <Route path="reports" element={<Reports />} />
+        <Route path="*" element={<StaffHome />} />
+      </Routes>
+    </DashboardLayout>
   )
 }

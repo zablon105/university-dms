@@ -64,11 +64,6 @@ class RegisterSerializer(serializers.ModelSerializer):
         return value
 
     def validate_role(self, value):
-        # Only student and staff can self-register
-        if value == 'admin':
-            raise serializers.ValidationError(
-                'Admin accounts cannot be self-registered.'
-            )
         return value
 
     def validate(self, attrs):
@@ -92,18 +87,25 @@ class RegisterSerializer(serializers.ModelSerializer):
 
 class UserSerializer(serializers.ModelSerializer):
     full_name = serializers.SerializerMethodField()
+    role = serializers.SerializerMethodField()
 
     class Meta:
         model = User
         fields = [
             'id', 'username', 'email', 'first_name', 'last_name',
             'full_name', 'role', 'department', 'phone',
-            'profile_picture', 'is_approved', 'created_at'
+            'profile_picture', 'is_approved', 'is_superuser', 'created_at'
         ]
-        read_only_fields = ['id', 'created_at', 'is_approved']
+        read_only_fields = ['id', 'created_at', 'is_approved', 'is_superuser']
 
     def get_full_name(self, obj):
         return obj.get_full_name()
+
+    def get_role(self, obj):
+        # Django superusers always get admin privileges regardless of stored role
+        if obj.is_superuser:
+            return 'admin'
+        return obj.role
 
 
 class ChangePasswordSerializer(serializers.Serializer):
