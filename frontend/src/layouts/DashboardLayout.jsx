@@ -2,12 +2,14 @@ import { useState, useCallback } from 'react'
 import { useNavigate } from 'react-router-dom'
 import Sidebar from './Sidebar'
 import TopBar from './TopBar'
+import BottomNav from './BottomNav'
 import IdleWarningModal from '../components/IdleWarningModal'
 import useIdleTimer from '../hooks/useIdleTimer'
 import useAuthStore from '../store/authStore'
 import api from '../api/axios'
 
 export default function DashboardLayout({ children, searchPlaceholder }) {
+  const [sidebarOpen, setSidebarOpen] = useState(false)
   const [showWarning, setShowWarning] = useState(false)
   const { logout } = useAuthStore()
   const navigate = useNavigate()
@@ -27,32 +29,36 @@ export default function DashboardLayout({ children, searchPlaceholder }) {
     setShowWarning(true)
   }, [])
 
-  const handleStay = useCallback(() => {
-    setShowWarning(false)
-    resetTimer()
-  }, [])
-
   const { resetTimer } = useIdleTimer({
     onWarning: handleWarning,
     onLogout: handleLogout,
   })
 
+  const handleStay = useCallback(() => {
+    setShowWarning(false)
+    resetTimer()
+  }, [resetTimer])
+
   return (
     <div className="app-layout">
-      {/* Idle warning modal */}
       {showWarning && (
-        <IdleWarningModal
-          onStay={handleStay}
-          onLogout={handleLogout}
-        />
+        <IdleWarningModal onStay={handleStay} onLogout={handleLogout} />
       )}
 
-      <Sidebar />
+      <Sidebar
+        isOpen={sidebarOpen}
+        onClose={() => setSidebarOpen(false)}
+      />
+
       <div className="main-content">
-        <TopBar searchPlaceholder={searchPlaceholder} />
-        <div className="page-body">
+        <TopBar
+          searchPlaceholder={searchPlaceholder}
+          onMenuClick={() => setSidebarOpen(true)}
+        />
+        <div className="page-body" style={{ paddingBottom: 80 }}>
           {children}
         </div>
+        <BottomNav />
       </div>
     </div>
   )
