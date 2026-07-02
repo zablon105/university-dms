@@ -94,7 +94,7 @@ export default function Register() {
   )
 
   return (
-    <div className={`${isFlippingIn && !isFlipping ? 'flip-page-in' : ''} ${isFlipping ? 'flip-page-out' : ''}`.trim()} style={{ height: '100vh', display: 'flex', overflow: 'hidden' }}>
+    <div className={`auth-layout ${isFlippingIn && !isFlipping ? 'flip-page-in' : ''} ${isFlipping ? 'flip-page-out' : ''}`.trim()} style={{ height: '100vh', display: 'flex', overflow: 'hidden' }}>
 
       {/* ── Left hero panel ──────────────────────────────────── */}
       <div style={{
@@ -181,7 +181,7 @@ export default function Register() {
       </div>
 
       {/* ── Right form panel ──────────────────────────────────── */}
-      <div style={{ width: '56%', background: 'var(--bg-page)', display: 'flex', alignItems: 'flex-start', justifyContent: 'center', padding: '40px 52px', overflowY: 'auto' }}>
+      <div className="auth-panel-right" style={{ width: '56%', background: 'var(--bg-page)', display: 'flex', alignItems: 'flex-start', justifyContent: 'center', padding: '40px 52px', overflowY: 'auto' }}>
         <div className="form-container" style={{ width: '100%', maxWidth: 540, paddingTop: 10 }}>
 
           {/* Back link */}
@@ -195,8 +195,8 @@ export default function Register() {
             <MdArrowBack size={15} /> Back to Sign In
           </a>
 
-          <div style={{ marginBottom: 26 }}>
-            <h2 style={{ fontFamily: 'Oswald, sans-serif', fontSize: 30, fontWeight: 700, color: 'var(--gray-900)', marginBottom: 6, letterSpacing: '0.02em' }}>
+          <div style={{ marginBottom: 26, textAlign: 'center' }}>
+            <h2 style={{ fontFamily: 'Oswald, sans-serif', fontSize: 30, fontWeight: 700, color: 'var(--gray-900)', marginBottom: 6, letterSpacing: '0.02em', textTransform: 'uppercase' }}>
               Register Account
             </h2>
             <p style={{ color: 'var(--gray-500)', fontSize: 14 }}>Enter your institutional details to begin.</p>

@@ -84,7 +84,7 @@ export default function Login() {
   }
 
   return (
-    <div className={`${isFlippingIn && !isFlipping ? 'flip-page-in' : ''} ${isFlipping ? 'flip-page-out' : ''}`.trim()} style={{ height: '100vh', display: 'flex', overflow: 'hidden' }}>
+    <div className={`auth-layout ${isFlippingIn && !isFlipping ? 'flip-page-in' : ''} ${isFlipping ? 'flip-page-out' : ''}`.trim()} style={{ height: '100vh', display: 'flex', overflow: 'hidden' }}>
 
       {/* ── Left hero panel ──────────────────────────────────── */}
       <div style={{
@@ -171,7 +171,7 @@ export default function Login() {
       </div>
 
       {/* ── Right form panel ──────────────────────────────────── */}
-      <div style={{
+      <div className="auth-panel-right" style={{
         width: '56%', background: 'var(--bg-page)',
         display: 'flex', alignItems: 'center',
         justifyContent: 'center', padding: '48px 56px',
@@ -180,8 +180,8 @@ export default function Login() {
         <div className="form-container" style={{ width: '100%', maxWidth: 460 }}>
 
           {/* Header */}
-          <div style={{ marginBottom: 30 }}>
-            <h2 style={{ fontFamily: 'Oswald, sans-serif', fontSize: 30, fontWeight: 700, color: 'var(--gray-900)', marginBottom: 6, letterSpacing: '0.02em' }}>
+          <div style={{ marginBottom: 30, textAlign: 'center' }}>
+            <h2 style={{ fontFamily: 'Oswald, sans-serif', fontSize: 30, fontWeight: 700, color: 'var(--gray-900)', marginBottom: 6, letterSpacing: '0.02em', textTransform: 'uppercase' }}>
               Sign In
             </h2>
             <p style={{ color: 'var(--gray-500)', fontSize: 14, lineHeight: 1.6 }}>

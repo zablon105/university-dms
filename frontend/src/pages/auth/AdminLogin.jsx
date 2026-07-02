@@ -67,7 +67,7 @@ export default function AdminLogin() {
   ]
 
   return (
-    <div className={isFlipping ? 'flip-page-in' : ''} style={{ height: '100vh', display: 'flex', overflow: 'hidden' }}>
+    <div className={`auth-layout ${isFlipping ? 'flip-page-in' : ''}`.trim()} style={{ height: '100vh', display: 'flex', overflow: 'hidden' }}>
 
       {/* ── Left panel ───────────────────────────────────────── */}
       <div style={{
@@ -118,7 +118,7 @@ export default function AdminLogin() {
       </div>
 
       {/* ── Right form panel ──────────────────────────────────── */}
-      <div style={{ width: '56%', background: 'var(--bg-page)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '48px 56px', overflowY: 'auto' }}>
+      <div className="auth-panel-right" style={{ width: '56%', background: 'var(--bg-page)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '48px 56px', overflowY: 'auto' }}>
         <div className="form-container" style={{ width: '100%', maxWidth: 460 }}>
 
           {/* Back link */}
