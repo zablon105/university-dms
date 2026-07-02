@@ -10,7 +10,8 @@ export default function Settings() {
     last_name: user?.last_name || '',
     email: user?.email || '',
     department: user?.department || '',
-    phone: user?.phone || ''
+    phone: user?.phone || '',
+    profile_picture: null,
   })
   const [passwordForm, setPasswordForm] = useState({ current_password: '', new_password: '', confirm_password: '' })
   const [saving, setSaving] = useState(false)
@@ -23,7 +24,8 @@ export default function Settings() {
         last_name: user.last_name || '',
         email: user.email || '',
         department: user.department || '',
-        phone: user.phone || ''
+        phone: user.phone || '',
+        profile_picture: null,
       })
     }
   }, [user])
@@ -32,7 +34,19 @@ export default function Settings() {
     e.preventDefault()
     setSaving(true)
     try {
-      const res = await api.patch('/auth/profile/', form)
+      const data = new FormData()
+      data.append('first_name', form.first_name)
+      data.append('last_name', form.last_name)
+      data.append('email', form.email)
+      data.append('department', form.department)
+      data.append('phone', form.phone)
+      if (form.profile_picture) {
+        data.append('profile_picture', form.profile_picture)
+      }
+
+      const res = await api.patch('/auth/profile/', data, {
+        headers: { 'Content-Type': 'multipart/form-data' }
+      })
       updateUser(res.data)
       alert('Profile updated successfully.')
     } catch (err) {
@@ -89,6 +103,39 @@ export default function Settings() {
                 />
               </div>
             ))}
+            <div className="input-group">
+              <label className="input-label">Profile Picture</label>
+              <input
+                className="input-field"
+                type="file"
+                accept="image/*"
+                onChange={e => setForm({ ...form, profile_picture: e.target.files?.[0] || null })}
+              />
+            </div>
+            {form.profile_picture && (
+              <div style={{ display: 'flex', gap: 12, alignItems: 'center' }}>
+                <img
+                  src={URL.createObjectURL(form.profile_picture)}
+                  alt="Profile preview"
+                  style={{ width: 64, height: 64, borderRadius: '50%', objectFit: 'cover', border: '1px solid var(--border)' }}
+                />
+                <span style={{ color: 'var(--gray-500)', fontSize: 13 }}>
+                  Selected file will be uploaded when you save.
+                </span>
+              </div>
+            )}
+            {user?.profile_picture && !form.profile_picture && (
+              <div style={{ display: 'flex', gap: 12, alignItems: 'center' }}>
+                <img
+                  src={user.profile_picture}
+                  alt="Current profile"
+                  style={{ width: 64, height: 64, borderRadius: '50%', objectFit: 'cover', border: '1px solid var(--border)' }}
+                />
+                <span style={{ color: 'var(--gray-500)', fontSize: 13 }}>
+                  Current profile picture.
+                </span>
+              </div>
+            )}
             <button className="btn btn-primary" type="submit" disabled={saving}>
               {saving ? 'Saving...' : 'Save Profile'}
             </button>
