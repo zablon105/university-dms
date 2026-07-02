@@ -3,7 +3,7 @@ import useAuthStore from '../store/authStore'
 import api from '../api/axios'
 
 const adminNav = [
-  { to: '/admin/dashboard', icon: '🏠', label: 'Dashboard' },
+  { to: '/admin/dashboard', icon: '🏠', label: 'Institutional Dashboard' },
   { to: '/admin/users', icon: '👥', label: 'User Management' },
   { to: '/admin/documents', icon: '🗄️', label: 'Storage' },
   { to: '/admin/compliance', icon: '🛡️', label: 'Compliance' },
