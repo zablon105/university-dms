@@ -163,27 +163,32 @@ export default function Sidebar({ isOpen, onClose }) {
 
         {/* Bottom section */}
         <div style={{ padding: '12px', borderTop: '1px solid var(--border)' }}>
-          <button style={{
-            width: '100%', padding: '10px',
-            background: 'var(--primary)', color: 'white',
-            border: 'none', borderRadius: 8, fontSize: 13,
-            fontWeight: 600, cursor: 'pointer', marginBottom: 8,
-            display: 'flex', alignItems: 'center',
-            justifyContent: 'center', gap: 6,
-            minHeight: 44
-          }}>
-            📊 Generate Report
-          </button>
+          {user?.role === 'admin' && (
+            <button style={{
+              width: '100%', padding: '10px',
+              background: 'var(--primary)', color: 'white',
+              border: 'none', borderRadius: 8, fontSize: 13,
+              fontWeight: 600, cursor: 'pointer', marginBottom: 8,
+              display: 'flex', alignItems: 'center',
+              justifyContent: 'center', gap: 6,
+              minHeight: 44
+            }}
+              onClick={() => { navigate('/admin/dashboard'); onClose?.() }}
+            >
+              📊 Generate Report
+            </button>
+          )}
 
           {[
-            { icon: '⚙️', label: 'Settings' },
-            { icon: '❓', label: 'Support' },
+            { icon: '⚙️', label: 'Settings', onClick: () => { navigate('/settings'); onClose?.() } },
+            { icon: '❓', label: 'Support', onClick: () => { window.location.href = 'mailto:support@kaimu.edu?subject=DocLibrary%20Support'; onClose?.() } },
           ].map(item => (
             <div key={item.label} style={{
               display: 'flex', alignItems: 'center', gap: 8,
               padding: '10px 10px', borderRadius: 8, cursor: 'pointer',
               color: 'var(--gray-600)', fontSize: 13, minHeight: 44
             }}
+              onClick={item.onClick}
               onMouseEnter={e => e.currentTarget.style.background = 'var(--gray-100)'}
               onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
             >
