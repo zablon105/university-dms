@@ -1,6 +1,8 @@
+import { useNavigate } from 'react-router-dom'
 import useAuthStore from '../store/authStore'
 
 export default function TopBar({ searchPlaceholder, onMenuClick }) {
+  const navigate = useNavigate()
   const { user } = useAuthStore()
 
   const initials = user
@@ -72,16 +74,30 @@ export default function TopBar({ searchPlaceholder, onMenuClick }) {
         </div>
 
         {/* User avatar + name — hide name on mobile */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: 8, cursor: 'pointer' }}>
+        <div
+          role="button"
+          tabIndex={0}
+          onClick={() => navigate('/settings')}
+          onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') navigate('/settings') }}
+          style={{ display: 'flex', alignItems: 'center', gap: 8, cursor: 'pointer' }}
+          title="Open profile settings"
+        >
           <div style={{
             width: 36, height: 36, borderRadius: '50%',
             background: 'var(--primary)',
             display: 'flex', alignItems: 'center',
             justifyContent: 'center',
             color: 'white', fontSize: 13, fontWeight: 700,
-            flexShrink: 0
+            flexShrink: 0,
+            overflow: 'hidden'
           }}>
-            {initials}
+            {user?.profile_picture ? (
+              <img
+                src={user.profile_picture}
+                alt="Profile"
+                style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+              />
+            ) : initials}
           </div>
           <div className="user-info-text" style={{ display: 'flex', flexDirection: 'column' }}>
             <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--gray-800)', whiteSpace: 'nowrap' }}>
