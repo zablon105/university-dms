@@ -209,12 +209,12 @@ export default function UserManagement() {
 
   return (
     <DashboardLayout searchPlaceholder="Search users, roles, or departments...">
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 24 }}>
+      <div className="page-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 16, marginBottom: 24, flexWrap: 'wrap' }}>
         <div>
           <h1 className="page-title">User Management</h1>
           <p className="page-subtitle">Manage access, roles, and system permissions.</p>
         </div>
-        <div style={{ display: 'flex', gap: 10 }}>
+        <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
           <button className="btn btn-outline btn-sm" onClick={handleBulkImport}>📥 Bulk Import</button>
           <button className="btn btn-primary btn-sm" onClick={handleAddNewUser}>➕ Add New User</button>
         </div>
