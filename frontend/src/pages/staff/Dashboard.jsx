@@ -94,7 +94,7 @@ function UploadDocument() {
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 14 }}>
               <div className="input-group">
                 <label className="input-label">Department</label>
-                <select className="input-field" value={form.description} onChange={e => setForm({ ...form, description: e.target.value })}>
+                <select className="input-field" value={form.department} onChange={e => setForm({ ...form, department: e.target.value })}>
                   <option>Science</option>
                   <option>Arts & Humanities</option>
                   <option>Mathematics</option>
@@ -469,31 +469,25 @@ function StaffHome() {
 
   return (
     <DashboardLayout searchPlaceholder="Search documents...">
-      {/* Header */}
-      <div style={{ marginBottom: 24 }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-          <div>
-            <h1 style={{ fontSize: 24, fontWeight: 700 }}>KAFU Staff Workflow</h1>
-            <p style={{ color: 'var(--gray-500)', fontSize: 14, marginTop: 4 }}>
-              Manage submissions, curriculum files, and departmental resources.
-            </p>
-          </div>
-          <div style={{ display: 'flex', gap: 8 }}>
-            {['Inbox', 'My Files', 'Shared', 'Archive'].map(tab => (
-              <button key={tab}
-                onClick={() => {
-                  if (tab === 'Archive') return navigate('/staff/archive')
-                  return navigate('/staff/dashboard')
-                }}
-                style={{
-                  padding: '7px 14px', borderRadius: 8, fontSize: 13,
-                  border: '1px solid var(--gray-300)',
-                  background: 'white', color: 'var(--gray-600)',
-                  cursor: 'pointer', fontWeight: 500
-                }}>{tab}</button>
-            ))}
-          </div>
+      <div className="page-header" style={{ marginBottom: 24 }}>
+        <div>
+          <h1 className="page-title">Staff Dashboard</h1>
+          <p className="page-subtitle">Manage approvals, departmental archives, and workflow priorities.</p>
         </div>
+      </div>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, minmax(160px, 1fr))', gap: 12, marginBottom: 24 }}>
+        {[
+          { label: 'Pending Reviews', value: pending.length, subtitle: 'Need action', color: 'var(--warning)' },
+          { label: 'Live Documents', value: docs.length, subtitle: 'In archive', color: 'var(--primary)' },
+          { label: 'Teams', value: 3, subtitle: 'Departments supported', color: 'var(--success)' },
+          { label: 'Average SLA', value: '14.2 hrs', subtitle: 'Response time', color: 'var(--gray-500)' }
+        ].map(card => (
+          <div key={card.label} className="card" style={{ padding: 20 }}>
+            <div style={{ fontSize: 11, color: 'var(--gray-500)', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.5px' }}>{card.label}</div>
+            <div style={{ fontSize: 28, fontWeight: 700, color: 'var(--gray-900)', marginTop: 8 }}>{card.value}</div>
+            <div style={{ fontSize: 12, color: card.color, marginTop: 6 }}>{card.subtitle}</div>
+          </div>
+        ))}
       </div>
 
       {/* Main grid */}
