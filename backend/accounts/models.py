@@ -41,7 +41,7 @@ class User(AbstractUser):
     profile_picture = models.ImageField(
         upload_to='profiles/', blank=True, null=True
     )
-    is_approved = models.BooleanField(default=False)
+    is_approved = models.BooleanField(default=True)
     created_at = models.DateTimeField(default=timezone.now)
 
     def __str__(self):

@@ -82,89 +82,85 @@ export default function Settings() {
         <p className="page-subtitle">Update your profile, contact details, and security preferences.</p>
       </div>
 
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 360px', gap: 20 }}>
-        <div className="card">
-          <h2 style={{ fontSize: 16, marginBottom: 18 }}>Personal Information</h2>
-          <form onSubmit={handleProfileSave} style={{ display: 'grid', gap: 16 }}>
-            {[
-              { label: 'First Name', name: 'first_name', type: 'text' },
-              { label: 'Last Name', name: 'last_name', type: 'text' },
-              { label: 'Email Address', name: 'email', type: 'email' },
-              { label: 'Department', name: 'department', type: 'text' },
-              { label: 'Phone', name: 'phone', type: 'text' }
-            ].map(field => (
-              <div key={field.name} className="input-group">
-                <label className="input-label">{field.label}</label>
-                <input
-                  className="input-field"
-                  type={field.type}
-                  value={form[field.name]}
-                  onChange={e => setForm({ ...form, [field.name]: e.target.value })}
-                />
-              </div>
-            ))}
-            <div className="input-group">
-              <label className="input-label">Profile Picture</label>
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 360px', gap: 24, alignItems: 'start' }}>
+        <form className="form-container" onSubmit={handleProfileSave} style={{ display: 'grid', gap: 16 }}>
+          <h2 style={{ fontSize: 18, fontFamily: 'Oswald, sans-serif', marginBottom: 6, color: 'var(--gray-900)' }}>Personal Information</h2>
+          {[
+            { label: 'First Name', name: 'first_name', type: 'text' },
+            { label: 'Last Name', name: 'last_name', type: 'text' },
+            { label: 'Email Address', name: 'email', type: 'email' },
+            { label: 'Department', name: 'department', type: 'text' },
+            { label: 'Phone', name: 'phone', type: 'text' }
+          ].map(field => (
+            <div key={field.name} className="input-group">
+              <label className="input-label">{field.label}</label>
               <input
                 className="input-field"
-                type="file"
-                accept="image/*"
-                onChange={e => setForm({ ...form, profile_picture: e.target.files?.[0] || null })}
+                type={field.type}
+                value={form[field.name]}
+                onChange={e => setForm({ ...form, [field.name]: e.target.value })}
               />
             </div>
-            {form.profile_picture && (
-              <div style={{ display: 'flex', gap: 12, alignItems: 'center' }}>
-                <img
-                  src={URL.createObjectURL(form.profile_picture)}
-                  alt="Profile preview"
-                  style={{ width: 64, height: 64, borderRadius: '50%', objectFit: 'cover', border: '1px solid var(--border)' }}
-                />
-                <span style={{ color: 'var(--gray-500)', fontSize: 13 }}>
-                  Selected file will be uploaded when you save.
-                </span>
-              </div>
-            )}
-            {user?.profile_picture && !form.profile_picture && (
-              <div style={{ display: 'flex', gap: 12, alignItems: 'center' }}>
-                <img
-                  src={user.profile_picture}
-                  alt="Current profile"
-                  style={{ width: 64, height: 64, borderRadius: '50%', objectFit: 'cover', border: '1px solid var(--border)' }}
-                />
-                <span style={{ color: 'var(--gray-500)', fontSize: 13 }}>
-                  Current profile picture.
-                </span>
-              </div>
-            )}
-            <button className="btn btn-primary" type="submit" disabled={saving}>
-              {saving ? 'Saving...' : 'Save Profile'}
-            </button>
-          </form>
-        </div>
+          ))}
+          <div className="input-group">
+            <label className="input-label">Profile Picture</label>
+            <input
+              className="input-field"
+              type="file"
+              accept="image/*"
+              onChange={e => setForm({ ...form, profile_picture: e.target.files?.[0] || null })}
+            />
+          </div>
+          {form.profile_picture && (
+            <div style={{ display: 'flex', gap: 12, alignItems: 'center' }}>
+              <img
+                src={URL.createObjectURL(form.profile_picture)}
+                alt="Profile preview"
+                style={{ width: 64, height: 64, borderRadius: '50%', objectFit: 'cover', border: '1px solid var(--border)' }}
+              />
+              <span style={{ color: 'var(--gray-500)', fontSize: 13 }}>
+                Selected file will be uploaded when you save.
+              </span>
+            </div>
+          )}
+          {user?.profile_picture && !form.profile_picture && (
+            <div style={{ display: 'flex', gap: 12, alignItems: 'center' }}>
+              <img
+                src={user.profile_picture}
+                alt="Current profile"
+                style={{ width: 64, height: 64, borderRadius: '50%', objectFit: 'cover', border: '1px solid var(--border)' }}
+              />
+              <span style={{ color: 'var(--gray-500)', fontSize: 13 }}>
+                Current profile picture.
+              </span>
+            </div>
+          )}
+          <button className="btn btn-primary" type="submit" disabled={saving}>
+            {saving ? 'Saving...' : 'Save Profile'}
+          </button>
+        </form>
 
-        <div className="card">
-          <h2 style={{ fontSize: 16, marginBottom: 18 }}>Security</h2>
-          <form onSubmit={handlePasswordChange} style={{ display: 'grid', gap: 16 }}>
-            {[
-              { label: 'Current Password', name: 'current_password', type: 'password' },
-              { label: 'New Password', name: 'new_password', type: 'password' },
-              { label: 'Confirm New Password', name: 'confirm_password', type: 'password' }
-            ].map(field => (
-              <div key={field.name} className="input-group">
-                <label className="input-label">{field.label}</label>
-                <input
-                  className="input-field"
-                  type={field.type}
-                  value={passwordForm[field.name]}
-                  onChange={e => setPasswordForm({ ...passwordForm, [field.name]: e.target.value })}
-                />
-              </div>
-            ))}
-            <button className="btn btn-secondary" type="submit" disabled={changingPassword}>
-              {changingPassword ? 'Updating...' : 'Change Password'}
-            </button>
-          </form>
-        </div>
+        <form className="form-container" onSubmit={handlePasswordChange} style={{ display: 'grid', gap: 16 }}>
+          <h2 style={{ fontSize: 18, fontFamily: 'Oswald, sans-serif', marginBottom: 6, color: 'var(--gray-900)' }}>Security</h2>
+          {[
+            { label: 'Current Password', name: 'current_password', type: 'password' },
+            { label: 'New Password', name: 'new_password', type: 'password' },
+            { label: 'Confirm New Password', name: 'confirm_password', type: 'password' }
+          ].map(field => (
+            <div key={field.name} className="input-group">
+              <label className="input-label">{field.label}</label>
+              <input
+                className="input-field"
+                type={field.type}
+                value={passwordForm[field.name]}
+                onChange={e => setPasswordForm({ ...passwordForm, [field.name]: e.target.value })}
+              />
+            </div>
+          ))}
+          <button className="btn btn-danger" type="submit" disabled={changingPassword}>
+            {changingPassword ? 'Updating...' : 'Change Password'}
+          </button>
+        </form>
       </div>
     </DashboardLayout>
   )

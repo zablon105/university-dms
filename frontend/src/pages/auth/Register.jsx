@@ -1,9 +1,30 @@
 import { useState } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
+import { Link, useNavigate, useLocation } from 'react-router-dom'
 import api from '../../api/axios'
+import {
+  MdPerson, MdEmail, MdLock, MdSchool, MdWork,
+  MdArrowBack, MdCheckCircle, MdInfo,
+  MdShield, MdBolt, MdRefresh, MdAppRegistration
+} from 'react-icons/md'
+
+const generateQuestion = () => {
+  const ops = ['+', '-']
+  const op = ops[Math.floor(Math.random() * ops.length)]
+  let a = Math.floor(Math.random() * 15) + 2
+  let b = Math.floor(Math.random() * 10) + 1
+  if (op === '-' && b > a) [a, b] = [b, a]
+  return { a, b, op, answer: op === '+' ? a + b : a - b }
+}
+
+const features = [
+  { icon: MdShield, text: 'Encrypted & Secure' },
+  { icon: MdBolt, text: 'Instant Access' },
+  { icon: MdSchool, text: 'KAFU Institutional' },
+]
 
 export default function Register() {
   const navigate = useNavigate()
+  const location = useLocation()
   const [role, setRole] = useState('student')
   const [form, setForm] = useState({
     first_name: '', last_name: '', username: '',
@@ -12,111 +33,207 @@ export default function Register() {
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
   const [success, setSuccess] = useState(false)
+  const [captcha, setCaptcha] = useState(generateQuestion)
+  const [captchaInput, setCaptchaInput] = useState('')
+  const [captchaError, setCaptchaError] = useState(false)
+  const [isFlipping, setIsFlipping] = useState(false)
+
+  const isFlippingIn = location.state?.fromFlip
 
   const handleSubmit = async (e) => {
     e.preventDefault()
     if (form.password !== form.password2) { setError('Passwords do not match.'); return }
+    if (parseInt(captchaInput) !== captcha.answer) {
+      setCaptchaError(true)
+      setCaptcha(generateQuestion())
+      setCaptchaInput('')
+      return
+    }
+    setCaptchaError(false)
     setLoading(true)
+    setError('')
     try {
       await api.post('/auth/register/', { ...form, role })
       setSuccess(true)
     } catch (err) {
       const data = err.response?.data
       setError(typeof data === 'object' ? Object.values(data).flat().join(' ') : 'Registration failed.')
+      setCaptcha(generateQuestion())
+      setCaptchaInput('')
     } finally { setLoading(false) }
   }
 
+  const handleLoginClick = (e) => {
+    e.preventDefault()
+    setIsFlipping(true)
+    setTimeout(() => {
+      navigate('/login', { state: { fromFlip: true } })
+    }, 1400)
+  }
+
+  const isValidRegNo = /^[A-Z]{2,4}\/\d{3,4}\/\d{4}$/.test(form.username)
+  const isFormValid = form.first_name && form.last_name && form.username && form.email && form.password && form.password2 && captchaInput
+
   if (success) return (
-    <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#f1f5f9' }}>
-      <div className="card" style={{ maxWidth: 440, width: '100%', textAlign: 'center', padding: 40 }}>
-        <div style={{ fontSize: 56, marginBottom: 16 }}>✅</div>
-        <h2 style={{ fontSize: 22, fontWeight: 700, marginBottom: 8 }}>Registration Submitted!</h2>
-        <p style={{ color: '#64748b', fontSize: 14, marginBottom: 24 }}>
-          Your account is pending admin approval. You'll be notified once approved.
+    <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'var(--bg-page)' }}>
+      <div className="form-container" style={{ maxWidth: 460, width: '100%', textAlign: 'center', animation: 'fadeIn 0.4s ease' }}>
+        <div style={{ width: 72, height: 72, borderRadius: '50%', background: 'var(--success-light)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 20px', border: '2px solid #bbf7d0' }}>
+          <MdCheckCircle size={38} color="var(--success)" />
+        </div>
+        <h2 style={{ fontFamily: 'Oswald, sans-serif', fontSize: 26, fontWeight: 700, marginBottom: 8, letterSpacing: '0.02em', color: 'var(--success)' }}>Registration Submitted!</h2>
+        <p style={{ color: 'var(--gray-500)', fontSize: 14, marginBottom: 28, lineHeight: 1.7 }}>
+          Your account has been created. You can now login to access the portal.
         </p>
-        <Link to="/login"><button className="btn btn-primary btn-lg">Back to Login</button></Link>
+        <Link to="/login">
+          <button className="btn btn-primary btn-lg">Back to Sign In</button>
+        </Link>
       </div>
     </div>
   )
 
   return (
-    <div style={{ minHeight: '100vh', display: 'flex' }}>
-      {/* Left panel */}
+    <div className={`${isFlippingIn && !isFlipping ? 'flip-page-in' : ''} ${isFlipping ? 'flip-page-out' : ''}`.trim()} style={{ minHeight: '100vh', display: 'flex' }}>
+
+      {/* ── Left hero panel ──────────────────────────────────── */}
       <div style={{
-        width: '40%', position: 'relative', overflow: 'hidden',
-        background: '#0047AB',
-        display: 'flex', flexDirection: 'column', justifyContent: 'space-between', padding: 48
-      }}>
+        width: '44%', position: 'relative',
+        display: 'flex', flexDirection: 'column',
+        justifyContent: 'flex-end', padding: 48, overflow: 'hidden'
+      }} className="auth-panel-left">
+        {/* BG image */}
         <div style={{
           position: 'absolute', inset: 0, zIndex: 0,
-          backgroundImage: `linear-gradient(rgba(255,255,255,0.04) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.04) 1px, transparent 1px)`,
-          backgroundSize: '32px 32px'
+          backgroundImage: `url('https://images.unsplash.com/photo-1562774053-701939374585?w=900&q=80')`,
+          backgroundSize: 'cover', backgroundPosition: 'center',
         }} />
-        <div style={{ position: 'relative', zIndex: 1 }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 0 }}>
-            <div style={{ width: 34, height: 34, borderRadius: 8, background: 'rgba(255,255,255,0.2)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 16 }}>📚</div>
-            <div>
-              <div style={{ color: 'white', fontWeight: 700, fontSize: 15 }}>DocLibrary</div>
-              <div style={{ color: 'rgba(255,255,255,0.6)', fontSize: 11 }}>KAFU Institutional Portal</div>
-            </div>
+        {/* gradient overlay */}
+        <div style={{
+          position: 'absolute', inset: 0, zIndex: 1,
+          background: 'linear-gradient(to top, rgba(5,15,40,0.97) 0%, rgba(5,15,40,0.55) 55%, rgba(5,15,40,0.18) 100%)'
+        }} />
+        {/* pattern overlay */}
+        <div style={{
+          position: 'absolute', inset: 0, zIndex: 1,
+          backgroundImage: `repeating-linear-gradient(0deg, rgba(255,255,255,0.015) 0px, rgba(255,255,255,0.015) 1px, transparent 1px, transparent 40px),
+            repeating-linear-gradient(90deg, rgba(255,255,255,0.015) 0px, rgba(255,255,255,0.015) 1px, transparent 1px, transparent 40px)`,
+        }} />
+
+        {/* Logo top */}
+        <div style={{ position: 'absolute', top: 36, left: 40, zIndex: 2, display: 'flex', alignItems: 'center', gap: 10 }}>
+          <div style={{
+            width: 36, height: 36, borderRadius: 6,
+            background: 'linear-gradient(135deg, #1a56db, #60a5fa)',
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            boxShadow: '0 4px 14px rgba(26,86,219,0.4)'
+          }}>
+            <MdSchool style={{ color: 'white', fontSize: 20 }} />
           </div>
+          <span style={{ color: 'white', fontFamily: 'Oswald, sans-serif', fontWeight: 600, fontSize: 16, letterSpacing: '0.08em' }}>
+            DocLibrary
+          </span>
         </div>
-        <div style={{ position: 'relative', zIndex: 1 }}>
-          <div style={{ background: 'rgba(255,255,255,0.12)', borderRadius: 12, padding: 24, border: '1px solid rgba(255,255,255,0.15)', marginBottom: 20 }}>
-            <div style={{ fontSize: 24, marginBottom: 10 }}>🛡️</div>
-            <h3 style={{ color: 'white', fontSize: 17, fontWeight: 700, marginBottom: 8 }}>Academic Integrity First</h3>
-            <p style={{ color: 'rgba(255,255,255,0.7)', fontSize: 13, lineHeight: 1.6 }}>
-              Join the secure environment for managing your academic records, research documents, and institutional assignments with full encryption.
-            </p>
+
+        {/* Content */}
+        <div style={{ position: 'relative', zIndex: 2 }}>
+          <div style={{
+            display: 'inline-flex', alignItems: 'center', gap: 6,
+            background: 'rgba(26,86,219,0.25)', border: '1px solid rgba(26,86,219,0.4)',
+            borderRadius: 4, padding: '4px 12px', marginBottom: 18
+          }}>
+            <div style={{ width: 6, height: 6, borderRadius: '50%', background: '#60a5fa', boxShadow: '0 0 6px #60a5fa' }} />
+            <span style={{ fontFamily: 'Oswald, sans-serif', color: '#93c5fd', fontSize: 11, letterSpacing: '0.12em', textTransform: 'uppercase' }}>
+              Secure Platform
+            </span>
           </div>
-          <div style={{ padding: '8px 14px', background: 'rgba(255,255,255,0.08)', borderRadius: 8, border: '1px solid rgba(255,255,255,0.12)', display: 'inline-flex', alignItems: 'center', gap: 6 }}>
-            <span style={{ color: 'rgba(255,255,255,0.5)', fontSize: 10, letterSpacing: '1px', fontWeight: 600 }}>● AUTHORIZED ACCESS ONLY</span>
-          </div>
-          <div style={{ marginTop: 16, fontSize: 11, color: 'rgba(255,255,255,0.35)', textAlign: 'center' }}>
-            © 2024 KAFU DocLibrary. All Institutional data is protected by the Educational Privacy Act.
+
+          <h1 style={{
+            fontFamily: 'Oswald, sans-serif',
+            color: 'white', fontSize: 40, fontWeight: 700,
+            lineHeight: 1.15, marginBottom: 16, letterSpacing: '0.02em'
+          }}>
+            Create Your<br />
+            <span style={{ color: '#60a5fa' }}>Institutional</span><br />
+            Account
+          </h1>
+
+          <p style={{ color: 'rgba(255,255,255,0.65)', fontSize: 14, lineHeight: 1.75, marginBottom: 28, maxWidth: 360 }}>
+            Join our robust document management ecosystem with full role-based access control and end-to-end security.
+          </p>
+
+          <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>
+            {features.map(({ icon: Icon, text }) => (
+              <div key={text} style={{
+                display: 'flex', alignItems: 'center', gap: 6,
+                background: 'rgba(255,255,255,0.08)',
+                border: '1px solid rgba(255,255,255,0.12)',
+                borderRadius: 4, padding: '6px 12px',
+              }}>
+                <Icon size={14} style={{ color: '#93c5fd', flexShrink: 0 }} />
+                <span style={{ color: 'rgba(255,255,255,0.75)', fontSize: 12, fontFamily: 'Oswald, sans-serif', letterSpacing: '0.04em' }}>
+                  {text}
+                </span>
+              </div>
+            ))}
           </div>
         </div>
       </div>
 
-      {/* Right panel */}
-      <div style={{ width: '60%', background: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '40px 56px', overflowY: 'auto' }}>
-        <div style={{ width: '100%', maxWidth: 460 }}>
-          <div style={{ marginBottom: 28 }}>
-            <h1 style={{ fontSize: 24, fontWeight: 700, color: '#0f172a', marginBottom: 4 }}>Create Account</h1>
-            <p style={{ color: '#64748b', fontSize: 14 }}>Enter your institutional details to begin.</p>
+      {/* ── Right form panel ──────────────────────────────────── */}
+      <div style={{ width: '56%', background: 'var(--bg-page)', display: 'flex', alignItems: 'flex-start', justifyContent: 'center', padding: '40px 52px', overflowY: 'auto' }}>
+        <div className="form-container" style={{ width: '100%', maxWidth: 540, paddingTop: 10 }}>
+
+          {/* Back link */}
+          <a
+            href="/login"
+            onClick={handleLoginClick}
+            style={{ display: 'inline-flex', alignItems: 'center', gap: 5, fontSize: 13, color: 'var(--gray-500)', marginBottom: 22, transition: 'color 0.18s', padding: '4px 0' }}
+            onMouseEnter={e => e.currentTarget.style.color = 'var(--primary)'}
+            onMouseLeave={e => e.currentTarget.style.color = 'var(--gray-500)'}
+          >
+            <MdArrowBack size={15} /> Back to Sign In
+          </a>
+
+          <div style={{ marginBottom: 26 }}>
+            <h2 style={{ fontFamily: 'Oswald, sans-serif', fontSize: 30, fontWeight: 700, color: 'var(--gray-900)', marginBottom: 6, letterSpacing: '0.02em' }}>
+              Register Account
+            </h2>
+            <p style={{ color: 'var(--gray-500)', fontSize: 14 }}>Enter your institutional details to begin.</p>
           </div>
 
           {error && (
-            <div style={{ background: '#FEF2F2', border: '1px solid #FECACA', borderRadius: 8, padding: '12px 16px', color: '#DC2626', fontSize: 13, marginBottom: 20 }}>
-              ⚠️ {error}
+            <div style={{ background: 'var(--danger-light)', border: '1px solid #fca5a5', borderRadius: 5, padding: '10px 14px', color: 'var(--danger)', fontSize: 13, marginBottom: 18, display: 'flex', gap: 8, alignItems: 'flex-start' }}>
+              ⚠ {error}
             </div>
           )}
 
           {/* Role selector */}
-          <div className="input-group">
-            <label className="input-label">I am registering as</label>
-            <div style={{ position: 'relative' }}>
-              <span style={{
-                position: 'absolute', left: 12, top: '50%',
-                transform: 'translateY(-50%)', color: '#94a3b8', fontSize: 15
-              }}>👤</span>
-              <select
-                className="input-field"
-                style={{ paddingLeft: 36, appearance: 'none', cursor: 'pointer' }}
-                value={role}
-                onChange={e => setRole(e.target.value)}
-              >
-                <option value="student">🎓 Student — Undergraduate / Postgraduate</option>
-                <option value="staff">💼 Staff Member — Faculty / Administrative</option>
-              </select>
-              <span style={{
-                position: 'absolute', right: 12, top: '50%',
-                transform: 'translateY(-50%)', color: '#94a3b8',
-                pointerEvents: 'none'
-              }}>▼</span>
-            </div>
-            <div style={{ fontSize: 11, color: '#94a3b8', marginTop: 4 }}>
-              Your role determines what you can access in the system
+          <div className="form-section" style={{ padding: 18, marginBottom: 20 }}>
+            <div className="form-section-title" style={{ marginBottom: 12 }}><MdPerson size={14} /> Account Type</div>
+            <div style={{ display: 'flex', gap: 10 }}>
+              {[
+                { value: 'student', label: 'Student', sub: 'Undergraduate or Postgrad', icon: MdSchool },
+                { value: 'staff', label: 'Staff Member', sub: 'Faculty or Admin', icon: MdWork },
+              ].map(({ value, label, sub, icon: Icon }) => (
+                <div
+                  key={value}
+                  onClick={() => setRole(value)}
+                  style={{
+                    flex: 1, padding: '10px 14px', borderRadius: 6, cursor: 'pointer',
+                    border: `2px solid ${role === value ? 'var(--primary)' : 'var(--border)'}`,
+                    background: role === value ? 'var(--primary-light)' : 'white',
+                    transition: 'all 0.2s',
+                    display: 'flex', flexDirection: 'column', gap: 4
+                  }}
+                >
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                    <Icon size={16} color={role === value ? 'var(--primary)' : 'var(--gray-400)'} />
+                    <span style={{ fontFamily: 'Oswald, sans-serif', fontSize: 13, fontWeight: 600, color: role === value ? 'var(--primary)' : 'var(--gray-700)', letterSpacing: '0.03em' }}>
+                      {label}
+                    </span>
+                  </div>
+                  <span style={{ fontSize: 11, color: 'var(--gray-500)', paddingLeft: 22 }}>{sub}</span>
+                </div>
+              ))}
             </div>
           </div>
 
@@ -124,113 +241,163 @@ export default function Register() {
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
               <div className="input-group">
                 <label className="input-label">First Name</label>
-                <input className="input-field" placeholder="Johnathan" value={form.first_name}
-                  onChange={e => setForm({ ...form, first_name: e.target.value })} required />
+                <input className="input-field" placeholder="Johnathan"
+                  value={form.first_name} onChange={e => setForm({ ...form, first_name: e.target.value })} required />
               </div>
               <div className="input-group">
                 <label className="input-label">Last Name</label>
-                <input className="input-field" placeholder="Doe" value={form.last_name}
-                  onChange={e => setForm({ ...form, last_name: e.target.value })} required />
+                <input className="input-field" placeholder="Doe"
+                  value={form.last_name} onChange={e => setForm({ ...form, last_name: e.target.value })} required />
               </div>
             </div>
 
             <div className="input-group">
               <label className="input-label">Registration Number</label>
               <div style={{ position: 'relative' }}>
-                <span style={{ position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)', color: '#94a3b8' }}>🪪</span>
-                <input className="input-field" style={{ paddingLeft: 36 }}
+                <MdPerson style={{ position: 'absolute', left: 11, top: '50%', transform: 'translateY(-50%)', color: 'var(--gray-400)', fontSize: 17 }} />
+                <input
+                  className="input-field" style={{ paddingLeft: 36 }}
                   placeholder="COM/0028/2023"
                   value={form.username}
                   onChange={e => setForm({ ...form, username: e.target.value.toUpperCase() })}
-                  required />
+                  required
+                />
               </div>
-              {form.username && !/^[A-Z]{2,4}\/\d{3,4}\/\d{4}$/.test(form.username) && (
-                <div style={{ fontSize: 11, color: '#D97706', marginTop: 4 }}>
-                  ⚠️ Format: DEPT/NUMBER/YEAR — e.g. COM/0028/2023
-                </div>
+              {form.username && !isValidRegNo && (
+                <span style={{ fontSize: 11, color: 'var(--warning)' }}>⚠ Format: DEPT/NUMBER/YEAR — e.g. COM/0028/2023</span>
               )}
-              {form.username && /^[A-Z]{2,4}\/\d{3,4}\/\d{4}$/.test(form.username) && (
-                <div style={{ fontSize: 11, color: '#16A34A', marginTop: 4 }}>
-                  ✅ Valid registration number format
-                </div>
+              {form.username && isValidRegNo && (
+                <span style={{ fontSize: 11, color: 'var(--success)', display: 'flex', alignItems: 'center', gap: 4 }}>
+                  <MdCheckCircle size={12} /> Valid format
+                </span>
               )}
             </div>
 
             <div className="input-group">
               <label className="input-label">University Email</label>
               <div style={{ position: 'relative' }}>
-                <span style={{ position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)', color: '#94a3b8' }}>✉️</span>
+                <MdEmail style={{ position: 'absolute', left: 11, top: '50%', transform: 'translateY(-50%)', color: 'var(--gray-400)', fontSize: 17 }} />
                 <input className="input-field" style={{ paddingLeft: 36 }} type="email"
                   placeholder="j.doe@kafu.edu" value={form.email}
                   onChange={e => setForm({ ...form, email: e.target.value })} required />
               </div>
             </div>
 
-            {role === 'student' ? (
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
-                <div className="input-group">
-                  <label className="input-label">Degree Program</label>
-                  <div style={{ position: 'relative' }}>
-                    <span style={{ position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)', color: '#94a3b8' }}>🎓</span>
-                    <input className="input-field" style={{ paddingLeft: 36 }}
-                      placeholder="e.g. B.Sc. Computer Science" value={form.department}
-                      onChange={e => setForm({ ...form, department: e.target.value })} />
-                  </div>
-                </div>
-                <div className="input-group">
-                  <label className="input-label">Enrollment Year</label>
-                  <div style={{ position: 'relative' }}>
-                    <span style={{ position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)', color: '#94a3b8' }}>📅</span>
-                    <input className="input-field" style={{ paddingLeft: 36 }} placeholder="2024" />
-                  </div>
-                </div>
-              </div>
-            ) : (
-              <div className="input-group">
-                <label className="input-label">Department</label>
-                <input className="input-field" placeholder="e.g. Computer Science"
-                  value={form.department} onChange={e => setForm({ ...form, department: e.target.value })} />
-              </div>
-            )}
+            <div className="input-group">
+              <label className="input-label">{role === 'student' ? 'Degree Program' : 'Department'}</label>
+              <input className="input-field" placeholder={role === 'student' ? "B.Sc. Computer Science" : "e.g. Computer Science"}
+                value={form.department} onChange={e => setForm({ ...form, department: e.target.value })} />
+            </div>
 
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
               <div className="input-group">
                 <label className="input-label">Password</label>
-                <input className="input-field" type="password" placeholder="••••••••"
-                  value={form.password} onChange={e => setForm({ ...form, password: e.target.value })} required />
+                <div style={{ position: 'relative' }}>
+                  <MdLock style={{ position: 'absolute', left: 11, top: '50%', transform: 'translateY(-50%)', color: 'var(--gray-400)', fontSize: 17 }} />
+                  <input className="input-field" style={{ paddingLeft: 36 }} type="password" placeholder="••••••••"
+                    value={form.password} onChange={e => setForm({ ...form, password: e.target.value })} required />
+                </div>
               </div>
               <div className="input-group">
                 <label className="input-label">Confirm Password</label>
-                <input className="input-field" type="password" placeholder="••••••••"
-                  value={form.password2} onChange={e => setForm({ ...form, password2: e.target.value })} required />
+                <div style={{ position: 'relative' }}>
+                  <MdLock style={{ position: 'absolute', left: 11, top: '50%', transform: 'translateY(-50%)', color: 'var(--gray-400)', fontSize: 17 }} />
+                  <input className="input-field" style={{ paddingLeft: 36 }} type="password" placeholder="••••••••"
+                    value={form.password2} onChange={e => setForm({ ...form, password2: e.target.value })} required />
+                </div>
+                {form.password && form.password2 && form.password !== form.password2 && (
+                  <span style={{ fontSize: 11, color: 'var(--danger)' }}>✗ Passwords don't match</span>
+                )}
               </div>
             </div>
 
-            <button type="submit" className="btn btn-primary btn-lg" disabled={loading}
-              style={{ marginTop: 4, opacity: loading ? 0.7 : 1 }}>
-              {loading ? 'Creating account...' : 'Create Account →'}
+            <div style={{
+              background: 'var(--gray-50)', border: `1.5px solid ${captchaError ? '#fca5a5' : 'var(--gray-200)'}`,
+              borderRadius: 6, padding: '12px 14px', marginBottom: 18, marginTop: 4,
+              transition: 'border-color 0.2s'
+            }}>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 10 }}>
+                <span style={{ fontFamily: 'Oswald, sans-serif', fontSize: 11, fontWeight: 600, color: 'var(--gray-500)', letterSpacing: '0.08em', textTransform: 'uppercase' }}>
+                  Human Verification
+                </span>
+                <button
+                  type="button"
+                  onClick={() => { setCaptcha(generateQuestion()); setCaptchaInput(''); setCaptchaError(false) }}
+                  style={{
+                    fontSize: 12, color: 'var(--primary)', background: 'none',
+                    border: 'none', cursor: 'pointer',
+                    display: 'flex', alignItems: 'center', gap: 4,
+                    fontFamily: 'Oswald, sans-serif', letterSpacing: '0.04em'
+                  }}
+                >
+                  <MdRefresh size={14} /> Refresh
+                </button>
+              </div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+                <div style={{
+                  background: 'var(--primary)', color: 'white',
+                  padding: '7px 14px', borderRadius: 5,
+                  fontFamily: 'monospace', fontSize: 16, fontWeight: 700,
+                  userSelect: 'none', letterSpacing: '0.08em',
+                  boxShadow: '0 2px 8px rgba(26,86,219,0.25)'
+                }}>
+                  {captcha.a} {captcha.op} {captcha.b} = ?
+                </div>
+                <span style={{ color: 'var(--gray-400)', fontSize: 18 }}>→</span>
+                <input
+                  type="number"
+                  value={captchaInput}
+                  onChange={e => { setCaptchaInput(e.target.value); setCaptchaError(false) }}
+                  placeholder="?"
+                  style={{
+                    width: 70, padding: '7px 10px',
+                    border: `2px solid ${captchaError ? 'var(--danger)' : captchaInput && parseInt(captchaInput) === captcha.answer ? 'var(--success)' : 'var(--gray-200)'}`,
+                    borderRadius: 5, fontSize: 15, fontWeight: 700,
+                    textAlign: 'center', outline: 'none',
+                    background: captchaError ? 'var(--danger-light)' : 'white',
+                    color: captchaError ? 'var(--danger)' : 'var(--gray-900)',
+                    transition: 'border-color 0.2s',
+                  }}
+                />
+              </div>
+              {captchaError && (
+                <div style={{ color: 'var(--danger)', fontSize: 12, marginTop: 8, fontWeight: 500, display: 'flex', gap: 4, alignItems: 'center' }}>
+                  ✗ Wrong answer. Please try again.
+                </div>
+              )}
+            </div>
+
+            <button
+              type="submit"
+              className="btn btn-primary btn-lg"
+              disabled={loading || !isFormValid}
+              style={{ opacity: (loading || !isFormValid) ? 0.6 : 1 }}
+            >
+              {loading ? 'Creating account…' : <><MdAppRegistration size={16} /> Create Account</>}
             </button>
           </form>
 
-          <div style={{
-            marginTop: 20, padding: '16px 20px',
-            background: '#F8FAFC', border: '1px solid #E2E8F0',
-            borderRadius: 12, textAlign: 'center'
-          }}>
-            <p style={{ fontSize: 13, color: '#64748b', marginBottom: 10 }}>
-              Already have an account?
+          {/* Info notice */}
+          <div style={{ marginTop: 22, padding: '12px 14px', background: 'var(--info-light)', borderRadius: 5, border: '1px solid #bae6fd', display: 'flex', gap: 8, alignItems: 'flex-start' }}>
+            <MdInfo size={15} style={{ color: 'var(--info)', flexShrink: 0, marginTop: 2 }} />
+            <p style={{ fontSize: 12, color: 'var(--gray-600)', lineHeight: 1.6 }}>
+              A verification link will be sent to your institutional email. By creating an account, you agree to our Terms of Service and Privacy Policy.
             </p>
-            <Link to="/login">
-              <button className="btn btn-outline" style={{ width: '100%', justifyContent: 'center' }}>
-                🔐 Sign In Instead →
-              </button>
-            </Link>
           </div>
 
-          <div style={{ marginTop: 16, padding: 14, background: '#F0F9FF', borderRadius: 8, border: '1px solid #BAE6FD' }}>
-            <p style={{ fontSize: 12, color: '#4B5563', lineHeight: 1.5 }}>
-              ℹ️ Registration requires a valid university email. A verification link will be sent to your inbox to activate your portal access.
+          <div style={{
+            marginTop: 22, padding: '14px 18px',
+            background: 'var(--gray-50)', border: '1px solid var(--border)',
+            borderRadius: 6, textAlign: 'center'
+          }}>
+            <p style={{ fontSize: 13, color: 'var(--gray-500)', marginBottom: 10 }}>
+              Already have an account?
             </p>
+            <a href="/login" onClick={handleLoginClick}>
+              <button className="btn btn-outline" style={{ width: '100%', justifyContent: 'center' }}>
+                Sign In Instead
+              </button>
+            </a>
           </div>
         </div>
       </div>

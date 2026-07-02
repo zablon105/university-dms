@@ -58,7 +58,7 @@ class RegisterSerializer(serializers.ModelSerializer):
         # Check uniqueness
         if User.objects.filter(email=value).exists():
             raise serializers.ValidationError(
-                'This email address is already registered. '
+                'This email address is already registered.'
                 'Please use a different email or login.'
             )
         return value
@@ -85,7 +85,7 @@ class RegisterSerializer(serializers.ModelSerializer):
         validated_data['username'] = validated_data['username'].upper()
         user = User(**validated_data)
         user.set_password(password)
-        user.is_approved = False  # always pending approval
+        user.is_approved = True  # automatically approved
         user.save()
         return user
 

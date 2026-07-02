@@ -139,11 +139,7 @@ class RegisterView(generics.CreateAPIView):
         send_admin_notification(user)
 
         return Response({
-            'message': (
-                'Account created successfully! '
-                'Your account is pending admin approval. '
-                'The admin has been notified and will review your account shortly.'
-            ),
+            'message': 'Account created successfully! You can now login.',
             'user': UserSerializer(user).data
         }, status=status.HTTP_201_CREATED)
 
@@ -179,16 +175,7 @@ class LoginView(APIView):
                 status=status.HTTP_401_UNAUTHORIZED
             )
 
-        if not user.is_approved:
-            return Response(
-                {
-                    'error': (
-                        'Your account is pending admin approval. '
-                        'You will receive an email once approved.'
-                    )
-                },
-                status=status.HTTP_403_FORBIDDEN
-            )
+        # Removed is_approved check to allow direct login
 
         refresh = RefreshToken.for_user(user)
         return Response({

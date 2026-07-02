@@ -9,12 +9,17 @@ def validate_registration_number(value):
     SIT/3923/2023
     BUS/1234/2022
     ENG/0001/2024
+    Also allows standard alphanumeric usernames for superusers/admins.
     """
-    pattern = r'^[A-Z]{2,4}\/\d{3,4}\/\d{4}$'
-    if not re.match(pattern, value):
+    # Regular students/staff format
+    reg_pattern = r'^[A-Z]{2,4}\/\d{3,4}\/\d{4}$'
+    # Regular django username format (admins, superusers)
+    admin_pattern = r'^[\w.@+-]+$'
+    
+    if not (re.match(reg_pattern, value) or re.match(admin_pattern, value)):
         raise ValidationError(
-            'Username must be a valid registration number. '
-            'Format: DEPT/NUMBER/YEAR (e.g. COM/0028/2023)'
+            'Username must be a valid registration number (e.g. COM/0028/2023) '
+            'or a standard alphanumeric username.'
         )
 
 
