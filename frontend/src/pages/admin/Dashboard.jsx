@@ -6,17 +6,28 @@ import api from '../../api/axios'
 export default function AdminDashboard() {
   const navigate = useNavigate()
   const [stats, setStats] = useState({
+    totalUsers: 0,
     totalDocuments: 0,
     activeUsers: 0,
     pendingApprovals: 0,
-    categories: 0
+    categories: 0,
+    complianceRate: 0,
+    storageUsed: 18.4,
+    storageCapacity: 20
   })
-  const [recentActivity, setRecentActivity] = useState([])
+  const [documents, setDocuments] = useState([])
+  const [departmentActivity, setDepartmentActivity] = useState([])
+  const [workflowActions, setWorkflowActions] = useState([])
   const [pendingUsers, setPendingUsers] = useState([])
   const [loading, setLoading] = useState(true)
   const [selectedDepartment, setSelectedDepartment] = useState('All Departments')
   const [selectedType, setSelectedType] = useState('All Types')
   const [selectedRange, setSelectedRange] = useState('Last 30 Days')
+
+  const recentActivity = documents
+    .slice()
+    .sort((a, b) => new Date(b.created_at) - new Date(a.created_at))
+    .slice(0, 6)
 
   const handleExportLogs = async () => {
     try {
@@ -96,20 +107,57 @@ export default function AdminDashboard() {
 
   const fetchDashboardData = async () => {
     try {
-      const [docsRes, usersRes, approvalsRes, categoriesRes] = await Promise.all([
+      const [docsRes, usersRes, approvalsRes, categoriesRes, workflowsRes] = await Promise.all([
         api.get('/documents/'),
         api.get('/auth/users/'),
         api.get('/workflows/pending/'),
         api.get('/categories/'),
+        api.get('/workflows/all/')
       ])
+      const documents = docsRes.data
+      const users = usersRes.data
+      const workflows = workflowsRes.data
+      const approvedDocuments = documents.filter(d => d.status === 'approved').length
+      const complianceRate = documents.length ? Math.round((approvedDocuments / documents.length) * 1000) / 10 : 0
+
+      setDocuments(documents)
       setStats({
-        totalDocuments: docsRes.data.length,
-        activeUsers: usersRes.data.filter(u => u.is_approved).length,
+        totalUsers: users.length,
+        totalDocuments: documents.length,
+        activeUsers: users.filter(u => u.is_approved).length,
         pendingApprovals: approvalsRes.data.length,
         categories: categoriesRes.data.length,
+        complianceRate,
+        storageUsed: 18.4,
+        storageCapacity: 20
       })
-      setRecentActivity(docsRes.data.slice(0, 5))
-      setPendingUsers(usersRes.data.filter(u => !u.is_approved).slice(0, 3))
+
+      const departmentCounts = documents.reduce((acc, doc) => {
+        const department = doc.uploaded_by?.department || doc.department || 'General'
+        acc[department] = (acc[department] || 0) + 1
+        return acc
+      }, {})
+      setDepartmentActivity(Object.entries(departmentCounts)
+        .sort(([, a], [, b]) => b - a)
+        .slice(0, 4)
+        .map(([department, count]) => ({ department, count }))
+      )
+
+      setWorkflowActions(workflows.slice(0, 5).map(item => ({
+        id: item.id,
+        actor: item.reviewed_by?.username || item.requested_by?.username || 'System',
+        description: item.document_detail?.title
+          ? `Updated document ${item.document_detail.title}`
+          : item.status === 'approved'
+            ? 'Approved workflow request'
+            : 'Processed system event',
+        target: item.document_detail?.title || item.requested_by?.username || 'Record',
+        status: item.status,
+        timestamp: item.reviewed_at || item.created_at,
+        documentTitle: item.document_detail?.title || 'Archive Record'
+      })))
+
+      setPendingUsers(users.filter(u => !u.is_approved).slice(0, 3))
     } catch (err) {
       console.error(err)
     } finally {
@@ -137,34 +185,34 @@ export default function AdminDashboard() {
 
   const statCards = [
     {
-      label: 'Total Storage',
-      value: stats.totalDocuments,
-      sub: 'documents uploaded',
+      label: 'Institutional Capacity',
+      value: `${stats.totalDocuments} Items`,
+      sub: 'Total registered documents',
       icon: '🗄️',
       color: '#0047AB',
       bg: '#EBF2FF'
     },
     {
-      label: 'Active Users',
-      value: stats.activeUsers,
-      sub: '● Online',
-      icon: '👥',
-      color: '#16A34A',
+      label: 'Storage Used',
+      value: '18.4 TB',
+      sub: 'of 20 TB used',
+      icon: '💽',
+      color: '#1D4ED8',
+      bg: '#DBEAFE'
+    },
+    {
+      label: 'Global Compliance',
+      value: '98.2%',
+      sub: 'Policy status',
+      icon: '🛡️',
+      color: '#047857',
       bg: '#DCFCE7'
     },
     {
-      label: 'Pending Approvals',
-      value: stats.pendingApprovals,
-      sub: 'files awaiting review',
-      icon: '📋',
-      color: '#D97706',
-      bg: '#FEF3C7'
-    },
-    {
-      label: 'System Uptime',
-      value: '99.9%',
-      sub: 'last 30 days',
-      icon: '✅',
+      label: 'Active Users',
+      value: `${stats.activeUsers} Active`,
+      sub: 'Verified access',
+      icon: '👥',
       color: '#16A34A',
       bg: '#DCFCE7'
     },
@@ -207,32 +255,24 @@ export default function AdminDashboard() {
 
   return (
     <DashboardLayout searchPlaceholder="Search records...">
-
-      {/* Header */}
-      <div style={{ marginBottom: 28 }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-          <div>
-            <h1 style={{ fontSize: 26, fontWeight: 700, color: 'var(--gray-900)' }}>
-              System Overview
-            </h1>
-            <p style={{ color: 'var(--gray-500)', fontSize: 14, marginTop: 4 }}>
-              All systems operational. Monitoring {stats.activeUsers} active users across departments.
-            </p>
-          </div>
-          <div style={{ display: 'flex', gap: 10 }}>
-            <button className="btn btn-outline btn-sm" onClick={handleExportLogs}>📤 Export Logs</button>
-            <button className="btn btn-primary btn-sm" onClick={handleSystemBackup}>💾 System Backup</button>
-          </div>
+      <div className="page-header" style={{ marginBottom: 28 }}>
+        <div>
+          <h1 className="page-title">Admin Dashboard</h1>
+          <p className="page-subtitle">Monitor institutional archive health and approval workflows.</p>
         </div>
-
+        <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
+          <button className="btn btn-primary btn-sm" onClick={handleExportLogs}>Generate Report</button>
+        </div>
+      </div>
         {/* Filters row */}
         <div style={{
-          display: 'flex', gap: 12, marginTop: 16,
-          flexWrap: 'wrap', alignItems: 'center'
+          display: 'grid',
+          gridTemplateColumns: 'repeat(4, minmax(160px, 1fr))',
+          gap: 12, marginTop: 16
         }}>
           <select value={selectedDepartment} onChange={e => setSelectedDepartment(e.target.value)} style={{
-            padding: '7px 12px', borderRadius: 8,
-            border: '1px solid var(--gray-300)',
+            padding: '10px 14px', borderRadius: 12,
+            border: '1px solid var(--gray-200)',
             fontSize: 13, color: 'var(--gray-700)',
             background: 'white', cursor: 'pointer'
           }}>
@@ -241,8 +281,8 @@ export default function AdminDashboard() {
             ))}
           </select>
           <select value={selectedType} onChange={e => setSelectedType(e.target.value)} style={{
-            padding: '7px 12px', borderRadius: 8,
-            border: '1px solid var(--gray-300)',
+            padding: '10px 14px', borderRadius: 12,
+            border: '1px solid var(--gray-200)',
             fontSize: 13, color: 'var(--gray-700)',
             background: 'white', cursor: 'pointer'
           }}>
@@ -251,8 +291,8 @@ export default function AdminDashboard() {
             ))}
           </select>
           <select value={selectedRange} onChange={e => setSelectedRange(e.target.value)} style={{
-            padding: '7px 12px', borderRadius: 8,
-            border: '1px solid var(--gray-300)',
+            padding: '10px 14px', borderRadius: 12,
+            border: '1px solid var(--gray-200)',
             fontSize: 13, color: 'var(--gray-700)',
             background: 'white', cursor: 'pointer'
           }}>
@@ -261,13 +301,12 @@ export default function AdminDashboard() {
             ))}
           </select>
           <button onClick={handleClearFilters} style={{
-            padding: '7px 14px', borderRadius: 8,
-            border: '1px solid var(--gray-300)',
+            padding: '10px 14px', borderRadius: 12,
+            border: '1px solid var(--primary)',
             fontSize: 13, color: 'var(--primary)',
-            background: 'white', cursor: 'pointer'
-          }}>✕ Clear Filters</button>
+            background: 'white', cursor: 'pointer', fontWeight: 600
+          }}>Reset Filters</button>
         </div>
-      </div>
 
       {/* Stat cards */}
       <div style={{
@@ -305,6 +344,64 @@ export default function AdminDashboard() {
             </div>
           </div>
         ))}
+      </div>
+
+      {/* Department & storage summary */}
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 360px', gap: 20, marginBottom: 24 }}>
+        <div style={{ background: 'white', borderRadius: 12, border: '1px solid var(--border)', padding: 20, boxShadow: 'var(--shadow-sm)' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
+            <div>
+              <h3 style={{ fontSize: 16, fontWeight: 600, margin: 0 }}>Departmental Activity</h3>
+              <p style={{ fontSize: 12, color: 'var(--gray-500)', margin: '6px 0 0' }}>Track document submissions by department.</p>
+            </div>
+            <span style={{ fontSize: 12, color: 'var(--gray-400)' }}>Updated now</span>
+          </div>
+          {departmentActivity.length === 0 ? (
+            <div style={{ padding: 24, textAlign: 'center', color: 'var(--gray-400)' }}>No department data available</div>
+          ) : departmentActivity.map((dept) => (
+            <div key={dept.department} style={{ marginBottom: 16 }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 6, fontSize: 13, color: 'var(--gray-700)' }}>
+                <span>{dept.department}</span>
+                <span>{dept.count} docs</span>
+              </div>
+              <div style={{ background: '#F8FAFC', borderRadius: 8, overflow: 'hidden', height: 10 }}>
+                <div style={{ width: `${Math.min(100, Math.round((dept.count / Math.max(...departmentActivity.map(d => d.count))) * 100))}%`, height: '100%', background: 'var(--primary)' }} />
+              </div>
+            </div>
+          ))}
+        </div>
+
+        <div style={{ background: 'white', borderRadius: 12, border: '1px solid var(--border)', padding: 20, boxShadow: 'var(--shadow-sm)' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
+            <div>
+              <h3 style={{ fontSize: 16, fontWeight: 600, margin: 0 }}>Active Storage Infrastructure</h3>
+              <p style={{ fontSize: 12, color: 'var(--gray-500)', margin: '6px 0 0' }}>Usage across primary archive nodes.</p>
+            </div>
+            <div style={{ fontSize: 14, fontWeight: 700, color: 'var(--danger)' }}>92%</div>
+          </div>
+          <div style={{ height: 14, borderRadius: 10, background: '#F1F5F9', marginBottom: 14, overflow: 'hidden' }}>
+            <div style={{ width: '92%', height: '100%', background: 'linear-gradient(90deg, #2563EB, #9333EA)' }} />
+          </div>
+          <div style={{ fontSize: 12, color: 'var(--gray-500)' }}>
+            {stats.storageUsed} TB / {stats.storageCapacity} TB Used
+          </div>
+          <div style={{ marginTop: 18, display: 'grid', gap: 10 }}>
+            {[
+              { label: 'Storage Critical', detail: 'Cloud server “Storage-A1” is reaching 92% capacity.', type: 'danger' },
+              { label: 'Compliance Audit', detail: 'New Q3 Compliance Audit required for Medical Faculty.', type: 'info' },
+              { label: 'Maintenance', detail: 'Scheduled downtime for DB Optimization on Oct 24.', type: 'muted' }
+            ].map(alert => (
+              <div key={alert.label} style={{
+                padding: 14, borderRadius: 12,
+                border: `1px solid ${alert.type === 'danger' ? '#FECACA' : alert.type === 'info' ? '#DBEAFE' : '#E5E7EB'}`,
+                background: alert.type === 'danger' ? '#FEF2F2' : alert.type === 'info' ? '#EFF6FF' : '#F9FAFB'
+              }}>
+                <div style={{ fontSize: 13, fontWeight: 600, marginBottom: 6 }}>{alert.label}</div>
+                <div style={{ fontSize: 12, color: 'var(--gray-600)' }}>{alert.detail}</div>
+              </div>
+            ))}
+          </div>
+        </div>
       </div>
 
       {/* Main content grid */}
@@ -518,8 +615,8 @@ export default function AdminDashboard() {
                 background: 'none', border: 'none', cursor: 'pointer'
               }}>View All</button>
             </div>
-            {recentActivity.slice(0, 3).map((doc) => (
-              <div key={doc.id} style={{
+            {workflowActions.slice(0, 3).map((item) => (
+              <div key={item.id} style={{
                 display: 'flex', gap: 10, alignItems: 'flex-start',
                 marginBottom: 14
               }}>
@@ -529,18 +626,17 @@ export default function AdminDashboard() {
                 }} />
                 <div>
                   <div style={{ fontSize: 13, color: 'var(--gray-700)' }}>
-                    <strong>{doc.uploaded_by?.username}</strong> uploaded{' '}
-                    <span style={{ color: 'var(--primary)' }}>{doc.title}</span>
+                    <strong>{item.actor}</strong> {item.description}
                   </div>
                   <div style={{ fontSize: 11, color: 'var(--gray-400)', marginTop: 2 }}>
-                    {new Date(doc.created_at).toLocaleTimeString('en-KE', {
+                    {new Date(item.timestamp).toLocaleTimeString('en-KE', {
                       hour: '2-digit', minute: '2-digit'
                     })}
                   </div>
                 </div>
               </div>
             ))}
-            {recentActivity.length === 0 && (
+            {workflowActions.length === 0 && (
               <p style={{ color: 'var(--gray-400)', fontSize: 13 }}>No recent activity</p>
             )}
           </div>
