@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react'
+import { MdCheck, MdWarning } from 'react-icons/md';
 
 export default function IdleWarningModal({ onStay, onLogout }) {
   const [seconds, setSeconds] = useState(120) // 2 minute countdown
@@ -46,7 +47,7 @@ export default function IdleWarningModal({ onStay, onLogout }) {
           display: 'flex', alignItems: 'center', justifyContent: 'center',
           fontSize: 28, margin: '0 auto 20px'
         }}>
-          {urgency ? '🚨' : '⏰'}
+          {urgency ? <MdWarning /> : '⏰'}
         </div>
 
         {/* Title */}
@@ -116,7 +117,7 @@ export default function IdleWarningModal({ onStay, onLogout }) {
             onMouseEnter={e => e.currentTarget.style.background = 'var(--primary-dark)'}
             onMouseLeave={e => e.currentTarget.style.background = 'var(--primary)'}
           >
-            ✓ Stay Logged In
+            <MdCheck /> Stay Logged In
           </button>
         </div>
 

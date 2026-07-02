@@ -1,0 +1,108 @@
+frontend/src/components/IdleWarningModal.jsx:49:          {urgency ? '🚨' : '⏰'}
+frontend/src/components/IdleWarningModal.jsx:119:            ✓ Stay Logged In
+frontend/src/App.jsx:53:      {/* Student routes — accessible by all roles */}
+frontend/src/App.jsx:60:      {/* Staff routes — accessible by staff and admin */}
+frontend/src/App.jsx:67:      {/* Admin routes — admin only */}
+frontend/src/pages/auth/ForgotPassword.jsx:85:          DocLibrary — Password Reset
+frontend/src/pages/auth/ForgotPassword.jsx:90:        {/* ── Step 1 — Enter email ────────────────────────── */}
+frontend/src/pages/auth/ForgotPassword.jsx:107:                ⚠ {error}
+frontend/src/pages/auth/ForgotPassword.jsx:144:        {/* ── Step 2 — OTP + new password ─────────────────── */}
+frontend/src/pages/auth/ForgotPassword.jsx:162:                ⚠ {error}
+frontend/src/pages/auth/ForgotPassword.jsx:231:                  <span style={{ fontSize: 11, color: 'var(--danger)' }}>✗ Passwords don't match</span>
+frontend/src/pages/auth/ForgotPassword.jsx:242:        {/* ── Step 3 — Success ─────────────────────────────── */}
+frontend/src/pages/auth/Register.jsx:205:              ⚠ {error}
+frontend/src/pages/auth/Register.jsx:267:                <span style={{ fontSize: 11, color: 'var(--warning)' }}>⚠ Format: DEPT/NUMBER/YEAR — e.g. COM/0028/2023</span>
+frontend/src/pages/auth/Register.jsx:297:                  <input className="input-field" style={{ paddingLeft: 36 }} type="password" placeholder="••••••••"
+frontend/src/pages/auth/Register.jsx:305:                  <input className="input-field" style={{ paddingLeft: 36 }} type="password" placeholder="••••••••"
+frontend/src/pages/auth/Register.jsx:309:                  <span style={{ fontSize: 11, color: 'var(--danger)' }}>✗ Passwords don't match</span>
+frontend/src/pages/auth/Register.jsx:365:                  ✗ Wrong answer. Please try again.
+frontend/src/pages/auth/AdminLogin.jsx:149:              ⚠ {error}
+frontend/src/pages/auth/AdminLogin.jsx:173:                  type={showPassword ? 'text' : 'password'} placeholder="••••••••••••"
+frontend/src/pages/auth/AdminLogin.jsx:209:              {captchaError && <div style={{ color: 'var(--danger)', fontSize: 12, marginTop: 8 }}>✗ Wrong answer — new question generated.</div>}
+frontend/src/pages/auth/AdminLogin.jsx:210:              {captchaInput && parseInt(captchaInput) === captcha.answer && <div style={{ color: 'var(--success)', fontSize: 12, marginTop: 8 }}>✓ Correct!</div>}
+frontend/src/pages/auth/Login.jsx:211:              ⚠ {error}
+frontend/src/pages/auth/Login.jsx:330:                  ✗ Wrong answer — a new question has been generated.
+frontend/src/pages/auth/Login.jsx:335:                  ✓ Correct!
+frontend/src/pages/staff/Dashboard.jsx:44:          <div style={{ fontSize: 56, marginBottom: 16 }}>✅</div>
+frontend/src/pages/staff/Dashboard.jsx:53:              <span style={{ fontSize: 24 }}>📄</span>
+frontend/src/pages/staff/Dashboard.jsx:64:              👁️ View Document in Archive
+frontend/src/pages/staff/Dashboard.jsx:67:              📤 Upload Another Document
+frontend/src/pages/staff/Dashboard.jsx:71:              🏠 Go to Staff Dashboard
+frontend/src/pages/staff/Dashboard.jsx:143:                <div style={{ fontSize: 28, marginBottom: 8 }}>{file ? '✅' : '☁️'}</div>
+frontend/src/pages/staff/Dashboard.jsx:168:                💾 Save as Draft
+frontend/src/pages/staff/Dashboard.jsx:172:                {loading ? 'Uploading...' : '📤 Publish to Archive'}
+frontend/src/pages/staff/Dashboard.jsx:183:              <span style={{ fontSize: 12, cursor: 'pointer', color: 'var(--primary)' }}>🔄</span>
+frontend/src/pages/staff/Dashboard.jsx:210:            <div style={{ fontSize: 28, marginBottom: 8 }}>💾</div>
+frontend/src/pages/staff/Dashboard.jsx:307:            <div style={{ fontSize: 32, marginBottom: 8 }}>✅</div>
+frontend/src/pages/staff/Dashboard.jsx:363:                          ✅ Approve
+frontend/src/pages/staff/Dashboard.jsx:367:                          ✕ Reject
+frontend/src/pages/staff/Dashboard.jsx:409:                    <span style={{ fontSize: 20 }}>{doc.file_type === 'pdf' ? '📄' : '📝'}</span>
+frontend/src/pages/staff/Dashboard.jsx:417:                <td style={{ fontSize: 13 }}>{doc.category_detail?.name || '—'}</td>
+frontend/src/pages/staff/Dashboard.jsx:430:                    <button className="btn btn-outline btn-sm">📥 Download</button>
+frontend/src/pages/staff/Dashboard.jsx:465:    { name: 'Science Dept', count: 42, icon: '🔬' },
+frontend/src/pages/staff/Dashboard.jsx:466:    { name: 'Arts & Humanities', count: 18, icon: '🎭' },
+frontend/src/pages/staff/Dashboard.jsx:467:    { name: 'Mathematics', count: 29, icon: '📐' },
+frontend/src/pages/staff/Dashboard.jsx:499:            <div style={{ width: 40, height: 40, borderRadius: 10, background: 'var(--primary-light)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 20 }}>📈</div>
+frontend/src/pages/staff/Dashboard.jsx:530:          <div style={{ fontSize: 28 }}>☁️</div>
+frontend/src/pages/staff/Dashboard.jsx:544:            <h3 style={{ fontSize: 14, fontWeight: 600 }}>📋 Action Required</h3>
+frontend/src/pages/staff/Dashboard.jsx:553:                ✅ No pending actions
+frontend/src/pages/staff/Dashboard.jsx:561:                  <span style={{ fontSize: 18 }}>📄</span>
+frontend/src/pages/staff/Dashboard.jsx:581:            <h3 style={{ fontSize: 14, fontWeight: 600 }}>🕐 Recent Uploads</h3>
+frontend/src/pages/staff/Dashboard.jsx:588:                  📄
+frontend/src/pages/staff/Dashboard.jsx:612:        <h3 style={{ fontSize: 14, fontWeight: 600, marginBottom: 14 }}>🏫 My Departments</h3>
+frontend/src/pages/staff/Reports.jsx:11:        <div style={{ fontSize: 48, marginBottom: 16 }}>📊</div>
+frontend/src/pages/student/Dashboard.jsx:37:          <span style={{ position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)', color: 'var(--gray-400)' }}>🔍</span>
+frontend/src/pages/student/Dashboard.jsx:68:                {doc.file_type === 'pdf' ? '📄' : doc.file_type === 'docx' ? '📝' : '📁'}
+frontend/src/pages/student/Dashboard.jsx:80:                <button className="btn btn-outline btn-sm">📥 Download</button>
+frontend/src/pages/student/Dashboard.jsx:97:        <div style={{ fontSize: 48, marginBottom: 12 }}>📝</div>
+frontend/src/pages/student/Dashboard.jsx:114:          { icon: '🎓', title: 'Official Transcripts', sub: 'Current Cumulative GPA: 3.8', badge: 'Verified', badgeColor: '#16A34A', badgeBg: '#DCFCE7', link: '/student/records' },
+frontend/src/pages/student/Dashboard.jsx:115:          { icon: '📋', title: 'Enrollment Letters', sub: 'Proof of current registration', badge: 'Active', badgeColor: '#0047AB', badgeBg: '#EBF2FF', link: '/student/academic' },
+frontend/src/pages/student/Dashboard.jsx:116:          { icon: '🏅', title: 'Degree Certificates', sub: 'Awaiting graduation clearance', badge: 'Pending', badgeColor: '#D97706', badgeBg: '#FEF3C7', link: '/student/shared' },
+frontend/src/pages/student/Dashboard.jsx:151:              <span style={{ fontSize: 24 }}>📄</span>
+frontend/src/pages/student/Dashboard.jsx:159:                <button className="btn btn-outline btn-sm">📥 Download</button>
+frontend/src/pages/student/Dashboard.jsx:191:    if (type === 'pdf') return { icon: '📄', bg: '#FEE2E2', color: '#DC2626' }
+frontend/src/pages/student/Dashboard.jsx:192:    if (type === 'docx' || type === 'doc') return { icon: '📝', bg: '#DBEAFE', color: '#1D4ED8' }
+frontend/src/pages/student/Dashboard.jsx:193:    if (type === 'xlsx') return { icon: '📊', bg: '#DCFCE7', color: '#16A34A' }
+frontend/src/pages/student/Dashboard.jsx:194:    return { icon: '📁', bg: '#F3F4F6', color: '#6B7280' }
+frontend/src/pages/student/Dashboard.jsx:212:          Welcome back, {firstName} 👋
+frontend/src/pages/student/Dashboard.jsx:230:          { label: 'TOTAL DOCS', value: docs.length, sub: '+12%', icon: '📁', color: 'var(--primary)' },
+frontend/src/pages/student/Dashboard.jsx:232:          { label: 'NEW SHARED', value: docs.filter(d => d.visibility === 'public').length, sub: 'This week', icon: '🤝', color: 'var(--success)' },
+frontend/src/pages/student/Dashboard.jsx:266:                <div style={{ fontSize: 32, marginBottom: 8 }}>📂</div>
+frontend/src/pages/student/Dashboard.jsx:305:            📥 Download Files
+frontend/src/pages/student/Dashboard.jsx:314:            <h3 style={{ fontSize: 15, fontWeight: 600, marginBottom: 14 }}>📅 Upcoming Deadlines</h3>
+frontend/src/pages/student/Dashboard.jsx:338:            <h3 style={{ fontSize: 15, fontWeight: 600, marginBottom: 14 }}>⚡ Quick Actions</h3>
+frontend/src/pages/student/Dashboard.jsx:340:              { label: 'Request Transcript', icon: '🎓', onClick: () => navigate('/student/records') },
+frontend/src/pages/student/Dashboard.jsx:341:              { label: 'Contact Support', icon: '💬', onClick: () => window.location.href = 'mailto:support@kaimu.edu?subject=KAFU%20Support' },
+frontend/src/pages/student/Dashboard.jsx:369:            <div style={{ fontSize: 28, marginBottom: 8 }}>📤</div>
+frontend/src/pages/admin/Dashboard.jsx:191:      icon: '🗄️',
+frontend/src/pages/admin/Dashboard.jsx:199:      icon: '💽',
+frontend/src/pages/admin/Dashboard.jsx:207:      icon: '🛡️',
+frontend/src/pages/admin/Dashboard.jsx:215:      icon: '👥',
+frontend/src/pages/admin/Dashboard.jsx:222:    if (fileType === 'pdf') return '📄'
+frontend/src/pages/admin/Dashboard.jsx:223:    if (fileType === 'docx' || fileType === 'doc') return '📝'
+frontend/src/pages/admin/Dashboard.jsx:224:    if (fileType === 'xlsx' || fileType === 'xls') return '📊'
+frontend/src/pages/admin/Dashboard.jsx:225:    return '📁'
+frontend/src/pages/admin/Dashboard.jsx:468:                    {doc.uploaded_by?.username || '—'}
+frontend/src/pages/admin/Dashboard.jsx:497:              <span style={{ fontSize: 16 }}>⚠️</span>
+frontend/src/pages/admin/Dashboard.jsx:507:                  📄 Missing Signatures
+frontend/src/pages/admin/Dashboard.jsx:524:                  📅 Expiring Certifications
+frontend/src/pages/admin/UserManagement.jsx:218:          <button className="btn btn-outline btn-sm" onClick={handleBulkImport}>📥 Bulk Import</button>
+frontend/src/pages/admin/UserManagement.jsx:219:          <button className="btn btn-primary btn-sm" onClick={handleAddNewUser}>➕ Add New User</button>
+frontend/src/pages/admin/UserManagement.jsx:226:          { label: 'Total Users', value: totalUsers, icon: '👥', color: 'var(--primary)', bg: 'var(--primary-light)' },
+frontend/src/pages/admin/UserManagement.jsx:227:          { label: 'Active Users', value: activeUsers, icon: '✅', color: 'var(--success)', bg: 'var(--success-light)' },
+frontend/src/pages/admin/UserManagement.jsx:249:              <span style={{ position: 'absolute', left: 10, top: '50%', transform: 'translateY(-50%)', color: 'var(--gray-400)', fontSize: 14 }}>🔍</span>
+frontend/src/pages/admin/UserManagement.jsx:305:                  <td style={{ fontSize: 13, color: 'var(--gray-600)' }}>{u.department || '—'}</td>
+frontend/src/pages/admin/UserManagement.jsx:329:                      <span style={{ fontSize: 12, color: 'var(--gray-400)' }}>—</span>
+frontend/src/pages/admin/UserManagement.jsx:349:                ✅ No pending requests
+frontend/src/pages/admin/UserManagement.jsx:375:            <h3 style={{ fontSize: 14, fontWeight: 600, marginBottom: 14 }}>🔐 Role Permissions</h3>
+frontend/src/pages/admin/Documents.jsx:67:    if (type === 'pdf') return { icon: '📄', color: '#DC2626' }
+frontend/src/pages/admin/Documents.jsx:68:    if (type === 'docx' || type === 'doc') return { icon: '📝', color: '#1D4ED8' }
+frontend/src/pages/admin/Documents.jsx:69:    if (type === 'xlsx') return { icon: '📊', color: '#16A34A' }
+frontend/src/pages/admin/Documents.jsx:70:    return { icon: '📁', color: '#6B7280' }
+frontend/src/pages/admin/Documents.jsx:112:          { label: 'Total Capacity', value: `${storageCapacity} TB`, sub: 'Archive quota', icon: '🧭', bg: '#EFF6FF' },
+frontend/src/pages/admin/Documents.jsx:113:          { label: 'Used Space', value: `${storageUsed} TB`, sub: 'Current utilization', icon: '💾', bg: '#E0F2FE' },
+frontend/src/pages/admin/Documents.jsx:114:          { label: 'Remaining', value: `${(storageCapacity - storageUsed).toFixed(1)} TB`, sub: 'Available space', icon: '📂', bg: '#ECFCCB' },
+frontend/src/pages/admin/Documents.jsx:183:            <span style={{ position: 'absolute', left: 10, top: '50%', transform: 'translateY(-50%)', color: 'var(--gray-400)', fontSize: 14 }}>🔍</span>
+frontend/src/pages/admin/Documents.jsx:249:                        <button className="btn btn-outline btn-sm">📥</button>
+frontend/src/layouts/TopBar.jsx:27:      {/* Hamburger — mobile only */}
+frontend/src/layouts/TopBar.jsx:71:      {/* Date — desktop only */}

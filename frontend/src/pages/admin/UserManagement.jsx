@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import DashboardLayout from '../../layouts/DashboardLayout'
 import api from '../../api/axios'
+import { MdCheckCircle, MdDownload, MdFileDownload, MdAdd, MdPeople, MdSearch, MdLock, MdHourglassEmpty } from 'react-icons/md';
 
 export default function UserManagement() {
   const [users, setUsers] = useState([])
@@ -215,17 +216,17 @@ export default function UserManagement() {
           <p className="page-subtitle">Manage access, roles, and system permissions.</p>
         </div>
         <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
-          <button className="btn btn-outline btn-sm" onClick={handleBulkImport}>📥 Bulk Import</button>
-          <button className="btn btn-primary btn-sm" onClick={handleAddNewUser}>➕ Add New User</button>
+          <button className="btn btn-outline btn-sm" onClick={handleBulkImport}><MdDownload /> Bulk Import</button>
+          <button className="btn btn-primary btn-sm" onClick={handleAddNewUser}><MdAdd /> Add New User</button>
         </div>
       </div>
 
       {/* Stat cards */}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 16, marginBottom: 24 }}>
         {[
-          { label: 'Total Users', value: totalUsers, icon: '👥', color: 'var(--primary)', bg: 'var(--primary-light)' },
-          { label: 'Active Users', value: activeUsers, icon: '✅', color: 'var(--success)', bg: 'var(--success-light)' },
-          { label: 'Pending Approval', value: pendingCount, icon: '⏳', color: 'var(--warning)', bg: 'var(--warning-light)' },
+          { label: 'Total Users', value: totalUsers, icon: <MdPeople />, color: 'var(--primary)', bg: 'var(--primary-light)' },
+          { label: 'Active Users', value: activeUsers, icon: <MdCheckCircle />, color: 'var(--success)', bg: 'var(--success-light)' },
+          { label: 'Pending Approval', value: pendingCount, icon: <MdHourglassEmpty />, color: 'var(--warning)', bg: 'var(--warning-light)' },
         ].map(s => (
           <div key={s.label} className="card" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
             <div>
@@ -246,7 +247,7 @@ export default function UserManagement() {
           {/* Filters */}
           <div style={{ padding: '16px 20px', borderBottom: '1px solid var(--border)', display: 'flex', gap: 12, alignItems: 'center', flexWrap: 'wrap' }}>
             <div style={{ position: 'relative', flex: 1 }}>
-              <span style={{ position: 'absolute', left: 10, top: '50%', transform: 'translateY(-50%)', color: 'var(--gray-400)', fontSize: 14 }}>🔍</span>
+              <span style={{ position: 'absolute', left: 10, top: '50%', transform: 'translateY(-50%)', color: 'var(--gray-400)', fontSize: 14 }}><MdSearch /></span>
               <input className="input-field" style={{ paddingLeft: 32, marginBottom: 0 }}
                 placeholder="Search users..."
                 value={search} onChange={e => setSearch(e.target.value)} />
@@ -346,7 +347,7 @@ export default function UserManagement() {
             </div>
             {pendingUsers.length === 0 ? (
               <div style={{ textAlign: 'center', color: 'var(--gray-400)', fontSize: 13, padding: '20px 0' }}>
-                ✅ No pending requests
+                <MdCheckCircle /> No pending requests
               </div>
             ) : pendingUsers.map(u => (
               <div key={u.id} style={{ padding: '14px 0', borderBottom: '1px solid var(--gray-100)' }}>
@@ -372,7 +373,7 @@ export default function UserManagement() {
 
           {/* Role permissions info */}
           <div className="card">
-            <h3 style={{ fontSize: 14, fontWeight: 600, marginBottom: 14 }}>🔐 Role Permissions</h3>
+            <h3 style={{ fontSize: 14, fontWeight: 600, marginBottom: 14 }}><MdLock /> Role Permissions</h3>
             {[
               { role: 'Admin', desc: 'Full Access: Add, Edit, Delete', color: '#7C3AED', bg: '#EDE9FE' },
               { role: 'Staff', desc: 'Management & Upload', color: '#1D4ED8', bg: '#DBEAFE' },
@@ -456,7 +457,7 @@ export default function UserManagement() {
                   </div>
                   <div style={{ display: 'flex', alignItems: 'flex-end' }}>
                     <button type="button" className="btn btn-outline" onClick={downloadImportTemplate} style={{ whiteSpace: 'nowrap' }}>
-                      ⬇️ Download sample CSV
+                      <MdFileDownload /> Download sample CSV
                     </button>
                   </div>
                 </div>

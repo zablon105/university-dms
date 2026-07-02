@@ -2,10 +2,10 @@ import { useState } from 'react'
 import { Link, useNavigate, useLocation } from 'react-router-dom'
 import api from '../../api/axios'
 import useAuthStore from '../../store/authStore'
-import {
-  MdAdminPanelSettings, MdLock, MdVisibility, MdVisibilityOff,
-  MdRefresh, MdShield, MdBarChart, MdKey, MdArrowBack
-} from 'react-icons/md'
+import { MdClose, MdArrowBack
+, 
+MdRefresh, MdVisibility, MdKey, MdCheck, 
+MdAdminPanelSettings, MdBarChart, MdShield, MdLock, MdWarning, MdVisibilityOff } from 'react-icons/md'
 
 const generateQuestion = () => {
   const ops = ['+', '-']
@@ -146,7 +146,7 @@ export default function AdminLogin() {
 
           {error && (
             <div style={{ background: 'var(--danger-light)', border: '1px solid #fca5a5', borderRadius: 5, padding: '10px 14px', color: 'var(--danger)', fontSize: 13, marginBottom: 18 }}>
-              ⚠ {error}
+              <MdWarning /> {error}
             </div>
           )}
 
@@ -206,8 +206,8 @@ export default function AdminLogin() {
                   onChange={e => { setCaptchaInput(e.target.value); setCaptchaError(false) }}
                   placeholder="?" style={{ width: 80, padding: '9px 12px', border: `2px solid ${captchaError ? 'var(--danger)' : captchaInput && parseInt(captchaInput) === captcha.answer ? 'var(--success)' : 'var(--gray-200)'}`, borderRadius: 5, fontSize: 16, fontWeight: 700, textAlign: 'center', outline: 'none', background: captchaError ? 'var(--danger-light)' : 'white', transition: 'border-color 0.2s' }} />
               </div>
-              {captchaError && <div style={{ color: 'var(--danger)', fontSize: 12, marginTop: 8 }}>✗ Wrong answer — new question generated.</div>}
-              {captchaInput && parseInt(captchaInput) === captcha.answer && <div style={{ color: 'var(--success)', fontSize: 12, marginTop: 8 }}>✓ Correct!</div>}
+              {captchaError && <div style={{ color: 'var(--danger)', fontSize: 12, marginTop: 8 }}><MdClose /> Wrong answer — new question generated.</div>}
+              {captchaInput && parseInt(captchaInput) === captcha.answer && <div style={{ color: 'var(--success)', fontSize: 12, marginTop: 8 }}><MdCheck /> Correct!</div>}
             </div>
 
             <button type="submit" id="admin-login-btn" className="btn btn-primary btn-lg"

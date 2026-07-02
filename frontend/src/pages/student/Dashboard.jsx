@@ -3,6 +3,7 @@ import { Routes, Route, useNavigate } from 'react-router-dom'
 import DashboardLayout from '../../layouts/DashboardLayout'
 import useAuthStore from '../../store/authStore'
 import api from '../../api/axios'
+import { MdInsertChart, MdChat, MdDownload, MdHourglassEmpty, MdSchool, MdDescription, MdStars, MdSearch, MdAssignment, MdBolt, MdWavingHand, MdFolderOpen, MdCalendarToday, MdUpload, MdHandshake, MdEditDocument, MdFolder } from 'react-icons/md';
 
 // ─── Sub-pages (placeholders we'll fill later) ───────────────────
 function AcademicDocuments() {
@@ -34,7 +35,7 @@ function AcademicDocuments() {
       </div>
       <div style={{ display: 'flex', gap: 12, marginBottom: 20, alignItems: 'center', flexWrap: 'wrap' }}>
         <div style={{ position: 'relative', flex: 1, maxWidth: 380 }}>
-          <span style={{ position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)', color: 'var(--gray-400)' }}>🔍</span>
+          <span style={{ position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)', color: 'var(--gray-400)' }}><MdSearch /></span>
           <input className="input-field" style={{ paddingLeft: 36 }}
             placeholder="Search documents by name or department..."
             value={search} onChange={e => setSearch(e.target.value)} />
@@ -65,7 +66,7 @@ function AcademicDocuments() {
               onMouseLeave={e => e.currentTarget.style.background = 'white'}
             >
               <div style={{ width: 40, height: 40, borderRadius: 10, background: 'var(--primary-light)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 20 }}>
-                {doc.file_type === 'pdf' ? '📄' : doc.file_type === 'docx' ? '📝' : '📁'}
+                {doc.file_type === 'pdf' ? <MdDescription /> : doc.file_type === 'docx' ? <MdEditDocument /> : <MdFolder />}
               </div>
               <div style={{ flex: 1 }}>
                 <div style={{ fontSize: 14, fontWeight: 500, color: 'var(--gray-800)' }}>{doc.title}</div>
@@ -77,7 +78,7 @@ function AcademicDocuments() {
                 </div>
               </div>
               <a href={doc.file} target="_blank" rel="noreferrer">
-                <button className="btn btn-outline btn-sm">📥 Download</button>
+                <button className="btn btn-outline btn-sm"><MdDownload /> Download</button>
               </a>
             </div>
           ))}
@@ -94,7 +95,7 @@ function Assignments() {
         <p className="page-subtitle">Submit and track your assignment documents.</p>
       </div>
       <div style={{ background: 'white', borderRadius: 12, border: '1px solid var(--border)', padding: 40, textAlign: 'center' }}>
-        <div style={{ fontSize: 48, marginBottom: 12 }}>📝</div>
+        <div style={{ fontSize: 48, marginBottom: 12 }}><MdEditDocument /></div>
         <p style={{ color: 'var(--gray-500)' }}>Assignment submissions coming soon.</p>
       </div>
     </DashboardLayout>
@@ -111,9 +112,9 @@ function InstitutionalRecords() {
       </div>
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 16, marginBottom: 24 }}>
         {[
-          { icon: '🎓', title: 'Official Transcripts', sub: 'Current Cumulative GPA: 3.8', badge: 'Verified', badgeColor: '#16A34A', badgeBg: '#DCFCE7', link: '/student/records' },
-          { icon: '📋', title: 'Enrollment Letters', sub: 'Proof of current registration', badge: 'Active', badgeColor: '#0047AB', badgeBg: '#EBF2FF', link: '/student/academic' },
-          { icon: '🏅', title: 'Degree Certificates', sub: 'Awaiting graduation clearance', badge: 'Pending', badgeColor: '#D97706', badgeBg: '#FEF3C7', link: '/student/shared' },
+          { icon: <MdSchool />, title: 'Official Transcripts', sub: 'Current Cumulative GPA: 3.8', badge: 'Verified', badgeColor: '#16A34A', badgeBg: '#DCFCE7', link: '/student/records' },
+          { icon: <MdAssignment />, title: 'Enrollment Letters', sub: 'Proof of current registration', badge: 'Active', badgeColor: '#0047AB', badgeBg: '#EBF2FF', link: '/student/academic' },
+          { icon: <MdStars />, title: 'Degree Certificates', sub: 'Awaiting graduation clearance', badge: 'Pending', badgeColor: '#D97706', badgeBg: '#FEF3C7', link: '/student/shared' },
         ].map(item => (
           <div key={item.title} style={{ background: 'white', borderRadius: 12, border: '1px solid var(--border)', padding: 20 }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 12 }}>
@@ -148,7 +149,7 @@ function SharedFiles() {
               padding: '14px 20px',
               borderBottom: i < docs.length - 1 ? '1px solid var(--gray-100)' : 'none'
             }}>
-              <span style={{ fontSize: 24 }}>📄</span>
+              <span style={{ fontSize: 24 }}><MdDescription /></span>
               <div style={{ flex: 1 }}>
                 <div style={{ fontSize: 14, fontWeight: 500 }}>{doc.title}</div>
                 <div style={{ fontSize: 12, color: 'var(--gray-400)' }}>
@@ -156,7 +157,7 @@ function SharedFiles() {
                 </div>
               </div>
               <a href={doc.file} target="_blank" rel="noreferrer">
-                <button className="btn btn-outline btn-sm">📥 Download</button>
+                <button className="btn btn-outline btn-sm"><MdDownload /> Download</button>
               </a>
             </div>
           ))}
@@ -188,10 +189,10 @@ function StudentHome() {
   const firstName = user?.first_name || user?.username || 'Student'
 
   const getFileIcon = (type) => {
-    if (type === 'pdf') return { icon: '📄', bg: '#FEE2E2', color: '#DC2626' }
-    if (type === 'docx' || type === 'doc') return { icon: '📝', bg: '#DBEAFE', color: '#1D4ED8' }
-    if (type === 'xlsx') return { icon: '📊', bg: '#DCFCE7', color: '#16A34A' }
-    return { icon: '📁', bg: '#F3F4F6', color: '#6B7280' }
+    if (type === 'pdf') return { icon: <MdDescription />, bg: '#FEE2E2', color: '#DC2626' }
+    if (type === 'docx' || type === 'doc') return { icon: <MdEditDocument />, bg: '#DBEAFE', color: '#1D4ED8' }
+    if (type === 'xlsx') return { icon: <MdInsertChart />, bg: '#DCFCE7', color: '#16A34A' }
+    return { icon: <MdFolder />, bg: '#F3F4F6', color: '#6B7280' }
   }
 
   const deadlines = [
@@ -209,7 +210,7 @@ function StudentHome() {
         padding: '20px 24px', marginBottom: 20
       }}>
         <h2 style={{ fontSize: 20, fontWeight: 700, color: 'var(--gray-900)' }}>
-          Welcome back, {firstName} 👋
+          Welcome back, {firstName} <MdWavingHand />
         </h2>
         <p style={{ color: 'var(--gray-500)', fontSize: 14, marginTop: 4 }}>
           You have{' '}
@@ -227,9 +228,9 @@ function StudentHome() {
       {/* Stat cards */}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 16, marginBottom: 24 }}>
         {[
-          { label: 'TOTAL DOCS', value: docs.length, sub: '+12%', icon: '📁', color: 'var(--primary)' },
-          { label: 'PENDING', value: pendingDocs.length, sub: 'Due soon', icon: '⏳', color: 'var(--danger)' },
-          { label: 'NEW SHARED', value: docs.filter(d => d.visibility === 'public').length, sub: 'This week', icon: '🤝', color: 'var(--success)' },
+          { label: 'TOTAL DOCS', value: docs.length, sub: '+12%', icon: <MdFolder />, color: 'var(--primary)' },
+          { label: 'PENDING', value: pendingDocs.length, sub: 'Due soon', icon: <MdHourglassEmpty />, color: 'var(--danger)' },
+          { label: 'NEW SHARED', value: docs.filter(d => d.visibility === 'public').length, sub: 'This week', icon: <MdHandshake />, color: 'var(--success)' },
         ].map(s => (
           <div key={s.label} style={{
             background: 'white', borderRadius: 12,
@@ -263,7 +264,7 @@ function StudentHome() {
           {loading ? <div style={{ padding: 20, textAlign: 'center', color: 'var(--gray-400)' }}>Loading...</div>
             : docs.length === 0 ? (
               <div style={{ padding: 20, textAlign: 'center', color: 'var(--gray-400)' }}>
-                <div style={{ fontSize: 32, marginBottom: 8 }}>📂</div>
+                <div style={{ fontSize: 32, marginBottom: 8 }}><MdFolderOpen /></div>
                 No documents yet
               </div>
             ) : (
@@ -302,7 +303,7 @@ function StudentHome() {
           {/* Download Files button */}
           <button className="btn btn-primary" style={{ marginTop: 16, width: '100%', justifyContent: 'center' }}
             onClick={() => navigate('/student/academic')}>
-            📥 Download Files
+            <MdDownload /> Download Files
           </button>
         </div>
 
@@ -311,7 +312,7 @@ function StudentHome() {
 
           {/* Upcoming Deadlines */}
           <div style={{ background: 'white', borderRadius: 12, border: '1px solid var(--border)', padding: 20 }}>
-            <h3 style={{ fontSize: 15, fontWeight: 600, marginBottom: 14 }}>📅 Upcoming Deadlines</h3>
+            <h3 style={{ fontSize: 15, fontWeight: 600, marginBottom: 14 }}><MdCalendarToday /> Upcoming Deadlines</h3>
             {deadlines.map((d, i) => (
               <div key={i} style={{
                 display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start',
@@ -335,10 +336,10 @@ function StudentHome() {
 
           {/* Quick Actions */}
           <div style={{ background: 'white', borderRadius: 12, border: '1px solid var(--border)', padding: 20 }}>
-            <h3 style={{ fontSize: 15, fontWeight: 600, marginBottom: 14 }}>⚡ Quick Actions</h3>
+            <h3 style={{ fontSize: 15, fontWeight: 600, marginBottom: 14 }}><MdBolt /> Quick Actions</h3>
             {[
-              { label: 'Request Transcript', icon: '🎓', onClick: () => navigate('/student/records') },
-              { label: 'Contact Support', icon: '💬', onClick: () => window.location.href = 'mailto:support@kaimu.edu?subject=KAFU%20Support' },
+              { label: 'Request Transcript', icon: <MdSchool />, onClick: () => navigate('/student/records') },
+              { label: 'Contact Support', icon: <MdChat />, onClick: () => window.location.href = 'mailto:support@kaimu.edu?subject=KAFU%20Support' },
             ].map(a => (
               <div key={a.label} onClick={a.onClick} style={{
                 display: 'flex', justifyContent: 'space-between', alignItems: 'center',
@@ -366,7 +367,7 @@ function StudentHome() {
             onMouseLeave={e => e.currentTarget.style.borderColor = 'var(--gray-300)'}
             onClick={() => navigate('/student/academic')}
           >
-            <div style={{ fontSize: 28, marginBottom: 8 }}>📤</div>
+            <div style={{ fontSize: 28, marginBottom: 8 }}><MdUpload /></div>
             <div style={{ fontSize: 14, fontWeight: 600, color: 'var(--gray-700)', marginBottom: 4 }}>
               Download Resources
             </div>

@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import DashboardLayout from '../../layouts/DashboardLayout'
 import api from '../../api/axios'
+import { MdFolderOpen, MdFolder, MdSave, MdDownload, MdExplore, MdEditDocument, MdInsertChart, MdDescription, MdSearch } from 'react-icons/md';
 
 const storagePalette = [
   { label: 'Academic Records', value: 8.2, color: '#2563EB' },
@@ -64,10 +65,10 @@ export default function AdminDocuments() {
   }
 
   const getFileIcon = (type) => {
-    if (type === 'pdf') return { icon: '📄', color: '#DC2626' }
-    if (type === 'docx' || type === 'doc') return { icon: '📝', color: '#1D4ED8' }
-    if (type === 'xlsx') return { icon: '📊', color: '#16A34A' }
-    return { icon: '📁', color: '#6B7280' }
+    if (type === 'pdf') return { icon: <MdDescription />, color: '#DC2626' }
+    if (type === 'docx' || type === 'doc') return { icon: <MdEditDocument />, color: '#1D4ED8' }
+    if (type === 'xlsx') return { icon: <MdInsertChart />, color: '#16A34A' }
+    return { icon: <MdFolder />, color: '#6B7280' }
   }
 
   const handleGenerateReport = () => {
@@ -109,9 +110,9 @@ export default function AdminDocuments() {
 
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, minmax(220px, 1fr))', gap: 16, marginBottom: 24 }}>
         {[
-          { label: 'Total Capacity', value: `${storageCapacity} TB`, sub: 'Archive quota', icon: '🧭', bg: '#EFF6FF' },
-          { label: 'Used Space', value: `${storageUsed} TB`, sub: 'Current utilization', icon: '💾', bg: '#E0F2FE' },
-          { label: 'Remaining', value: `${(storageCapacity - storageUsed).toFixed(1)} TB`, sub: 'Available space', icon: '📂', bg: '#ECFCCB' },
+          { label: 'Total Capacity', value: `${storageCapacity} TB`, sub: 'Archive quota', icon: <MdExplore />, bg: '#EFF6FF' },
+          { label: 'Used Space', value: `${storageUsed} TB`, sub: 'Current utilization', icon: <MdSave />, bg: '#E0F2FE' },
+          { label: 'Remaining', value: `${(storageCapacity - storageUsed).toFixed(1)} TB`, sub: 'Available space', icon: <MdFolderOpen />, bg: '#ECFCCB' },
         ].map(s => (
           <div key={s.label} className="card" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: 20 }}>
             <div>
@@ -180,7 +181,7 @@ export default function AdminDocuments() {
       <div className="card" style={{ padding: 0, overflow: 'hidden' }}>
         <div style={{ padding: '16px 20px', borderBottom: '1px solid var(--border)', display: 'flex', gap: 12, alignItems: 'center', flexWrap: 'wrap' }}>
           <div style={{ position: 'relative', flex: 1, minWidth: 200 }}>
-            <span style={{ position: 'absolute', left: 10, top: '50%', transform: 'translateY(-50%)', color: 'var(--gray-400)', fontSize: 14 }}>🔍</span>
+            <span style={{ position: 'absolute', left: 10, top: '50%', transform: 'translateY(-50%)', color: 'var(--gray-400)', fontSize: 14 }}><MdSearch /></span>
             <input className="input-field" style={{ paddingLeft: 32 }}
               placeholder="Filter by name, submitter, or category..."
               value={search} onChange={e => setSearch(e.target.value)} />
@@ -246,7 +247,7 @@ export default function AdminDocuments() {
                   <td>
                     <div style={{ display: 'flex', gap: 6 }}>
                       <a href={doc.file} target="_blank" rel="noreferrer">
-                        <button className="btn btn-outline btn-sm">📥</button>
+                        <button className="btn btn-outline btn-sm"><MdDownload /></button>
                       </a>
                     </div>
                   </td>

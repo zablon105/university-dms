@@ -1,11 +1,11 @@
 import { useState } from 'react'
 import { Link, useNavigate, useLocation } from 'react-router-dom'
 import api from '../../api/axios'
-import {
-  MdPerson, MdEmail, MdLock, MdSchool, MdWork,
-  MdArrowBack, MdCheckCircle, MdInfo,
-  MdShield, MdBolt, MdRefresh, MdAppRegistration
-} from 'react-icons/md'
+import { MdClose, MdEmail, 
+MdArrowBack, MdWork, MdInfo, MdCheckCircle, 
+MdShield, 
+MdPerson, MdSchool, MdAppRegistration
+, MdLock, MdRefresh, MdWarning, MdBolt } from 'react-icons/md'
 
 const generateQuestion = () => {
   const ops = ['+', '-']
@@ -202,7 +202,7 @@ export default function Register() {
 
           {error && (
             <div style={{ background: 'var(--danger-light)', border: '1px solid #fca5a5', borderRadius: 5, padding: '10px 14px', color: 'var(--danger)', fontSize: 13, marginBottom: 18, display: 'flex', gap: 8, alignItems: 'flex-start' }}>
-              ⚠ {error}
+              <MdWarning /> {error}
             </div>
           )}
 
@@ -264,7 +264,7 @@ export default function Register() {
                 />
               </div>
               {form.username && !isValidRegNo && (
-                <span style={{ fontSize: 11, color: 'var(--warning)' }}>⚠ Format: DEPT/NUMBER/YEAR — e.g. COM/0028/2023</span>
+                <span style={{ fontSize: 11, color: 'var(--warning)' }}><MdWarning /> Format: DEPT/NUMBER/YEAR — e.g. COM/0028/2023</span>
               )}
               {form.username && isValidRegNo && (
                 <span style={{ fontSize: 11, color: 'var(--success)', display: 'flex', alignItems: 'center', gap: 4 }}>
@@ -306,7 +306,7 @@ export default function Register() {
                     value={form.password2} onChange={e => setForm({ ...form, password2: e.target.value })} required />
                 </div>
                 {form.password && form.password2 && form.password !== form.password2 && (
-                  <span style={{ fontSize: 11, color: 'var(--danger)' }}>✗ Passwords don't match</span>
+                  <span style={{ fontSize: 11, color: 'var(--danger)' }}><MdClose /> Passwords don't match</span>
                 )}
               </div>
             </div>
@@ -362,7 +362,7 @@ export default function Register() {
               </div>
               {captchaError && (
                 <div style={{ color: 'var(--danger)', fontSize: 12, marginTop: 8, fontWeight: 500, display: 'flex', gap: 4, alignItems: 'center' }}>
-                  ✗ Wrong answer. Please try again.
+                  <MdClose /> Wrong answer. Please try again.
                 </div>
               )}
             </div>

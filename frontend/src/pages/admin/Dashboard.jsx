@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import DashboardLayout from '../../layouts/DashboardLayout'
 import api from '../../api/axios'
+import { MdInsertChart, MdHourglassEmpty, MdWarning, MdDescription, MdPeople, MdStorage, MdSave, MdCalendarToday, MdShield, MdEditDocument, MdFolder } from 'react-icons/md';
 
 export default function AdminDashboard() {
   const navigate = useNavigate()
@@ -188,7 +189,7 @@ export default function AdminDashboard() {
       label: 'Institutional Capacity',
       value: `${stats.totalDocuments} Items`,
       sub: 'Total registered documents',
-      icon: '🗄️',
+      icon: <MdStorage />,
       color: '#0047AB',
       bg: '#EBF2FF'
     },
@@ -196,7 +197,7 @@ export default function AdminDashboard() {
       label: 'Storage Used',
       value: '18.4 TB',
       sub: 'of 20 TB used',
-      icon: '💽',
+      icon: <MdSave />,
       color: '#1D4ED8',
       bg: '#DBEAFE'
     },
@@ -204,7 +205,7 @@ export default function AdminDashboard() {
       label: 'Global Compliance',
       value: '98.2%',
       sub: 'Policy status',
-      icon: '🛡️',
+      icon: <MdShield />,
       color: '#047857',
       bg: '#DCFCE7'
     },
@@ -212,17 +213,17 @@ export default function AdminDashboard() {
       label: 'Active Users',
       value: `${stats.activeUsers} Active`,
       sub: 'Verified access',
-      icon: '👥',
+      icon: <MdPeople />,
       color: '#16A34A',
       bg: '#DCFCE7'
     },
   ]
 
   const getFileIcon = (fileType) => {
-    if (fileType === 'pdf') return '📄'
-    if (fileType === 'docx' || fileType === 'doc') return '📝'
-    if (fileType === 'xlsx' || fileType === 'xls') return '📊'
-    return '📁'
+    if (fileType === 'pdf') return <MdDescription />
+    if (fileType === 'docx' || fileType === 'doc') return <MdEditDocument />
+    if (fileType === 'xlsx' || fileType === 'xls') return <MdInsertChart />
+    return <MdFolder />
   }
 
   const getStatusBadge = (status) => {
@@ -246,7 +247,7 @@ export default function AdminDashboard() {
     <DashboardLayout searchPlaceholder="Search records...">
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: 400 }}>
         <div style={{ textAlign: 'center', color: 'var(--gray-500)' }}>
-          <div style={{ fontSize: 32, marginBottom: 12 }}>⏳</div>
+          <div style={{ fontSize: 32, marginBottom: 12 }}><MdHourglassEmpty /></div>
           <p>Loading dashboard...</p>
         </div>
       </div>
@@ -494,7 +495,7 @@ export default function AdminDashboard() {
             boxShadow: 'var(--shadow-sm)', padding: 20
           }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 16 }}>
-              <span style={{ fontSize: 16 }}>⚠️</span>
+              <span style={{ fontSize: 16 }}><MdWarning /></span>
               <h3 style={{ fontSize: 15, fontWeight: 600 }}>Compliance Alerts</h3>
             </div>
             <div style={{
@@ -504,7 +505,7 @@ export default function AdminDashboard() {
             }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                 <div style={{ fontSize: 13, fontWeight: 500, color: '#991B1B' }}>
-                  📄 Missing Signatures
+                  <MdDescription /> Missing Signatures
                 </div>
                 <span style={{
                   background: '#DC2626', color: 'white',
@@ -521,7 +522,7 @@ export default function AdminDashboard() {
             }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                 <div style={{ fontSize: 13, fontWeight: 500, color: '#92400E' }}>
-                  📅 Expiring Certifications
+                  <MdCalendarToday /> Expiring Certifications
                 </div>
                 <span style={{
                   background: '#D97706', color: 'white',

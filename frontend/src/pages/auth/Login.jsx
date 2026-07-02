@@ -2,10 +2,10 @@ import { useState } from 'react'
 import { Link, useNavigate, useLocation } from 'react-router-dom'
 import api from '../../api/axios'
 import useAuthStore from '../../store/authStore'
-import {
-  MdPerson, MdLock, MdVisibility, MdVisibilityOff,
-  MdRefresh, MdLogin, MdShield, MdBolt, MdSchool
-} from 'react-icons/md'
+import { MdClose, 
+MdRefresh, MdSchool
+, MdVisibility, MdCheck, 
+MdPerson, MdShield, MdLogin, MdLock, MdWarning, MdVisibilityOff, MdBolt } from 'react-icons/md'
 
 const generateQuestion = () => {
   const ops = ['+', '-']
@@ -208,7 +208,7 @@ export default function Login() {
               color: 'var(--danger)', fontSize: 13, marginBottom: 18,
               display: 'flex', gap: 8, alignItems: 'center'
             }}>
-              ⚠ {error}
+              <MdWarning /> {error}
             </div>
           )}
 
@@ -327,12 +327,12 @@ export default function Login() {
               </div>
               {captchaError && (
                 <div style={{ color: 'var(--danger)', fontSize: 12, marginTop: 8, fontWeight: 500, display: 'flex', gap: 4, alignItems: 'center' }}>
-                  ✗ Wrong answer — a new question has been generated.
+                  <MdClose /> Wrong answer — a new question has been generated.
                 </div>
               )}
               {captchaInput && parseInt(captchaInput) === captcha.answer && (
                 <div style={{ color: 'var(--success)', fontSize: 12, marginTop: 8, fontWeight: 500, display: 'flex', gap: 4, alignItems: 'center' }}>
-                  ✓ Correct!
+                  <MdCheck /> Correct!
                 </div>
               )}
             </div>

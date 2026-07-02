@@ -4,6 +4,7 @@ import DashboardLayout from '../../layouts/DashboardLayout'
 import useAuthStore from '../../store/authStore'
 import api from '../../api/axios'
 import Reports from './Reports'
+import { MdCheckCircle, MdCloud, MdDownload, MdSchool, MdDescription, MdTheaterComedy, MdAssignment, MdSquareFoot, MdAccessTime, MdSave, MdScience, MdVisibility, MdLoop, MdTrendingUp, MdHome, MdUpload, MdEditDocument } from 'react-icons/md';
 
 // ─── Upload Document Page ─────────────────────────────────────────
 function UploadDocument() {
@@ -41,7 +42,7 @@ function UploadDocument() {
     <DashboardLayout searchPlaceholder="Search archives...">
       <div style={{ maxWidth: 480, margin: '80px auto', textAlign: 'center' }}>
         <div className="card">
-          <div style={{ fontSize: 56, marginBottom: 16 }}>✅</div>
+          <div style={{ fontSize: 56, marginBottom: 16 }}><MdCheckCircle /></div>
           <h2 style={{ fontSize: 22, fontWeight: 700, color: 'var(--primary)', marginBottom: 8 }}>
             Document Successfully Uploaded
           </h2>
@@ -50,7 +51,7 @@ function UploadDocument() {
           </p>
           <div style={{ background: 'var(--gray-50)', borderRadius: 10, padding: 16, marginBottom: 24, textAlign: 'left' }}>
             <div style={{ display: 'flex', gap: 12, alignItems: 'center' }}>
-              <span style={{ fontSize: 24 }}>📄</span>
+              <span style={{ fontSize: 24 }}><MdDescription /></span>
               <div>
                 <div style={{ fontSize: 14, fontWeight: 500 }}>{form.title}</div>
                 <div style={{ fontSize: 12, color: 'var(--gray-400)' }}>
@@ -61,14 +62,14 @@ function UploadDocument() {
           </div>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
             <button className="btn btn-primary btn-lg" onClick={() => navigate('/staff/archive')}>
-              👁️ View Document in Archive
+              <MdVisibility /> View Document in Archive
             </button>
             <button className="btn btn-outline btn-lg" onClick={() => { setSuccess(false); setForm({ title: '', description: '', category: '', visibility: 'staff', status: 'draft' }); setFile(null) }}>
-              📤 Upload Another Document
+              <MdUpload /> Upload Another Document
             </button>
             <button style={{ background: 'none', border: 'none', color: 'var(--gray-500)', fontSize: 13, cursor: 'pointer', marginTop: 4 }}
               onClick={() => navigate('/staff/dashboard')}>
-              🏠 Go to Staff Dashboard
+              <MdHome /> Go to Staff Dashboard
             </button>
           </div>
         </div>
@@ -140,7 +141,7 @@ function UploadDocument() {
                 onDragOver={e => e.preventDefault()}
                 onDrop={e => { e.preventDefault(); setFile(e.dataTransfer.files[0]) }}
               >
-                <div style={{ fontSize: 28, marginBottom: 8 }}>{file ? '✅' : '☁️'}</div>
+                <div style={{ fontSize: 28, marginBottom: 8 }}>{file ? <MdCheckCircle /> : <MdCloud />}</div>
                 {file ? (
                   <div>
                     <div style={{ fontSize: 14, fontWeight: 600, color: 'var(--primary)' }}>{file.name}</div>
@@ -165,11 +166,11 @@ function UploadDocument() {
             <div style={{ display: 'flex', gap: 12, marginTop: 8 }}>
               <button type="button" className="btn btn-outline" style={{ flex: 1, justifyContent: 'center' }}
                 onClick={() => setForm({ ...form, status: 'draft' })}>
-                💾 Save as Draft
+                <MdSave /> Save as Draft
               </button>
               <button type="submit" className="btn btn-primary" style={{ flex: 2, justifyContent: 'center' }}
                 disabled={loading}>
-                {loading ? 'Uploading...' : '📤 Publish to Archive'}
+                {loading ? 'Uploading...' : <><MdUpload /> Publish to Archive</>}
               </button>
             </div>
           </form>
@@ -180,7 +181,7 @@ function UploadDocument() {
           <div className="card">
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 14 }}>
               <h3 style={{ fontSize: 14, fontWeight: 600 }}>Recent Submissions</h3>
-              <span style={{ fontSize: 12, cursor: 'pointer', color: 'var(--primary)' }}>🔄</span>
+              <span style={{ fontSize: 12, cursor: 'pointer', color: 'var(--primary)' }}><MdLoop /></span>
             </div>
             {recentUploads.length === 0
               ? <p style={{ color: 'var(--gray-400)', fontSize: 13 }}>No recent uploads</p>
@@ -207,7 +208,7 @@ function UploadDocument() {
             background: 'linear-gradient(135deg, #0047AB, #003580)',
             color: 'white', textAlign: 'center'
           }}>
-            <div style={{ fontSize: 28, marginBottom: 8 }}>💾</div>
+            <div style={{ fontSize: 28, marginBottom: 8 }}><MdSave /></div>
             <div style={{ fontSize: 14, fontWeight: 600, marginBottom: 4 }}>Storage Usage</div>
             <div style={{ fontSize: 22, fontWeight: 700 }}>64% of 500GB Used</div>
             <div style={{ background: 'rgba(255,255,255,0.2)', borderRadius: 6, height: 6, marginTop: 10 }}>
@@ -304,7 +305,7 @@ function ApprovalQueue() {
           <div style={{ padding: 40, textAlign: 'center', color: 'var(--gray-400)' }}>Loading...</div>
         ) : displayed.length === 0 ? (
           <div style={{ padding: 40, textAlign: 'center', color: 'var(--gray-400)' }}>
-            <div style={{ fontSize: 32, marginBottom: 8 }}>✅</div>
+            <div style={{ fontSize: 32, marginBottom: 8 }}><MdCheckCircle /></div>
             No {activeTab} requests
           </div>
         ) : (
@@ -360,7 +361,7 @@ function ApprovalQueue() {
                       <div style={{ display: 'flex', gap: 6 }}>
                         <button onClick={() => handleAction(ap.id, 'approve')}
                           style={{ padding: '5px 12px', borderRadius: 6, border: 'none', background: 'var(--primary)', color: 'white', fontSize: 12, cursor: 'pointer', fontWeight: 500 }}>
-                          ✅ Approve
+                          <MdCheckCircle /> Approve
                         </button>
                         <button onClick={() => handleAction(ap.id, 'reject')}
                           style={{ padding: '5px 12px', borderRadius: 6, border: '1px solid var(--danger)', background: 'white', color: 'var(--danger)', fontSize: 12, cursor: 'pointer', fontWeight: 500 }}>
@@ -406,7 +407,7 @@ function Archive() {
               <tr key={doc.id}>
                 <td>
                   <div style={{ display: 'flex', gap: 10, alignItems: 'center' }}>
-                    <span style={{ fontSize: 20 }}>{doc.file_type === 'pdf' ? '📄' : '📝'}</span>
+                    <span style={{ fontSize: 20 }}>{doc.file_type === 'pdf' ? <MdDescription /> : <MdEditDocument />}</span>
                     <div>
                       <div style={{ fontSize: 13, fontWeight: 500 }}>{doc.title}</div>
                       <div style={{ fontSize: 11, color: 'var(--gray-400)' }}>{doc.file_type?.toUpperCase()}</div>
@@ -427,7 +428,7 @@ function Archive() {
                 </td>
                 <td>
                   <a href={doc.file} target="_blank" rel="noreferrer">
-                    <button className="btn btn-outline btn-sm">📥 Download</button>
+                    <button className="btn btn-outline btn-sm"><MdDownload /> Download</button>
                   </a>
                 </td>
               </tr>
@@ -462,9 +463,9 @@ function StaffHome() {
   const actionRequired = docs.filter(d => d.status === 'pending' || d.status === 'draft').slice(0, 3)
 
   const departments = [
-    { name: 'Science Dept', count: 42, icon: '🔬' },
-    { name: 'Arts & Humanities', count: 18, icon: '🎭' },
-    { name: 'Mathematics', count: 29, icon: '📐' },
+    { name: 'Science Dept', count: 42, icon: <MdScience /> },
+    { name: 'Arts & Humanities', count: 18, icon: <MdTheaterComedy /> },
+    { name: 'Mathematics', count: 29, icon: <MdSquareFoot /> },
   ]
 
   return (
@@ -496,7 +497,7 @@ function StaffHome() {
         {/* Workflow Efficiency */}
         <div className="card">
           <div style={{ display: 'flex', gap: 12, alignItems: 'flex-start', marginBottom: 16 }}>
-            <div style={{ width: 40, height: 40, borderRadius: 10, background: 'var(--primary-light)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 20 }}>📈</div>
+            <div style={{ width: 40, height: 40, borderRadius: 10, background: 'var(--primary-light)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 20 }}><MdTrendingUp /></div>
             <div>
               <h3 style={{ fontSize: 15, fontWeight: 600 }}>Workflow Efficiency</h3>
               <p style={{ fontSize: 13, color: 'var(--gray-500)', marginTop: 2 }}>
@@ -527,7 +528,7 @@ function StaffHome() {
           onMouseLeave={e => { e.currentTarget.style.borderColor = 'var(--gray-300)'; e.currentTarget.style.background = 'white' }}
           onClick={() => navigate('/staff/upload')}
         >
-          <div style={{ fontSize: 28 }}>☁️</div>
+          <div style={{ fontSize: 28 }}><MdCloud /></div>
           <div style={{ fontSize: 14, fontWeight: 600, color: 'var(--gray-700)' }}>Bulk Upload</div>
           <div style={{ fontSize: 12, color: 'var(--gray-400)', lineHeight: 1.5 }}>
             Drag and drop curriculum files, rubrics, or departmental notices here.
@@ -541,7 +542,7 @@ function StaffHome() {
         {/* Action Required */}
         <div className="card">
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 14 }}>
-            <h3 style={{ fontSize: 14, fontWeight: 600 }}>📋 Action Required</h3>
+            <h3 style={{ fontSize: 14, fontWeight: 600 }}><MdAssignment /> Action Required</h3>
             <button onClick={() => navigate('/staff/approvals')}
               style={{ fontSize: 12, color: 'var(--primary)', background: 'none', border: 'none', cursor: 'pointer' }}>
               View All
@@ -550,7 +551,7 @@ function StaffHome() {
           {loading ? <div style={{ color: 'var(--gray-400)', fontSize: 13 }}>Loading...</div>
             : actionRequired.length === 0 ? (
               <div style={{ color: 'var(--gray-400)', fontSize: 13, padding: '12px 0' }}>
-                ✅ No pending actions
+                <MdCheckCircle /> No pending actions
               </div>
             ) : actionRequired.map(doc => (
               <div key={doc.id} style={{
@@ -558,7 +559,7 @@ function StaffHome() {
                 padding: '10px 0', borderBottom: '1px solid var(--gray-100)'
               }}>
                 <div style={{ display: 'flex', gap: 10, alignItems: 'flex-start' }}>
-                  <span style={{ fontSize: 18 }}>📄</span>
+                  <span style={{ fontSize: 18 }}><MdDescription /></span>
                   <div>
                     <div style={{ fontSize: 13, fontWeight: 500, color: 'var(--gray-800)' }}>{doc.title}</div>
                     <div style={{ fontSize: 11, color: 'var(--gray-400)' }}>
@@ -578,14 +579,14 @@ function StaffHome() {
         {/* Recent Uploads */}
         <div className="card">
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 14 }}>
-            <h3 style={{ fontSize: 14, fontWeight: 600 }}>🕐 Recent Uploads</h3>
+            <h3 style={{ fontSize: 14, fontWeight: 600 }}><MdAccessTime /> Recent Uploads</h3>
           </div>
           {recentUploads.length === 0
             ? <div style={{ color: 'var(--gray-400)', fontSize: 13 }}>No uploads yet</div>
             : recentUploads.map(doc => (
               <div key={doc.id} style={{ display: 'flex', gap: 12, alignItems: 'flex-start', padding: '10px 0', borderBottom: '1px solid var(--gray-100)' }}>
                 <div style={{ width: 36, height: 36, borderRadius: 8, background: 'var(--primary-light)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 16 }}>
-                  📄
+                  <MdDescription />
                 </div>
                 <div style={{ flex: 1 }}>
                   <div style={{ fontSize: 13, fontWeight: 500 }}>{doc.title}</div>
@@ -609,7 +610,7 @@ function StaffHome() {
 
       {/* My Departments */}
       <div className="card">
-        <h3 style={{ fontSize: 14, fontWeight: 600, marginBottom: 14 }}>🏫 My Departments</h3>
+        <h3 style={{ fontSize: 14, fontWeight: 600, marginBottom: 14 }}><MdSchool /> My Departments</h3>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 12 }}>
           {departments.map(dept => (
             <div key={dept.name} style={{

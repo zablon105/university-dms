@@ -1,10 +1,10 @@
 import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import api from '../../api/axios'
-import {
-  MdEmail, MdLock, MdRefresh, MdArrowBack,
-  MdCheckCircle, MdInfo, MdSend, MdLockReset
-} from 'react-icons/md'
+import { 
+MdEmail, 
+MdCheckCircle, MdClose, MdInfo, MdLockReset
+, MdSend, MdArrowBack, MdLock, MdRefresh, MdWarning } from 'react-icons/md'
 
 export default function ForgotPassword() {
   const navigate = useNavigate()
@@ -104,7 +104,7 @@ export default function ForgotPassword() {
 
             {error && (
               <div style={{ background: 'var(--danger-light)', border: '1px solid #fca5a5', borderRadius: 5, padding: '10px 14px', color: 'var(--danger)', fontSize: 13, marginBottom: 16 }}>
-                ⚠ {error}
+                <MdWarning /> {error}
               </div>
             )}
 
@@ -159,7 +159,7 @@ export default function ForgotPassword() {
 
             {error && (
               <div style={{ background: 'var(--danger-light)', border: '1px solid #fca5a5', borderRadius: 5, padding: '10px 14px', color: 'var(--danger)', fontSize: 13, marginBottom: 16 }}>
-                ⚠ {error}
+                <MdWarning /> {error}
               </div>
             )}
 
@@ -228,7 +228,7 @@ export default function ForgotPassword() {
                     onChange={e => setConfirmPassword(e.target.value)} required />
                 </div>
                 {confirmPassword && newPassword !== confirmPassword && (
-                  <span style={{ fontSize: 11, color: 'var(--danger)' }}>✗ Passwords don't match</span>
+                  <span style={{ fontSize: 11, color: 'var(--danger)' }}><MdClose /> Passwords don't match</span>
                 )}
               </div>
 
