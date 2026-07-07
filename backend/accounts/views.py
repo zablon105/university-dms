@@ -74,6 +74,10 @@ Please log in to the DocLibrary Admin portal to approve or deny this account.
 
 → Login at: https://university-dms.vercel.app/admin-login
 
+If you are using the delta deployment, also visit:
+
+→ Login at: https://university-dms-delta.vercel.app/admin-login
+
 This is an automated notification from DocLibrary KAFU.
         """.strip()
 
