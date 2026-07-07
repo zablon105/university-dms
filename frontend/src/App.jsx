@@ -70,18 +70,17 @@ export default function App() {
       {/* Admin routes — admin only */}
       <Route path="/admin/*" element={
         <ProtectedRoute allowedRoles={['admin']}>
-          <DashboardLayout searchPlaceholder="Search users, documents...">
-            <Routes>
-              <Route path="dashboard" element={<AdminDashboard />} />
-              <Route path="users" element={<UserManagement />} />
-              <Route path="documents" element={<AdminDocuments />} />
-              <Route path="compliance" element={<AdminCompliance />} />
-              <Route path="logs" element={<AdminLogs />} />
-              <Route path="*" element={<AdminDashboard />} />
-            </Routes>
-          </DashboardLayout>
+          <DashboardLayout searchPlaceholder="Search users, documents..." />
         </ProtectedRoute>
-      } />
+      }>
+        <Route index element={<Navigate to="dashboard" replace />} />
+        <Route path="dashboard" element={<AdminDashboard />} />
+        <Route path="users" element={<UserManagement />} />
+        <Route path="documents" element={<AdminDocuments />} />
+        <Route path="compliance" element={<AdminCompliance />} />
+        <Route path="logs" element={<AdminLogs />} />
+        <Route path="*" element={<AdminDashboard />} />
+      </Route>
 
       <Route path="/settings" element={
         <ProtectedRoute allowedRoles={['student', 'staff', 'admin']}>

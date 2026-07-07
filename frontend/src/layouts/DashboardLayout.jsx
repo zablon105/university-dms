@@ -1,5 +1,5 @@
 import { useState, useCallback } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, Outlet } from 'react-router-dom'
 import Sidebar from './Sidebar'
 import TopBar from './TopBar'
 import BottomNav from './BottomNav'
@@ -9,7 +9,7 @@ import useIdleTimer from '../hooks/useIdleTimer'
 import useAuthStore from '../store/authStore'
 import api from '../api/axios'
 
-export default function DashboardLayout({ children, searchPlaceholder }) {
+export default function DashboardLayout({ searchPlaceholder }) {
   const [sidebarOpen, setSidebarOpen] = useState(false)
   const [showWarning, setShowWarning] = useState(false)
   const { logout } = useAuthStore()
@@ -57,7 +57,7 @@ export default function DashboardLayout({ children, searchPlaceholder }) {
           onMenuClick={() => setSidebarOpen(true)}
         />
         <div className="page-body bg-mesh animate-fade-in" style={{ paddingBottom: 160 }}>
-          {children}
+          <Outlet />
         </div>
         <Footer />
         <BottomNav />
