@@ -9,7 +9,7 @@ import useIdleTimer from '../hooks/useIdleTimer'
 import useAuthStore from '../store/authStore'
 import api from '../api/axios'
 
-export default function DashboardLayout({ searchPlaceholder }) {
+export default function DashboardLayout({ searchPlaceholder, children }) {
   const [sidebarOpen, setSidebarOpen] = useState(false)
   const [showWarning, setShowWarning] = useState(false)
   const { logout } = useAuthStore()
@@ -57,7 +57,7 @@ export default function DashboardLayout({ searchPlaceholder }) {
           onMenuClick={() => setSidebarOpen(true)}
         />
         <div className="page-body bg-mesh animate-fade-in" style={{ paddingBottom: 160 }}>
-          <Outlet />
+          {children || <Outlet />}
         </div>
         <Footer />
         <BottomNav />
