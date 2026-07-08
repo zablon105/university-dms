@@ -108,7 +108,7 @@ export default function AdminDashboard() {
     fetchDashboardData()
   }, [])
 
-  const fetchDashboardData = async () => {
+  async function fetchDashboardData() {
     try {
       const [docsRes, usersRes, approvalsRes, categoriesRes, workflowsRes] = await Promise.all([
         api.get('/documents/'),
