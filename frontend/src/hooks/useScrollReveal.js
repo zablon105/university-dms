@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react'
+import { useEffect, useState, useCallback } from 'react'
 
 /**
  * useScrollReveal — observes elements with .reveal / .reveal-left / .reveal-right /
@@ -8,38 +8,51 @@ import { useEffect, useRef } from 'react'
  *         <div ref={containerRef}> ... elements with .reveal class ... </div>
  */
 export default function useScrollReveal(options = {}) {
-    const ref = useRef(null)
+    const [node, setNode] = useState(null)
+
+    // Callback ref: fires every time the DOM node it's attached to actually
+    // changes (e.g. null while loading, then the real element once content mounts).
+    // A plain useRef never notifies us of that change, so the effect below
+    // would silently run once against a null/stale node and never re-run.
+    const ref = useCallback((el) => {
+        setNode(el)
+    }, [])
 
     useEffect(() => {
-const selectionRoot = ref.current || document.body
-
-    let targets = []
-
-    if (options.stagger && ref.current) {
-        targets = Array.from(ref.current.children)
-        targets.forEach(t => t.classList.add('reveal'))
-    } else {
-        const revealClasses = ['.reveal', '.reveal-left', '.reveal-right', '.reveal-scale', '.reveal-blur']
-        targets = selectionRoot.querySelectorAll(revealClasses.join(','))
-        if (targets.length === 0 && ref.current && ref.current.classList.contains('reveal')) {
-            targets = [ref.current]
+        if (!node && !options.stagger) {
+            // fall back to document.body only for the non-stagger, no-ref case
         }
-    }
 
-    if (!targets || targets.length === 0) return
+        const selectionRoot = node || document.body
 
-    const observer = new IntersectionObserver(
-        (entries) => {
-            entries.forEach((entry) => {
-                if (entry.isIntersecting) {
-                    entry.target.classList.add('visible')
-                    observer.unobserve(entry.target)
-                }
-            })
-        },
-        {
-            threshold: options.threshold ?? 0.12,
-            root: null,
+        let targets = []
+
+        if (options.stagger) {
+            if (!node) return
+            targets = Array.from(node.children)
+            targets.forEach(t => t.classList.add('reveal'))
+        } else {
+            const revealClasses = ['.reveal', '.reveal-left', '.reveal-right', '.reveal-scale', '.reveal-blur']
+            targets = selectionRoot.querySelectorAll(revealClasses.join(','))
+            if (targets.length === 0 && node && node.classList.contains('reveal')) {
+                targets = [node]
+            }
+        }
+
+        if (!targets || targets.length === 0) return
+
+        const observer = new IntersectionObserver(
+            (entries) => {
+                entries.forEach((entry) => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('visible')
+                        observer.unobserve(entry.target)
+                    }
+                })
+            },
+            {
+                threshold: options.threshold ?? 0.12,
+                root: null,
                 rootMargin: options.rootMargin ?? '0px 0px -40px 0px',
             }
         )
@@ -58,7 +71,7 @@ const selectionRoot = ref.current || document.body
             observer.disconnect()
             clearTimeout(fallbackTimer)
         }
-    }, [options.threshold, options.rootMargin, options.stagger])
+    }, [node, options.threshold, options.rootMargin, options.stagger])
 
     return ref
 }
