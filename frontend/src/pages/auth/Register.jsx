@@ -74,7 +74,11 @@ export default function Register() {
     }, 1400)
   }
 
-  const isValidRegNo = /^[A-Z]{2,4}\/\d{3,4}\/\d{4}$/.test(form.username)
+  const studentPattern = /^[A-Z]{2,4}\/\d{3,4}\/\d{4}$/
+  const staffPattern = /^KAFU\/(STF|EMP)\/\d{3,4}$/
+  const isValidRegNo = role === 'student'
+    ? studentPattern.test(form.username)
+    : staffPattern.test(form.username)
   const isFormValid = form.first_name && form.last_name && form.username && form.email && form.password && form.password2 && captchaInput
 
   if (success) return (
@@ -242,25 +246,50 @@ export default function Register() {
               </div>
 
               <div className="input-group">
-                <label className="input-label">Registration Number</label>
+                <label className="input-label">
+                  {role === 'student' ? 'Registration Number' : 'Employee ID'}
+                </label>
                 <div style={{ position: 'relative' }}>
-                  <MdPerson style={{ position: 'absolute', left: 11, top: '50%', transform: 'translateY(-50%)', color: 'var(--gray-400)', fontSize: 17 }} />
+                  <span style={{
+                    position: 'absolute', left: 12, top: '50%',
+                    transform: 'translateY(-50%)', color: '#94a3b8', fontSize: 15
+                  }}>🪪</span>
                   <input
-                    className="input-field" style={{ paddingLeft: 36 }}
-                    placeholder="COM/0028/2023"
+                    className="input-field"
+                    style={{ paddingLeft: 36 }}
+                    placeholder={role === 'student' ? 'COM/0028/2023' : 'KAFU/STF/001'}
                     value={form.username}
-                    onChange={e => setForm({ ...form, username: e.target.value.toUpperCase() })}
+                    onChange={e => setForm({
+                      ...form,
+                      username: e.target.value.toUpperCase()
+                    })}
                     required
                   />
                 </div>
-                {form.username && !isValidRegNo && (
-                  <span style={{ fontSize: 11, color: 'var(--warning)' }}><MdWarning /> Format: DEPT/NUMBER/YEAR — e.g. COM/0028/2023</span>
-                )}
-                {form.username && isValidRegNo && (
-                  <span style={{ fontSize: 11, color: 'var(--success)', display: 'flex', alignItems: 'center', gap: 4 }}>
-                    <MdCheckCircle size={12} /> Valid format
-                  </span>
-                )}
+                {form.username && (() => {
+                  const studentOk = studentPattern.test(form.username)
+                  const staffOk = staffPattern.test(form.username)
+                  const isValid = role === 'student' ? studentOk : staffOk
+                  return (
+                    <div style={{
+                      fontSize: 11, marginTop: 4,
+                      color: isValid ? '#16A34A' : '#D97706'
+                    }}>
+                      {isValid
+                        ? '✅ Valid format'
+                        : role === 'student'
+                          ? '⚠️ Format: COM/0028/2023'
+                          : '⚠️ Format: KAFU/STF/001'
+                      }
+                    </div>
+                  )
+                })()}
+                <div style={{ fontSize: 11, color: '#94a3b8', marginTop: 4 }}>
+                  {role === 'student'
+                    ? 'Your student registration number from KAFU'
+                    : 'Your employee ID — contact HR if unsure'
+                  }
+                </div>
               </div>
 
               <div className="input-group">

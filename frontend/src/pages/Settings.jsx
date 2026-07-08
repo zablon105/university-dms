@@ -6,6 +6,7 @@ import api from '../api/axios'
 export default function Settings() {
   const { user, updateUser } = useAuthStore()
   const [form, setForm] = useState({
+    username: user?.username || '',
     first_name: user?.first_name || '',
     last_name: user?.last_name || '',
     email: user?.email || '',
@@ -20,6 +21,7 @@ export default function Settings() {
   useEffect(() => {
     if (user) {
       setForm({
+        username: user.username || '',
         first_name: user.first_name || '',
         last_name: user.last_name || '',
         email: user.email || '',
@@ -35,6 +37,7 @@ export default function Settings() {
     setSaving(true)
     try {
       const data = new FormData()
+      data.append('username', form.username)
       data.append('first_name', form.first_name)
       data.append('last_name', form.last_name)
       data.append('email', form.email)
@@ -86,6 +89,7 @@ export default function Settings() {
         <form className="form-container" onSubmit={handleProfileSave} style={{ display: 'grid', gap: 16 }}>
           <h2 style={{ fontSize: 18, fontFamily: 'Oswald, sans-serif', marginBottom: 6, color: 'var(--gray-900)' }}>Personal Information</h2>
           {[
+            { label: 'Username', name: 'username', type: 'text' },
             { label: 'First Name', name: 'first_name', type: 'text' },
             { label: 'Last Name', name: 'last_name', type: 'text' },
             { label: 'Email Address', name: 'email', type: 'email' },
