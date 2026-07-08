@@ -25,21 +25,25 @@ class RegisterSerializer(serializers.ModelSerializer):
         ]
 
     def validate_username(self, value):
-        # Force uppercase for registration number
         value = value.upper().strip()
 
-        # Validate format
-        pattern = r'^[A-Z]{2,4}\/\d{3,4}\/\d{4}$'
-        if not re.match(pattern, value):
+        import re
+        # Student format
+        student_pattern = r'^[A-Z]{2,4}\/\d{3,4}\/\d{4}$'
+        # Staff format
+        staff_pattern = r'^KAFU\/(STF|EMP)\/\d{3,4}$'
+
+        if not (re.match(student_pattern, value) or
+                re.match(staff_pattern, value)):
             raise serializers.ValidationError(
-                'Username must be a valid registration number. '
-                'Format: DEPT/NUMBER/YEAR (e.g. COM/0028/2023)'
+                'Invalid username format. '
+                'Students use: COM/0028/2023 | '
+                'Staff use: KAFU/STF/001'
             )
 
-        # Check uniqueness
         if User.objects.filter(username=value).exists():
             raise serializers.ValidationError(
-                'This registration number is already registered. '
+                'This username is already registered. '
                 'If this is your account, please login instead.'
             )
         return value
