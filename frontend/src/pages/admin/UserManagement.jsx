@@ -190,6 +190,21 @@ export default function UserManagement() {
     } catch (err) { console.error(err) }
   }
 
+  const handleToggleActive = async (userId, isCurrentlyActive) => {
+    const confirmMsg = isCurrentlyActive
+      ? 'Deactivate this user? They will not be able to log in until reactivated.'
+      : 'Reactivate this user? They will be able to log in again.'
+    if (!window.confirm(confirmMsg)) return
+    try {
+      const res = await api.post(`/auth/users/${userId}/toggle-active/`)
+      alert(res.data.message)
+      fetchUsers()
+    } catch (err) {
+      console.error(err)
+      alert(err.response?.data?.error || 'Unable to update user status.')
+    }
+  }
+
   const totalUsers = users.length
   const activeUsers = users.filter(u => u.is_approved).length
   const pendingCount = pendingUsers.length
@@ -307,9 +322,9 @@ export default function UserManagement() {
                   <td>
                     <span style={{
                       padding: '3px 10px', borderRadius: 20, fontSize: 11, fontWeight: 600,
-                      background: u.is_approved ? 'var(--success-light)' : 'var(--warning-light)',
-                      color: u.is_approved ? 'var(--success)' : 'var(--warning)'
-                    }}>{u.is_approved ? 'Active' : 'Pending'}</span>
+                      background: !u.is_approved ? 'var(--warning-light)' : u.is_active ? 'var(--success-light)' : '#FEE2E2',
+                      color: !u.is_approved ? 'var(--warning)' : u.is_active ? 'var(--success)' : '#DC2626'
+                    }}>{!u.is_approved ? 'Pending' : u.is_active ? 'Active' : 'Deactivated'}</span>
                   </td>
                   <td style={{ fontSize: 12, color: 'var(--gray-500)' }}>
                     {new Date(u.created_at).toLocaleDateString('en-KE', { month: 'short', day: 'numeric', year: 'numeric' })}
@@ -326,8 +341,17 @@ export default function UserManagement() {
                           Approve
                         </button>
                       </div>
-                    ) : (
+                    ) : u.is_superuser ? (
                       <span style={{ fontSize: 12, color: 'var(--gray-400)' }}>—</span>
+                    ) : (
+                      <button onClick={() => handleToggleActive(u.id, u.is_active)}
+                        style={{
+                          padding: '5px 10px', borderRadius: 6, border: `1px solid ${u.is_active ? 'var(--danger)' : 'var(--success)'}`,
+                          background: 'white', color: u.is_active ? 'var(--danger)' : 'var(--success)',
+                          fontSize: 11, cursor: 'pointer', fontWeight: 500
+                        }}>
+                        {u.is_active ? 'Deactivate' : 'Reactivate'}
+                      </button>
                     )}
                   </td>
                 </tr>
