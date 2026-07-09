@@ -8,6 +8,8 @@ from .serializers import (
     ApprovalRequestSerializer, ApprovalActionSerializer
 )
 from documents.models import Document
+from notifications.models import notify
+from accounts.models import User
 
 
 class IsAdminOrStaff(permissions.BasePermission):
@@ -58,6 +60,17 @@ class SubmitForApprovalView(APIView):
             note=approval.request_note
         )
 
+        # Notify staff/admins that a new document needs review
+        reviewers = User.objects.filter(
+            role__in=['admin', 'staff'], is_approved=True, is_active=True
+        )
+        for reviewer in reviewers:
+            notify(
+                recipient=reviewer,
+                message=f'{request.user.get_full_name() or request.user.username} submitted "{document.title}" for approval.',
+                link='/staff/approvals'
+            )
+
         return Response(
             ApprovalRequestSerializer(approval).data,
             status=status.HTTP_201_CREATED
@@ -100,6 +113,14 @@ class ReviewApprovalView(APIView):
             action=approval.status,
             performed_by=request.user,
             note=review_note
+        )
+
+        # Notify the person who submitted the document
+        status_word = 'approved' if approval.status == 'approved' else 'rejected'
+        notify(
+            recipient=approval.requested_by,
+            message=f'Your document "{approval.document.title}" was {status_word}.' + (f' Note: {review_note}' if review_note else ''),
+            link='/staff/archive' if approval.requested_by.role in ['staff', 'admin'] else '/student/academic'
         )
 
         return Response(ApprovalRequestSerializer(approval).data)

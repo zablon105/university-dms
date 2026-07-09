@@ -17,6 +17,7 @@ urlpatterns = [
     path('api/categories/', include('categories.urls')),
     path('api/documents/', include('documents.urls')),
     path('api/workflows/', include('workflows.urls')),
+    path('api/notifications/', include('notifications.urls')),
 ]
 
 if settings.DEBUG:

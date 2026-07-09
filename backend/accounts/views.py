@@ -15,6 +15,7 @@ from .serializers import (
     ChangePasswordSerializer, OTPRequestSerializer,
     OTPVerifySerializer
 )
+from notifications.models import notify
 
 logger = logging.getLogger(__name__)
 
@@ -141,6 +142,15 @@ class RegisterView(generics.CreateAPIView):
 
         # Notify admin by email
         send_admin_notification(user)
+
+        # Notify admins in-app
+        admins = User.objects.filter(role='admin', is_approved=True, is_active=True)
+        for admin in admins:
+            notify(
+                recipient=admin,
+                message=f'{user.get_full_name() or user.username} registered and is awaiting approval.',
+                link='/admin/users'
+            )
 
         return Response({
             'message': 'Account created successfully! You can now login.',
@@ -270,6 +280,13 @@ class ApproveUserView(APIView):
         if action == 'approve':
             user.is_approved = True
             user.save()
+
+            # Notify user in-app
+            notify(
+                recipient=user,
+                message='Your account has been approved. Welcome to DocLibrary KAFU!',
+                link='/login'
+            )
 
             # Notify user their account is approved
             send_mail_async(
