@@ -9,12 +9,34 @@ import {
   MdCheckCircleOutline, MdWarningAmber,
 } from 'react-icons/md'
 
-const MOCK_NOTIFICATIONS = [
-  { id: 1, type: 'info', read: false, title: 'Document Pending Approval', body: 'Your transcript request is awaiting staff review.', time: '2 min ago' },
-  { id: 2, type: 'success', read: false, title: 'Upload Successful', body: 'Assignment_03.pdf has been uploaded successfully.', time: '15 min ago' },
-  { id: 3, type: 'warning', read: true, title: 'Compliance Check Due', body: 'Annual compliance review is due in 3 days.', time: '1 hr ago' },
-  { id: 4, type: 'info', read: true, title: 'System Maintenance', body: 'Scheduled maintenance on July 5 at 02:00 UTC.', time: '3 hr ago' },
-]
+function formatRelativeTime(dateString) {
+  const diffMs = Date.now() - new Date(dateString).getTime()
+  const mins = Math.floor(diffMs / 60000)
+  if (mins < 1) return 'just now'
+  if (mins < 60) return `${mins} min ago`
+  const hrs = Math.floor(mins / 60)
+  if (hrs < 24) return `${hrs} hr ago`
+  const days = Math.floor(hrs / 24)
+  return `${days}d ago`
+}
+
+function mapNotification(n) {
+  const msg = n.message.toLowerCase()
+  const type = msg.includes('rejected') ? 'warning' : msg.includes('approved') ? 'success' : 'info'
+  const title = n.link?.includes('/admin/users') ? 'New Registration'
+    : n.link?.includes('/staff/approvals') ? 'Document Submitted'
+    : n.link?.includes('/login') ? 'Account Approved'
+    : 'Document Update'
+  return {
+    id: n.id,
+    type,
+    read: n.is_read,
+    title,
+    body: n.message,
+    time: formatRelativeTime(n.created_at),
+    link: n.link
+  }
+}
 
 const notifIcon = { info: <MdInfoOutline size={14} />, success: <MdCheckCircleOutline size={14} />, warning: <MdWarningAmber size={14} /> }
 const notifColor = {
@@ -29,7 +51,7 @@ export default function TopBar({ searchPlaceholder, onMenuClick }) {
   const toast = useToast()
   const [notifOpen, setNotifOpen] = useState(false)
   const [userMenuOpen, setUserMenuOpen] = useState(false)
-  const [notifications, setNotifications] = useState(MOCK_NOTIFICATIONS)
+  const [notifications, setNotifications] = useState([])
   const [searchVal, setSearchVal] = useState('')
 
   const notifRef = useRef(null)
@@ -45,17 +67,56 @@ export default function TopBar({ searchPlaceholder, onMenuClick }) {
     return () => document.removeEventListener('mousedown', close)
   }, [])
 
+  useEffect(() => {
+    const fetchNotifications = async () => {
+      try {
+        const res = await api.get('/notifications/')
+        setNotifications((res.data || []).map(mapNotification))
+      } catch (err) {
+        console.error('Failed to load notifications', err)
+      }
+    }
+    fetchNotifications()
+  }, [])
+
   const initials = user
     ? `${user.first_name?.[0] || ''}${user.last_name?.[0] || ''}`.toUpperCase() || user.username?.[0]?.toUpperCase()
     : 'U'
 
   const today = new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'short', day: 'numeric' })
 
-  const handleMarkAllRead = () => {
-    setNotifications(ns => ns.map(n => ({ ...n, read: true })))
-    toast.success('All notifications marked as read')
+  const handleMarkAllRead = async () => {
+    try {
+      await api.post('/notifications/mark-all-read/')
+      setNotifications(ns => ns.map(n => ({ ...n, read: true })))
+      toast.success('All notifications marked as read')
+    } catch (err) {
+      console.error('Failed to mark all notifications as read', err)
+    }
   }
-  const handleMarkRead = (id) => setNotifications(ns => ns.map(n => n.id === id ? { ...n, read: true } : n))
+
+  const handleMarkRead = async (id, link) => {
+    const existing = notifications.find(n => n.id === id)
+    if (existing?.read) {
+      if (link) {
+        navigate(link)
+        setNotifOpen(false)
+      }
+      return
+    }
+
+    try {
+      await api.post(`/notifications/${id}/read/`)
+      setNotifications(ns => ns.map(n => n.id === id ? { ...n, read: true } : n))
+    } catch (err) {
+      console.error('Failed to mark notification as read', err)
+    }
+
+    if (link) {
+      navigate(link)
+      setNotifOpen(false)
+    }
+  }
 
   const handleLogout = async () => {
     setUserMenuOpen(false)
@@ -116,10 +177,12 @@ export default function TopBar({ searchPlaceholder, onMenuClick }) {
                 {unread > 0 && <button className="dd-mark-btn" onClick={handleMarkAllRead}>Mark all read</button>}
               </div>
               <div className="notif-list">
-                {notifications.map(n => {
+                {notifications.length === 0 ? (
+                  <div className="notif-empty">No notifications yet.</div>
+                ) : notifications.map(n => {
                   const c = notifColor[n.type]
                   return (
-                    <div key={n.id} className={`notif-item ${n.read ? 'notif-read' : ''}`} onClick={() => handleMarkRead(n.id)}>
+                    <div key={n.id} className={`notif-item ${n.read ? 'notif-read' : ''}`} onClick={() => handleMarkRead(n.id, n.link)}>
                       <div className="notif-icon" style={{ background: c.bg, color: c.color, border: `1px solid ${c.border}` }}>
                         {notifIcon[n.type]}
                       </div>
