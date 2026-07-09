@@ -169,6 +169,11 @@ class LoginView(APIView):
         if not user:
             try:
                 actual_user = User.objects.get(username__iexact=username)
+                if not actual_user.is_active:
+                    return Response(
+                        {'error': 'This account has been deactivated. Please contact an administrator.'},
+                        status=status.HTTP_403_FORBIDDEN
+                    )
                 user = authenticate(username=actual_user.username, password=password)
             except User.DoesNotExist:
                 user = None
@@ -298,6 +303,40 @@ Welcome to DocLibrary KAFU!
             {'error': 'Invalid action. Use approve or deny.'},
             status=status.HTTP_400_BAD_REQUEST
         )
+
+
+class ToggleUserActiveView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+
+    def post(self, request, user_id):
+        if not request.user.is_admin:
+            return Response(
+                {'error': 'Admins only.'},
+                status=status.HTTP_403_FORBIDDEN
+            )
+
+        try:
+            user = User.objects.get(id=user_id)
+        except User.DoesNotExist:
+            return Response(
+                {'error': 'User not found.'},
+                status=status.HTTP_404_NOT_FOUND
+            )
+
+        if user.is_superuser:
+            return Response(
+                {'error': 'Cannot deactivate a superuser account.'},
+                status=status.HTTP_403_FORBIDDEN
+            )
+
+        user.is_active = not user.is_active
+        user.save()
+
+        action_word = 'reactivated' if user.is_active else 'deactivated'
+        return Response({
+            'message': f'{user.get_full_name() or user.username} {action_word} successfully.',
+            'is_active': user.is_active
+        })
 
 
 class RequestOTPView(APIView):
