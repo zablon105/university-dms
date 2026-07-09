@@ -84,7 +84,6 @@ class RegisterSerializer(serializers.ModelSerializer):
         validated_data['username'] = validated_data['username'].upper()
         user = User(**validated_data)
         user.set_password(password)
-        user.is_approved = True  # automatically approved
         user.save()
         return user
 

@@ -180,6 +180,11 @@ class LoginView(APIView):
             )
 
         # Removed is_approved check to allow direct login
+        if not user.is_approved and not user.is_superuser:
+            return Response(
+                {'error': 'Your account is pending admin approval. Please wait for an admin to approve your registration.'},
+                status=status.HTTP_403_FORBIDDEN
+            )
 
         refresh = RefreshToken.for_user(user)
         return Response({
