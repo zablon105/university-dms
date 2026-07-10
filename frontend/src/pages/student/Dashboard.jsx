@@ -89,16 +89,166 @@ function AcademicDocuments() {
 }
 
 function Assignments() {
+  const [myDocs, setMyDocs] = useState([])
+  const [categories, setCategories] = useState([])
+  const [loading, setLoading] = useState(true)
+  const [showUploadForm, setShowUploadForm] = useState(false)
+  const [uploading, setUploading] = useState(false)
+  const [form, setForm] = useState({ title: '', description: '', category: '', file: null })
+
+  useEffect(() => { fetchData() }, [])
+
+  const fetchData = async () => {
+    try {
+      const [docsRes, catsRes] = await Promise.all([
+        api.get('/documents/my/'),
+        api.get('/categories/')
+      ])
+      setMyDocs(docsRes.data)
+      setCategories(catsRes.data)
+    } catch (err) {
+      console.error(err)
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const handleUpload = async (e) => {
+    e.preventDefault()
+    if (!form.file) return alert('Please select a file to upload.')
+    setUploading(true)
+    try {
+      const formData = new FormData()
+      formData.append('title', form.title)
+      formData.append('description', form.description)
+      if (form.category) formData.append('category', form.category)
+      formData.append('file', form.file)
+      formData.append('status', 'draft')
+      formData.append('visibility', 'staff')
+
+      await api.post('/documents/', formData, {
+        headers: { 'Content-Type': 'multipart/form-data' }
+      })
+
+      setForm({ title: '', description: '', category: '', file: null })
+      setShowUploadForm(false)
+      fetchData()
+    } catch (err) {
+      console.error(err)
+      alert(err.response?.data?.detail || 'Unable to upload document. Please check the fields and try again.')
+    } finally {
+      setUploading(false)
+    }
+  }
+
+  const handleSubmitForReview = async (docId) => {
+    if (!window.confirm('Submit this document for staff review? You won\'t be able to edit it while pending.')) return
+    try {
+      await api.post(`/workflows/submit/${docId}/`)
+      alert('Submitted for review.')
+      fetchData()
+    } catch (err) {
+      console.error(err)
+      alert(err.response?.data?.error || 'Unable to submit for review.')
+    }
+  }
+
+  const getStatusBadge = (status) => {
+    const map = {
+      draft: { bg: '#F1F5F9', color: '#64748B', label: 'Draft' },
+      pending: { bg: '#FEF3C7', color: '#D97706', label: 'Pending Review' },
+      approved: { bg: '#DCFCE7', color: '#16A34A', label: 'Approved' },
+      rejected: { bg: '#FEE2E2', color: '#DC2626', label: 'Rejected' },
+    }
+    const s = map[status] || map.draft
+    return (
+      <span style={{ background: s.bg, color: s.color, padding: '3px 10px', borderRadius: 20, fontSize: 11, fontWeight: 600 }}>
+        {s.label}
+      </span>
+    )
+  }
+
   return (
     <>
-      <div className="page-header">
-        <h1 className="page-title">Assignments</h1>
-        <p className="page-subtitle">Submit and track your assignment documents.</p>
+      <div className="page-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: 16 }}>
+        <div>
+          <h1 className="page-title">Assignments</h1>
+          <p className="page-subtitle">Submit and track your assignment documents.</p>
+        </div>
+        <button className="btn btn-primary btn-sm" onClick={() => setShowUploadForm(true)}>
+          <MdUpload /> Upload Document
+        </button>
       </div>
-      <div style={{ background: 'white', borderRadius: 12, border: '1px solid var(--border)', padding: 40, textAlign: 'center' }}>
-        <div style={{ fontSize: 48, marginBottom: 12 }}><MdEditDocument /></div>
-        <p style={{ color: 'var(--gray-500)' }}>Assignment submissions coming soon.</p>
-      </div>
+
+      {loading ? (
+        <div style={{ padding: 40, textAlign: 'center', color: 'var(--gray-400)' }}>Loading...</div>
+      ) : myDocs.length === 0 ? (
+        <div style={{ background: 'white', borderRadius: 12, border: '1px solid var(--border)', padding: 40, textAlign: 'center' }}>
+          <div style={{ fontSize: 48, marginBottom: 12 }}><MdEditDocument /></div>
+          <p style={{ color: 'var(--gray-500)' }}>No submissions yet. Click "Upload Document" to get started.</p>
+        </div>
+      ) : (
+        <div style={{ background: 'white', borderRadius: 12, border: '1px solid var(--border)', overflow: 'hidden' }}>
+          {myDocs.map((doc, i) => (
+            <div key={doc.id} style={{
+              display: 'flex', alignItems: 'center', gap: 14, padding: '16px 20px',
+              borderBottom: i < myDocs.length - 1 ? '1px solid var(--gray-100)' : 'none'
+            }}>
+              <div style={{ width: 40, height: 40, borderRadius: 10, background: 'var(--primary-light)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 20 }}>
+                <MdEditDocument />
+              </div>
+              <div style={{ flex: 1 }}>
+                <div style={{ fontSize: 14, fontWeight: 500, color: 'var(--gray-800)' }}>{doc.title}</div>
+                <div style={{ fontSize: 12, color: 'var(--gray-400)', marginTop: 2 }}>
+                  {doc.category_detail?.name || 'Uncategorized'} · {new Date(doc.created_at).toLocaleDateString()}
+                </div>
+              </div>
+              {getStatusBadge(doc.status)}
+              {doc.status === 'draft' && (
+                <button className="btn btn-primary btn-sm" onClick={() => handleSubmitForReview(doc.id)}>
+                  Submit for Review
+                </button>
+              )}
+            </div>
+          ))}
+        </div>
+      )}
+
+      {showUploadForm && (
+        <div style={{ position: 'fixed', inset: 0, background: 'rgba(15, 23, 42, 0.6)', zIndex: 200, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 20 }}>
+          <div style={{ width: '100%', maxWidth: 520, background: 'white', borderRadius: 16, overflow: 'hidden' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '18px 24px', borderBottom: '1px solid var(--border)' }}>
+              <h2 style={{ fontSize: 18, margin: 0 }}>Upload Document</h2>
+              <button onClick={() => setShowUploadForm(false)} style={{ border: 'none', background: 'none', fontSize: 24, cursor: 'pointer' }}>×</button>
+            </div>
+            <form onSubmit={handleUpload} style={{ padding: '20px 24px', display: 'grid', gap: 16 }}>
+              <div className="input-group">
+                <label className="input-label">Title</label>
+                <input className="input-field" value={form.title} onChange={e => setForm({ ...form, title: e.target.value })} required />
+              </div>
+              <div className="input-group">
+                <label className="input-label">Description</label>
+                <textarea className="input-field" rows={3} value={form.description} onChange={e => setForm({ ...form, description: e.target.value })} />
+              </div>
+              <div className="input-group">
+                <label className="input-label">Category</label>
+                <select className="input-field" value={form.category} onChange={e => setForm({ ...form, category: e.target.value })}>
+                  <option value="">Select a category</option>
+                  {categories.map(cat => <option key={cat.id} value={cat.id}>{cat.name}</option>)}
+                </select>
+              </div>
+              <div className="input-group">
+                <label className="input-label">File</label>
+                <input type="file" onChange={e => setForm({ ...form, file: e.target.files?.[0] || null })} required />
+              </div>
+              <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 12, marginTop: 8 }}>
+                <button type="button" className="btn btn-outline" onClick={() => setShowUploadForm(false)}>Cancel</button>
+                <button type="submit" className="btn btn-primary" disabled={uploading}>{uploading ? 'Uploading...' : 'Upload'}</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </>
   )
 }
