@@ -216,19 +216,19 @@ function Assignments() {
 
       {showUploadForm && (
         <div style={{ position: 'fixed', inset: 0, background: 'rgba(15, 23, 42, 0.6)', zIndex: 200, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 20 }}>
-          <div style={{ width: '100%', maxWidth: 520, maxHeight: '85vh', background: 'white', borderRadius: 16, overflowY: 'auto', overflowX: 'hidden' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '18px 24px', borderBottom: '1px solid var(--border)' }}>
-              <h2 style={{ fontSize: 18, margin: 0 }}>Upload Document</h2>
-              <button onClick={() => setShowUploadForm(false)} style={{ border: 'none', background: 'none', fontSize: 24, cursor: 'pointer' }}>×</button>
+          <div style={{ width: '100%', maxWidth: 480, maxHeight: '92vh', background: 'white', borderRadius: 16, overflowY: 'auto', display: 'flex', flexDirection: 'column' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '14px 20px', borderBottom: '1px solid var(--border)' }}>
+              <h2 style={{ fontSize: 16, margin: 0 }}>Upload Document</h2>
+              <button onClick={() => setShowUploadForm(false)} style={{ border: 'none', background: 'none', fontSize: 22, cursor: 'pointer' }}>×</button>
             </div>
-            <form onSubmit={handleUpload} style={{ padding: '20px 24px', display: 'grid', gap: 16 }}>
+            <form onSubmit={handleUpload} style={{ padding: '16px 20px', display: 'grid', gap: 10 }}>
               <div className="input-group">
                 <label className="input-label">Title</label>
                 <input className="input-field" value={form.title} onChange={e => setForm({ ...form, title: e.target.value })} required />
               </div>
               <div className="input-group">
                 <label className="input-label">Description</label>
-                <textarea className="input-field" rows={3} value={form.description} onChange={e => setForm({ ...form, description: e.target.value })} />
+                <textarea className="input-field" rows={2} value={form.description} onChange={e => setForm({ ...form, description: e.target.value })} />
               </div>
               <div className="input-group">
                 <label className="input-label">Category</label>
