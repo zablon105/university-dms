@@ -15,6 +15,15 @@ class DocumentVersionSerializer(serializers.ModelSerializer):
         ]
         read_only_fields = ['id', 'uploaded_at', 'uploaded_by', 'version_number']
 
+    def to_representation(self, instance):
+        data = super().to_representation(instance)
+        if instance.file:
+            try:
+                data['file'] = instance.file.url
+            except Exception:
+                pass
+        return data
+
 
 class DocumentSerializer(serializers.ModelSerializer):
     uploaded_by = UserSerializer(read_only=True)
@@ -38,6 +47,24 @@ class DocumentSerializer(serializers.ModelSerializer):
 
     def get_version_count(self, obj):
         return obj.versions.count()
+
+    def to_representation(self, instance):
+        data = super().to_representation(instance)
+        if instance.file:
+            try:
+                data['file'] = instance.file.url
+            except Exception:
+                pass
+        return data
+
+    def to_representation(self, instance):
+        data = super().to_representation(instance)
+        if instance.file:
+            try:
+                data['file'] = instance.file.url
+            except Exception:
+                pass
+        return data
 
 
 class DocumentListSerializer(serializers.ModelSerializer):
