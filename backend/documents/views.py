@@ -2,6 +2,7 @@ from rest_framework import generics, permissions, status, filters
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.parsers import MultiPartParser, FormParser
+from django.db.models import Q
 from django.shortcuts import get_object_or_404
 from .models import Document, DocumentVersion
 from .serializers import (
@@ -47,7 +48,10 @@ class DocumentListCreateView(generics.ListCreateAPIView):
         if user.role == 'student':
             queryset = queryset.filter(visibility='public')
         elif user.role == 'staff':
-            queryset = queryset.filter(visibility__in=['public', 'staff'])
+            queryset = queryset.filter(
+                Q(visibility='public') |
+                Q(visibility='staff', uploaded_by__department=user.department)
+            )
         # admin sees all
 
         # Optional filters from query params
