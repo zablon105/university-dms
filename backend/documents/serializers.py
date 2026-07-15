@@ -98,3 +98,12 @@ class DocumentListSerializer(serializers.ModelSerializer):
 
     def get_version_count(self, obj):
         return obj.versions.count()
+
+    def to_representation(self, instance):
+        data = super().to_representation(instance)
+        if instance.file:
+            try:
+                data['file'] = instance.file.url
+            except Exception:
+                pass
+        return data
