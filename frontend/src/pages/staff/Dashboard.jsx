@@ -22,17 +22,19 @@ function UploadDocument() {
     api.get('/documents/my/').then(r => setRecentUploads(r.data.slice(0, 4)))
   }, [])
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async (e, statusOverride) => {
     e.preventDefault()
     if (!file) return alert('Please select a file')
     setLoading(true)
     try {
       const data = new FormData()
-      Object.entries(form).forEach(([k, v]) => data.append(k, v))
+      const finalForm = { ...form, status: statusOverride || form.status }
+      Object.entries(finalForm).forEach(([k, v]) => data.append(k, v))
       data.append('file', file)
       await api.post('/documents/', data, { headers: { 'Content-Type': 'multipart/form-data' } })
       setSuccess(true)
     } catch (err) {
+      console.error(err)
       alert('Upload failed. Please try again.')
     } finally {
       setLoading(false)
@@ -93,24 +95,12 @@ function UploadDocument() {
               <input className="input-field" placeholder="e.g. 2024 Computer Science Curriculum Review"
                 value={form.title} onChange={e => setForm({ ...form, title: e.target.value })} required />
             </div>
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 14 }}>
-              <div className="input-group">
-                <label className="input-label">Department</label>
-                <select className="input-field" value={form.department} onChange={e => setForm({ ...form, department: e.target.value })}>
-                  <option>Science</option>
-                  <option>Arts & Humanities</option>
-                  <option>Mathematics</option>
-                  <option>Computer Science</option>
-                  <option>Engineering</option>
-                </select>
-              </div>
-              <div className="input-group">
-                <label className="input-label">Document Type / Category</label>
-                <select className="input-field" value={form.category} onChange={e => setForm({ ...form, category: e.target.value })}>
-                  <option value="">Select category</option>
-                  {categories.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
-                </select>
-              </div>
+            <div className="input-group">
+              <label className="input-label">Document Type / Category</label>
+              <select className="input-field" value={form.category} onChange={e => setForm({ ...form, category: e.target.value })}>
+                <option value="">Select category</option>
+                {categories.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
+              </select>
             </div>
             <div className="input-group">
               <label className="input-label">Visibility Settings</label>
@@ -166,11 +156,13 @@ function UploadDocument() {
             </div>
             <div style={{ display: 'flex', gap: 12, marginTop: 8 }}>
               <button type="button" className="btn btn-outline" style={{ flex: 1, justifyContent: 'center' }}
-                onClick={() => setForm({ ...form, status: 'draft' })}>
-                <MdSave /> Save as Draft
+                disabled={loading}
+                onClick={(e) => handleSubmit(e, 'draft')}>
+                {loading ? 'Saving...' : <><MdSave /> Save as Draft</>}
               </button>
-              <button type="submit" className="btn btn-primary" style={{ flex: 2, justifyContent: 'center' }}
-                disabled={loading}>
+              <button type="button" className="btn btn-primary" style={{ flex: 2, justifyContent: 'center' }}
+                disabled={loading}
+                onClick={(e) => handleSubmit(e, 'approved')}>
                 {loading ? 'Uploading...' : <><MdUpload /> Publish to Archive</>}
               </button>
             </div>
