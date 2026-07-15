@@ -66,6 +66,15 @@ class DocumentSerializer(serializers.ModelSerializer):
                 pass
         return data
 
+    def to_representation(self, instance):
+        data = super().to_representation(instance)
+        if instance.file:
+            try:
+                data['file'] = instance.file.url
+            except Exception:
+                pass
+        return data
+
 
 class DocumentListSerializer(serializers.ModelSerializer):
     """Lightweight serializer for listing — no nested versions"""
