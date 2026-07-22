@@ -5,6 +5,7 @@ import useToast from '../hooks/useToast'
 import api from '../api/axios'
 import {
   MdMenu, MdSearch, MdNotifications, MdKeyboardArrowDown,
+  MdLightMode, MdDarkMode,
   MdSettings, MdLogout, MdPerson, MdClose, MdInfoOutline,
   MdCheckCircleOutline, MdWarningAmber,
 } from 'react-icons/md'
@@ -57,6 +58,20 @@ export default function TopBar({ searchPlaceholder, onMenuClick }) {
   const notifRef = useRef(null)
   const userRef = useRef(null)
   const unread = notifications.filter(n => !n.read).length
+
+  const [theme, setTheme] = useState(() => {
+    try {
+      const saved = localStorage.getItem('theme')
+      if (saved === 'light' || saved === 'dark') return saved
+    } catch (e) {}
+    return window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
+  })
+
+  useEffect(() => {
+    try { document.documentElement.setAttribute('data-theme', theme); localStorage.setItem('theme', theme) } catch (e) {}
+  }, [theme])
+
+  const toggleTheme = () => setTheme(t => (t === 'light' ? 'dark' : 'light'))
 
   useEffect(() => {
     const close = (e) => {
@@ -162,6 +177,16 @@ export default function TopBar({ searchPlaceholder, onMenuClick }) {
 
       {/* Right actions */}
       <div className="tb-actions">
+
+        {/* Theme toggle */}
+        <button
+          className="tb-icon-btn"
+          onClick={toggleTheme}
+          aria-label="Toggle dark mode"
+          title={theme === 'light' ? 'Switch to dark mode' : 'Switch to light mode'}
+        >
+          {theme === 'light' ? <MdDarkMode size={19} /> : <MdLightMode size={19} />}
+        </button>
 
         {/* Notification bell */}
         <div ref={notifRef} style={{ position: 'relative' }}>
