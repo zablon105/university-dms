@@ -1,10 +1,10 @@
-import { MdSchool } from 'react-icons/md';
-import Footer from './Footer';
+// import { MdSchool } from 'react-icons/md';
+// import Footer from './Footer';
 
 export default function AuthLayout({ children }) {
     return (
         <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh', background: 'var(--bg-page)' }}>
-            {/* Horizontal Navbar - Sky Blue */}
+            {/* Header temporarily disabled
             <nav style={{
                 height: 'var(--topbar-height)',
                 background: 'linear-gradient(135deg, #0ea5e9 0%, #0284c7 100%)',
@@ -34,6 +34,7 @@ export default function AuthLayout({ children }) {
                     <a href="#" style={{ color: 'white', fontSize: 13, textDecoration: 'none', fontWeight: 500, opacity: 0.9 }}>Support</a>
                 </div>
             </nav>
+            */}
 
             {/* Main Content */}
             <main style={{ flex: 1, display: 'flex' }}>
@@ -42,8 +43,9 @@ export default function AuthLayout({ children }) {
                 </div>
             </main>
 
-            {/* Footer */}
+            {/* Footer temporarily disabled
             <Footer noSidebar />
+            */}
         </div>
     )
 }

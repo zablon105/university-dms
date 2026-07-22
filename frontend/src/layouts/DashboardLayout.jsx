@@ -1,9 +1,9 @@
 import { useState, useCallback } from 'react'
 import { useNavigate, Outlet } from 'react-router-dom'
 import Sidebar from './Sidebar'
-import TopBar from './TopBar'
-import BottomNav from './BottomNav'
-import Footer from './Footer'
+// import TopBar from './TopBar'
+// import BottomNav from './BottomNav'
+// import Footer from './Footer'
 import IdleWarningModal from '../components/IdleWarningModal'
 import useIdleTimer from '../hooks/useIdleTimer'
 import useAuthStore from '../store/authStore'
@@ -52,15 +52,19 @@ export default function DashboardLayout({ searchPlaceholder, children }) {
       />
 
       <div className="main-content">
+        {/* Header temporarily disabled
         <TopBar
           searchPlaceholder={searchPlaceholder}
           onMenuClick={() => setSidebarOpen(true)}
         />
+        */}
         <div className="page-body bg-mesh animate-fade-in" style={{ paddingBottom: 160 }}>
           {children || <Outlet />}
         </div>
+        {/* Footer temporarily disabled
         <Footer />
         <BottomNav />
+        */}
       </div>
     </div>
   )
