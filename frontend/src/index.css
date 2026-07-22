@@ -183,7 +183,7 @@
 }
 
 [data-theme="dark"] .dd-item:hover {
-  background: rgba(255,255,255,0.08) !important;
+  background: rgba(255,255,255,0.12) !important;
 }
 
 [data-theme="dark"] .dd-item,
@@ -201,22 +201,35 @@
 [data-theme="dark"] .dd-user-name,
 [data-theme="dark"] .dd-user-email,
 [data-theme="dark"] .tb-date,
-[data-theme="dark"] .tb-user-role {
+[data-theme="dark"] .tb-user-role,
+[data-theme="dark"] .btn-ghost,
+[data-theme="dark"] .badge-gray {
   color: var(--gray-100) !important;
 }
 
 [data-theme="dark"] .table th {
-  background: var(--gray-100) !important;
-  color: var(--gray-900) !important;
+  background: var(--bg-card) !important;
+  color: var(--gray-100) !important;
+  border-color: var(--border) !important;
 }
 
 [data-theme="dark"] .table td,
-[data-theme="dark"] .table th,
 [data-theme="dark"] .page-subtitle,
 [data-theme="dark"] .form-section-title,
 [data-theme="dark"] .input-label,
-[data-theme="dark"] .stat-label {
+[data-theme="dark"] .stat-label,
+[data-theme="dark"] .badge-gray {
   color: var(--gray-200) !important;
+}
+
+[data-theme="dark"] .badge-gray {
+  background: var(--gray-100) !important;
+  border-color: var(--gray-200) !important;
+}
+
+[data-theme="dark"] .btn-ghost {
+  color: var(--gray-100) !important;
+  border-color: var(--gray-200) !important;
 }
 
 [data-theme="dark"] .card:hover,
@@ -233,7 +246,7 @@
 }
 
 [data-theme="dark"] .tb-search-icon {
-  color: rgba(255,255,255,0.7) !important;
+  color: rgba(255,255,255,0.8) !important;
 }
 
 [data-theme="dark"] .dd-sep {
