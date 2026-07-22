@@ -78,6 +78,21 @@ export default function Settings() {
     }
   }
 
+  // Theme toggle (persistent)
+  const [theme, setTheme] = useState(() => {
+    try {
+      const saved = localStorage.getItem('theme')
+      if (saved === 'light' || saved === 'dark') return saved
+    } catch (e) {}
+    return window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
+  })
+
+  useEffect(() => {
+    try { document.documentElement.setAttribute('data-theme', theme); localStorage.setItem('theme', theme) } catch (e) {}
+  }, [theme])
+
+  const toggleTheme = () => setTheme(t => t === 'light' ? 'dark' : 'light')
+
   return (
     <DashboardLayout searchPlaceholder="Search settings...">
       <div className="page-header">
@@ -164,6 +179,16 @@ export default function Settings() {
           <button className="btn btn-danger" type="submit" disabled={changingPassword}>
             {changingPassword ? 'Updating...' : 'Change Password'}
           </button>
+
+          <div style={{ marginTop: 8 }}>
+            <h3 style={{ fontSize: 14, marginBottom: 8 }}>Display</h3>
+            <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+              <button type="button" className="btn" onClick={toggleTheme}>
+                Switch to {theme === 'light' ? 'dark' : 'light'} mode
+              </button>
+              <span style={{ color: 'var(--gray-500)', fontSize: 13 }}>Current: {theme}</span>
+            </div>
+          </div>
         </form>
       </div>
     </DashboardLayout>

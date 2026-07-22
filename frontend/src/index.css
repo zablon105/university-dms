@@ -76,6 +76,55 @@
   --gradient-admin: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%);
 }
 
+/* ── Dark Mode Overrides ───────────────────────────────── */
+[data-theme="dark"] {
+  --bg-page: #0b1220;
+  --bg-card: #111a2e;
+  --bg-sidebar: #050810;
+  --border: #1e293b;
+
+  --gray-50: #1a2436;
+  --gray-100: #1e293b;
+  --gray-200: #334155;
+  --gray-300: #475569;
+  --gray-400: #64748b;
+  --gray-500: #94a3b8;
+  --gray-600: #cbd5e1;
+  --gray-700: #e2e8f0;
+  --gray-800: #f1f5f9;
+  --gray-900: #f8fafc;
+
+  --primary-light: #0c3a52;
+}
+
+[data-theme="dark"] body {
+  background-color: var(--bg-page);
+  color: var(--gray-900);
+}
+
+[data-theme="dark"] .card,
+[data-theme="dark"] .form-section,
+[data-theme="dark"] .form-container,
+[data-theme="dark"] .stat-card,
+[data-theme="dark"] .table th {
+  background: var(--bg-card);
+}
+
+[data-theme="dark"] .input-field,
+[data-theme="dark"] select.input-field {
+  background: var(--bg-card);
+  color: var(--gray-800);
+  border-color: var(--gray-200);
+}
+
+[data-theme="dark"] .input-field:focus {
+  background: var(--bg-card);
+}
+
+[data-theme="dark"] .table tr:hover td {
+  background: var(--gray-50);
+}
+
 /* ── Reset ─────────────────────────────────────────────── */
 *,
 *::before,
