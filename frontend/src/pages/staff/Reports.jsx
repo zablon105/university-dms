@@ -1,8 +1,10 @@
 import { useState, useEffect } from 'react'
 import api from '../../api/axios'
+import useAuthStore from '../../store/authStore'
 import { MdInsertChart, MdDescription, MdCheckCircle, MdHourglassEmpty, MdCancel, MdDownload, MdTrendingUp } from 'react-icons/md'
 
 export default function Reports() {
+  const { user } = useAuthStore()
   const [myDocs, setMyDocs] = useState([])
   const [allApprovals, setAllApprovals] = useState([])
   const [loading, setLoading] = useState(true)
@@ -36,7 +38,7 @@ export default function Reports() {
   }, {})
 
   // Approvals this staff member has reviewed (not just submitted)
-  const reviewedByMe = allApprovals.filter(a => a.reviewed_by && a.status !== 'pending')
+  const reviewedByMe = allApprovals.filter(a => a.reviewed_by?.id === user?.id && a.status !== 'pending')
   const avgTurnaroundHrs = (() => {
     const durations = reviewedByMe
       .filter(a => a.reviewed_at && a.created_at)
