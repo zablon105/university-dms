@@ -54,6 +54,7 @@ export default function TopBar({ searchPlaceholder, onMenuClick }) {
   const [userMenuOpen, setUserMenuOpen] = useState(false)
   const [notifications, setNotifications] = useState([])
   const [searchVal, setSearchVal] = useState('')
+  const [activeImage, setActiveImage] = useState(null)
 
   const notifRef = useRef(null)
   const userRef = useRef(null)
@@ -72,6 +73,8 @@ export default function TopBar({ searchPlaceholder, onMenuClick }) {
   }, [theme])
 
   const toggleTheme = () => setTheme(t => (t === 'light' ? 'dark' : 'light'))
+  const openImageViewer = (src) => setActiveImage(src)
+  const closeImageViewer = () => setActiveImage(null)
 
   useEffect(() => {
     const close = (e) => {
@@ -235,7 +238,16 @@ export default function TopBar({ searchPlaceholder, onMenuClick }) {
           <button className="tb-user-btn" onClick={() => { setUserMenuOpen(o => !o); setNotifOpen(false) }} aria-label="User menu">
             <div className="tb-avatar">
               {user?.profile_picture
-                ? <img src={user.profile_picture} alt="Profile" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                ? <img
+                    src={user.profile_picture}
+                    alt="Profile"
+                    onClick={(e) => {
+                      e.stopPropagation()
+                      e.preventDefault()
+                      openImageViewer(user.profile_picture)
+                    }}
+                    style={{ width: '100%', height: '100%', objectFit: 'cover', cursor: 'pointer' }}
+                  />
                 : initials}
             </div>
             <div className="tb-user-info user-info-text">
@@ -263,6 +275,38 @@ export default function TopBar({ searchPlaceholder, onMenuClick }) {
           )}
         </div>
       </div>
+
+      {activeImage && (
+        <div
+          onClick={closeImageViewer}
+          style={{
+            position: 'fixed',
+            inset: 0,
+            background: 'rgba(2, 6, 23, 0.78)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            padding: 20,
+            zIndex: 1000
+          }}
+        >
+          <div onClick={e => e.stopPropagation()} style={{ position: 'relative', maxWidth: '92vw', maxHeight: '92vh', borderRadius: 16, overflow: 'hidden', boxShadow: '0 30px 70px rgba(0,0,0,0.45)' }}>
+            <button
+              type="button"
+              onClick={closeImageViewer}
+              style={{ position: 'absolute', top: 12, right: 12, width: 36, height: 36, borderRadius: '50%', border: 'none', background: 'rgba(15,23,42,0.75)', color: 'white', fontSize: 20, cursor: 'pointer', zIndex: 1 }}
+              aria-label="Close profile image"
+            >
+              ×
+            </button>
+            <img
+              src={activeImage}
+              alt="Profile enlarged view"
+              style={{ display: 'block', width: '100%', maxWidth: 'min(900px, 92vw)', maxHeight: '92vh', objectFit: 'contain', background: '#0f172a' }}
+            />
+          </div>
+        </div>
+      )}
 
       <style>{`
         /* ═══ TOPBAR — SKY BLUE THEME ═══════════════════════════════ */

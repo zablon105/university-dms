@@ -45,6 +45,7 @@ export default function Sidebar({ isOpen, onClose }) {
   const navigate = useNavigate()
   const toast = useToast()
   const [loggingOut, setLoggingOut] = useState(false)
+  const [activeImage, setActiveImage] = useState(null)
 
   const navItems = user?.role === 'admin' ? adminNav : user?.role === 'staff' ? staffNav : studentNav
   const cfg = portalConfig[user?.role] || portalConfig.student
@@ -58,6 +59,9 @@ export default function Sidebar({ isOpen, onClose }) {
     toast.success('Signed out successfully')
     setTimeout(() => { logout(); navigate('/login'); onClose?.() }, 900)
   }
+
+  const openImageViewer = (src) => setActiveImage(src)
+  const closeImageViewer = () => setActiveImage(null)
 
   return (
     <>
@@ -128,7 +132,16 @@ export default function Sidebar({ isOpen, onClose }) {
           >
             <div className="sb-user-avatar">
               {user?.profile_picture
-                ? <img src={user.profile_picture} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: 6 }} />
+                ? <img
+                    src={user.profile_picture}
+                    alt="Profile"
+                    onClick={(e) => {
+                      e.stopPropagation()
+                      e.preventDefault()
+                      openImageViewer(user.profile_picture)
+                    }}
+                    style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: 6, cursor: 'pointer' }}
+                  />
                 : initials}
             </div>
             <div className="sb-user-info">
@@ -163,6 +176,38 @@ export default function Sidebar({ isOpen, onClose }) {
           </div>
         </div>
       </aside>
+
+      {activeImage && (
+        <div
+          onClick={closeImageViewer}
+          style={{
+            position: 'fixed',
+            inset: 0,
+            background: 'rgba(2, 6, 23, 0.78)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            padding: 20,
+            zIndex: 1000
+          }}
+        >
+          <div onClick={e => e.stopPropagation()} style={{ position: 'relative', maxWidth: '92vw', maxHeight: '92vh', borderRadius: 16, overflow: 'hidden', boxShadow: '0 30px 70px rgba(0,0,0,0.45)' }}>
+            <button
+              type="button"
+              onClick={closeImageViewer}
+              style={{ position: 'absolute', top: 12, right: 12, width: 36, height: 36, borderRadius: '50%', border: 'none', background: 'rgba(15,23,42,0.75)', color: 'white', fontSize: 20, cursor: 'pointer', zIndex: 1 }}
+              aria-label="Close profile image"
+            >
+              ×
+            </button>
+            <img
+              src={activeImage}
+              alt="Profile enlarged view"
+              style={{ display: 'block', width: '100%', maxWidth: 'min(900px, 92vw)', maxHeight: '92vh', objectFit: 'contain', background: '#0f172a' }}
+            />
+          </div>
+        </div>
+      )}
 
       <style>{`
         /* ═══ SIDEBAR — RICH BLUE THEME ═════════════════════════ */
