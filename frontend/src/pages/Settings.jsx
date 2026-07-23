@@ -17,6 +17,7 @@ export default function Settings() {
   const [passwordForm, setPasswordForm] = useState({ current_password: '', new_password: '', confirm_password: '' })
   const [saving, setSaving] = useState(false)
   const [changingPassword, setChangingPassword] = useState(false)
+  const [activeImage, setActiveImage] = useState(null)
 
   useEffect(() => {
     if (user) {
@@ -93,6 +94,9 @@ export default function Settings() {
 
   const toggleTheme = () => setTheme(t => t === 'light' ? 'dark' : 'light')
 
+  const openImageViewer = (src) => setActiveImage(src)
+  const closeImageViewer = () => setActiveImage(null)
+
   return (
     <DashboardLayout searchPlaceholder="Search settings...">
       <div className="page-header">
@@ -132,11 +136,17 @@ export default function Settings() {
           </div>
           {form.profile_picture && (
             <div style={{ display: 'flex', gap: 12, alignItems: 'center' }}>
-              <img
-                src={URL.createObjectURL(form.profile_picture)}
-                alt="Profile preview"
-                style={{ width: 64, height: 64, borderRadius: '50%', objectFit: 'cover', border: '1px solid var(--border)' }}
-              />
+              <button
+                type="button"
+                onClick={() => openImageViewer(URL.createObjectURL(form.profile_picture))}
+                style={{ border: 'none', background: 'none', padding: 0, cursor: 'pointer' }}
+              >
+                <img
+                  src={URL.createObjectURL(form.profile_picture)}
+                  alt="Profile preview"
+                  style={{ width: 64, height: 64, borderRadius: '50%', objectFit: 'cover', border: '1px solid var(--border)' }}
+                />
+              </button>
               <span style={{ color: 'var(--gray-500)', fontSize: 13 }}>
                 Selected file will be uploaded when you save.
               </span>
@@ -144,11 +154,17 @@ export default function Settings() {
           )}
           {user?.profile_picture && !form.profile_picture && (
             <div style={{ display: 'flex', gap: 12, alignItems: 'center' }}>
-              <img
-                src={user.profile_picture}
-                alt="Current profile"
-                style={{ width: 64, height: 64, borderRadius: '50%', objectFit: 'cover', border: '1px solid var(--border)' }}
-              />
+              <button
+                type="button"
+                onClick={() => openImageViewer(user.profile_picture)}
+                style={{ border: 'none', background: 'none', padding: 0, cursor: 'pointer' }}
+              >
+                <img
+                  src={user.profile_picture}
+                  alt="Current profile"
+                  style={{ width: 64, height: 64, borderRadius: '50%', objectFit: 'cover', border: '1px solid var(--border)' }}
+                />
+              </button>
               <span style={{ color: 'var(--gray-500)', fontSize: 13 }}>
                 Current profile picture.
               </span>
@@ -191,6 +207,38 @@ export default function Settings() {
           </div>
         </form>
       </div>
+
+      {activeImage && (
+        <div
+          onClick={closeImageViewer}
+          style={{
+            position: 'fixed',
+            inset: 0,
+            background: 'rgba(2, 6, 23, 0.78)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            padding: 20,
+            zIndex: 1000
+          }}
+        >
+          <div onClick={e => e.stopPropagation()} style={{ position: 'relative', maxWidth: '92vw', maxHeight: '92vh', borderRadius: 16, overflow: 'hidden', boxShadow: '0 30px 70px rgba(0,0,0,0.45)' }}>
+            <button
+              type="button"
+              onClick={closeImageViewer}
+              style={{ position: 'absolute', top: 12, right: 12, width: 36, height: 36, borderRadius: '50%', border: 'none', background: 'rgba(15,23,42,0.75)', color: 'white', fontSize: 20, cursor: 'pointer', zIndex: 1 }}
+              aria-label="Close profile image"
+            >
+              ×
+            </button>
+            <img
+              src={activeImage}
+              alt="Profile enlarged view"
+              style={{ display: 'block', width: '100%', maxWidth: 'min(900px, 92vw)', maxHeight: '92vh', objectFit: 'contain', background: '#0f172a' }}
+            />
+          </div>
+        </div>
+      )}
     </DashboardLayout>
   )
 }
