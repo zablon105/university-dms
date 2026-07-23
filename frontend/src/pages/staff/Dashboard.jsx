@@ -433,6 +433,153 @@ function Archive() {
   )
 }
 
+function StaffRequests() {
+  const [requests, setRequests] = useState([])
+  const [loading, setLoading] = useState(true)
+  const [activeTab, setActiveTab] = useState('pending')
+  const [fulfillingId, setFulfillingId] = useState(null)
+  const [fulfillFile, setFulfillFile] = useState(null)
+  const [staffNote, setStaffNote] = useState('')
+  const [processing, setProcessing] = useState(false)
+
+  useEffect(() => { fetchRequests() }, [])
+
+  const fetchRequests = async () => {
+    try {
+      const res = await api.get('/document-requests/all/')
+      setRequests(res.data)
+    } catch (err) {
+      console.error(err)
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const displayed = activeTab === 'pending' ? requests.filter(r => r.status === 'pending') : requests
+
+  const handleFulfill = async (id) => {
+    if (!fulfillFile) return alert('Please choose a file to upload.')
+    setProcessing(true)
+    try {
+      const formData = new FormData()
+      formData.append('file', fulfillFile)
+      formData.append('staff_note', staffNote)
+      await api.post(`/document-requests/${id}/fulfill/`, formData, {
+        headers: { 'Content-Type': 'multipart/form-data' }
+      })
+      setFulfillingId(null)
+      setFulfillFile(null)
+      setStaffNote('')
+      fetchRequests()
+    } catch (err) {
+      console.error(err)
+      alert(err.response?.data?.error || 'Unable to fulfill request.')
+    } finally {
+      setProcessing(false)
+    }
+  }
+
+  const handleReject = async (id) => {
+    const note = window.prompt('Reason for declining this request (optional):', '')
+    if (note === null) return
+    try {
+      await api.post(`/document-requests/${id}/reject/`, { staff_note: note })
+      fetchRequests()
+    } catch (err) {
+      console.error(err)
+      alert(err.response?.data?.error || 'Unable to decline request.')
+    }
+  }
+
+  return (
+    <>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 24 }}>
+        <div>
+          <h1 className="page-title">Document Requests</h1>
+          <p className="page-subtitle">Fulfill or decline student requests for official documents.</p>
+        </div>
+        <div style={{ display: 'flex', gap: 8 }}>
+          {['pending', 'all'].map(tab => (
+            <button key={tab} onClick={() => setActiveTab(tab)}
+              style={{
+                padding: '8px 16px', borderRadius: 8, fontSize: 13,
+                border: `1.5px solid ${activeTab === tab ? 'var(--primary)' : 'var(--gray-300)'}`,
+                background: activeTab === tab ? 'var(--primary)' : 'white',
+                color: activeTab === tab ? 'white' : 'var(--gray-600)',
+                fontWeight: activeTab === tab ? 600 : 400, cursor: 'pointer', textTransform: 'capitalize'
+              }}>{tab === 'pending' ? 'Pending' : 'All Requests'}</button>
+          ))}
+        </div>
+      </div>
+
+      <div className="card" style={{ padding: 0, overflow: 'hidden' }}>
+        {loading ? (
+          <div style={{ padding: 40, textAlign: 'center', color: 'var(--gray-400)' }}>Loading...</div>
+        ) : displayed.length === 0 ? (
+          <div style={{ padding: 40, textAlign: 'center', color: 'var(--gray-400)' }}>No {activeTab} requests</div>
+        ) : (
+          <table className="table">
+            <thead>
+              <tr>{['Student', 'Document Type', 'Reason', 'Requested', 'Status', 'Actions'].map(h => <th key={h}>{h}</th>)}</tr>
+            </thead>
+            <tbody>
+              {displayed.map(r => (
+                <tr key={r.id}>
+                  <td>
+                    <div style={{ fontSize: 13, fontWeight: 500 }}>{r.requested_by?.first_name ? `${r.requested_by.first_name} ${r.requested_by.last_name}` : r.requested_by?.username}</div>
+                    <div style={{ fontSize: 11, color: 'var(--gray-400)' }}>{r.requested_by?.department || '—'}</div>
+                  </td>
+                  <td style={{ fontSize: 13 }}>{r.document_type}</td>
+                  <td style={{ fontSize: 12, color: 'var(--gray-500)', maxWidth: 200 }}>{r.reason || '—'}</td>
+                  <td style={{ fontSize: 12, color: 'var(--gray-500)' }}>{new Date(r.created_at).toLocaleDateString()}</td>
+                  <td>
+                    <span style={{
+                      padding: '3px 10px', borderRadius: 20, fontSize: 11, fontWeight: 600,
+                      background: r.status === 'fulfilled' ? 'var(--success-light)' : r.status === 'rejected' ? '#FEE2E2' : 'var(--warning-light)',
+                      color: r.status === 'fulfilled' ? 'var(--success)' : r.status === 'rejected' ? 'var(--danger)' : 'var(--warning)'
+                    }}>{r.status}</span>
+                  </td>
+                  <td>
+                    {r.status === 'pending' && (
+                      fulfillingId === r.id ? (
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: 6, minWidth: 200 }}>
+                          <input type="file" onChange={e => setFulfillFile(e.target.files?.[0] || null)} />
+                          <input className="input-field" placeholder="Note (optional)" value={staffNote} onChange={e => setStaffNote(e.target.value)} style={{ marginBottom: 0 }} />
+                          <div style={{ display: 'flex', gap: 6 }}>
+                            <button onClick={() => handleFulfill(r.id)} disabled={processing}
+                              style={{ padding: '5px 12px', borderRadius: 6, border: 'none', background: 'var(--primary)', color: 'white', fontSize: 12, cursor: 'pointer' }}>
+                              {processing ? 'Uploading...' : 'Confirm'}
+                            </button>
+                            <button onClick={() => { setFulfillingId(null); setFulfillFile(null); setStaffNote('') }}
+                              style={{ padding: '5px 12px', borderRadius: 6, border: '1px solid var(--gray-300)', background: 'white', fontSize: 12, cursor: 'pointer' }}>
+                              Cancel
+                            </button>
+                          </div>
+                        </div>
+                      ) : (
+                        <div style={{ display: 'flex', gap: 6 }}>
+                          <button onClick={() => setFulfillingId(r.id)}
+                            style={{ padding: '5px 12px', borderRadius: 6, border: 'none', background: 'var(--primary)', color: 'white', fontSize: 12, cursor: 'pointer', fontWeight: 500 }}>
+                            Fulfill
+                          </button>
+                          <button onClick={() => handleReject(r.id)}
+                            style={{ padding: '5px 12px', borderRadius: 6, border: '1px solid var(--danger)', background: 'white', color: 'var(--danger)', fontSize: 12, cursor: 'pointer', fontWeight: 500 }}>
+                            Decline
+                          </button>
+                        </div>
+                      )
+                    )}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        )}
+      </div>
+    </>
+  )
+}
+
 // ─── Staff Home Dashboard ─────────────────────────────────────────
 function StaffHome() {
   const { user } = useAuthStore()
@@ -644,6 +791,7 @@ export default function StaffDashboard() {
       <Routes>
         <Route path="dashboard" element={<StaffHome />} />
         <Route path="approvals" element={<ApprovalQueue />} />
+        <Route path="requests" element={<StaffRequests />} />
         <Route path="upload" element={<UploadDocument />} />
         <Route path="archive" element={<Archive />} />
         <Route path="reports" element={<Reports />} />

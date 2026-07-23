@@ -21,6 +21,7 @@ const adminNav = [
 const staffNav = [
   { to: '/staff/dashboard', icon: MdDashboard, label: 'Dashboard' },
   { to: '/staff/approvals', icon: MdChecklist, label: 'Approval Queue' },
+  { to: '/staff/requests', icon: MdAssignment, label: 'Document Requests' },
   { to: '/staff/archive', icon: MdArchive, label: 'Archive' },
   { to: '/staff/upload', icon: MdUpload, label: 'Upload Document' },
   { to: '/staff/reports', icon: MdBarChart, label: 'Reports' },

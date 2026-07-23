@@ -257,30 +257,131 @@ function Assignments() {
 }
 
 function InstitutionalRecords() {
-  const navigate = useNavigate()
+  const [requests, setRequests] = useState([])
+  const [loading, setLoading] = useState(true)
+  const [showForm, setShowForm] = useState(false)
+  const [submitting, setSubmitting] = useState(false)
+  const [form, setForm] = useState({ document_type: '', reason: '' })
+
+  useEffect(() => { fetchRequests() }, [])
+
+  const fetchRequests = async () => {
+    try {
+      const res = await api.get('/document-requests/')
+      setRequests(res.data)
+    } catch (err) {
+      console.error(err)
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const handleSubmit = async (e) => {
+    e.preventDefault()
+    setSubmitting(true)
+    try {
+      await api.post('/document-requests/', form)
+      setForm({ document_type: '', reason: '' })
+      setShowForm(false)
+      fetchRequests()
+    } catch (err) {
+      console.error(err)
+      alert('Unable to submit request. Please try again.')
+    } finally {
+      setSubmitting(false)
+    }
+  }
+
+  const getStatusBadge = (status) => {
+    const map = {
+      pending: { bg: '#FEF3C7', color: '#D97706', label: 'Pending' },
+      fulfilled: { bg: '#DCFCE7', color: '#16A34A', label: 'Fulfilled' },
+      rejected: { bg: '#FEE2E2', color: '#DC2626', label: 'Rejected' },
+    }
+    const s = map[status] || map.pending
+    return (
+      <span style={{ background: s.bg, color: s.color, padding: '3px 10px', borderRadius: 20, fontSize: 11, fontWeight: 600 }}>
+        {s.label}
+      </span>
+    )
+  }
+
   return (
     <>
-      <div className="page-header">
-        <h1 className="page-title">Institutional Records</h1>
-        <p className="page-subtitle">View and manage your official academic documents.</p>
+      <div className="page-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: 16 }}>
+        <div>
+          <h1 className="page-title">Institutional Records</h1>
+          <p className="page-subtitle">Request and track your official academic documents.</p>
+        </div>
+        <button className="btn btn-primary btn-sm" onClick={() => setShowForm(true)}>+ New Request</button>
       </div>
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 16, marginBottom: 24 }}>
-        {[
-          { icon: <MdSchool />, title: 'Official Transcripts', sub: 'Current Cumulative GPA: 3.8', badge: 'Verified', badgeColor: '#16A34A', badgeBg: '#DCFCE7', link: '/student/records' },
-          { icon: <MdAssignment />, title: 'Enrollment Letters', sub: 'Proof of current registration', badge: 'Active', badgeColor: '#0047AB', badgeBg: '#EBF2FF', link: '/student/academic' },
-          { icon: <MdStars />, title: 'Degree Certificates', sub: 'Awaiting graduation clearance', badge: 'Pending', badgeColor: '#D97706', badgeBg: '#FEF3C7', link: '/student/shared' },
-        ].map(item => (
-          <div key={item.title} style={{ background: 'white', borderRadius: 12, border: '1px solid var(--border)', padding: 20 }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 12 }}>
-              <span style={{ fontSize: 28 }}>{item.icon}</span>
-              <span style={{ background: item.badgeBg, color: item.badgeColor, padding: '3px 10px', borderRadius: 20, fontSize: 11, fontWeight: 600 }}>{item.badge}</span>
+
+      {loading ? (
+        <div style={{ padding: 40, textAlign: 'center', color: 'var(--gray-400)' }}>Loading...</div>
+      ) : requests.length === 0 ? (
+        <div style={{ background: 'white', borderRadius: 12, border: '1px solid var(--border)', padding: 40, textAlign: 'center' }}>
+          <div style={{ fontSize: 48, marginBottom: 12 }}><MdSchool /></div>
+          <p style={{ color: 'var(--gray-500)' }}>No requests yet. Click "New Request" to request a transcript, enrollment letter, or certificate.</p>
+        </div>
+      ) : (
+        <div style={{ background: 'white', borderRadius: 12, border: '1px solid var(--border)', overflow: 'hidden' }}>
+          {requests.map((r, i) => (
+            <div key={r.id} style={{
+              display: 'flex', alignItems: 'center', gap: 14, padding: '16px 20px',
+              borderBottom: i < requests.length - 1 ? '1px solid var(--gray-100)' : 'none'
+            }}>
+              <div style={{ width: 40, height: 40, borderRadius: 10, background: 'var(--primary-light)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 20 }}>
+                <MdSchool />
+              </div>
+              <div style={{ flex: 1 }}>
+                <div style={{ fontSize: 14, fontWeight: 500, color: 'var(--gray-800)' }}>{r.document_type}</div>
+                <div style={{ fontSize: 12, color: 'var(--gray-400)', marginTop: 2 }}>
+                  Requested {new Date(r.created_at).toLocaleDateString()}
+                  {r.staff_note && ` · Note: ${r.staff_note}`}
+                </div>
+              </div>
+              {getStatusBadge(r.status)}
+              {r.status === 'fulfilled' && r.fulfilled_document_detail?.file && (
+                <a href={r.fulfilled_document_detail.file} target="_blank" rel="noreferrer">
+                  <button className="btn btn-outline btn-sm"><MdDownload /> Download</button>
+                </a>
+              )}
             </div>
-            <div style={{ fontSize: 14, fontWeight: 600, color: 'var(--gray-800)', marginBottom: 4 }}>{item.title}</div>
-            <div style={{ fontSize: 12, color: 'var(--gray-500)' }}>{item.sub}</div>
-            <button className="btn btn-outline btn-sm" style={{ marginTop: 14, width: '100%', justifyContent: 'center' }} onClick={() => navigate(item.link)}>View →</button>
+          ))}
+        </div>
+      )}
+
+      {showForm && (
+        <div style={{ position: 'fixed', inset: 0, background: 'rgba(15, 23, 42, 0.6)', zIndex: 200, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 20 }}>
+          <div style={{ width: '100%', maxWidth: 480, maxHeight: '90vh', background: 'white', borderRadius: 16, overflowY: 'auto' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '16px 22px', borderBottom: '1px solid var(--border)' }}>
+              <h2 style={{ fontSize: 17, margin: 0 }}>Request a Document</h2>
+              <button onClick={() => setShowForm(false)} style={{ border: 'none', background: 'none', fontSize: 22, cursor: 'pointer' }}>×</button>
+            </div>
+            <form onSubmit={handleSubmit} style={{ padding: '18px 22px', display: 'grid', gap: 14 }}>
+              <div className="input-group">
+                <label className="input-label">Document Type</label>
+                <select className="input-field" value={form.document_type} onChange={e => setForm({ ...form, document_type: e.target.value })} required>
+                  <option value="">Select a document type</option>
+                  <option value="Official Transcript">Official Transcript</option>
+                  <option value="Enrollment Letter">Enrollment Letter</option>
+                  <option value="Degree Certificate">Degree Certificate</option>
+                  <option value="Fee Statement">Fee Statement</option>
+                  <option value="Other">Other</option>
+                </select>
+              </div>
+              <div className="input-group">
+                <label className="input-label">Reason / Notes (optional)</label>
+                <textarea className="input-field" rows={3} value={form.reason} onChange={e => setForm({ ...form, reason: e.target.value })} placeholder="e.g. Needed for job application" />
+              </div>
+              <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 12, marginTop: 8 }}>
+                <button type="button" className="btn btn-outline" onClick={() => setShowForm(false)}>Cancel</button>
+                <button type="submit" className="btn btn-primary" disabled={submitting}>{submitting ? 'Submitting...' : 'Submit Request'}</button>
+              </div>
+            </form>
           </div>
-        ))}
-      </div>
+        </div>
+      )}
     </>
   )
 }
