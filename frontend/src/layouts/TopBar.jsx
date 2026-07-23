@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import useAuthStore from '../store/authStore'
 import useToast from '../hooks/useToast'
 import api from '../api/axios'
+import ProfileImageModal from '../components/ProfileImageModal'
 import {
   MdMenu, MdSearch, MdNotifications, MdKeyboardArrowDown,
   MdLightMode, MdDarkMode,
@@ -225,7 +226,7 @@ export default function TopBar({ searchPlaceholder, onMenuClick }) {
                 })}
               </div>
               <div className="dd-foot">
-                <button className="dd-foot-btn" onClick={() => setNotifOpen(false)}>View all notifications</button>
+                <button className="dd-foot-btn" onClick={() => { setNotifOpen(false); navigate('/notifications') }}>View all notifications</button>
               </div>
             </div>
           )}
@@ -276,37 +277,7 @@ export default function TopBar({ searchPlaceholder, onMenuClick }) {
         </div>
       </div>
 
-      {activeImage && (
-        <div
-          onClick={closeImageViewer}
-          style={{
-            position: 'fixed',
-            inset: 0,
-            background: 'rgba(2, 6, 23, 0.78)',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            padding: 20,
-            zIndex: 1000
-          }}
-        >
-          <div onClick={e => e.stopPropagation()} style={{ position: 'relative', maxWidth: '92vw', maxHeight: '92vh', borderRadius: 16, overflow: 'hidden', boxShadow: '0 30px 70px rgba(0,0,0,0.45)' }}>
-            <button
-              type="button"
-              onClick={closeImageViewer}
-              style={{ position: 'absolute', top: 12, right: 12, width: 36, height: 36, borderRadius: '50%', border: 'none', background: 'rgba(15,23,42,0.75)', color: 'white', fontSize: 20, cursor: 'pointer', zIndex: 1 }}
-              aria-label="Close profile image"
-            >
-              ×
-            </button>
-            <img
-              src={activeImage}
-              alt="Profile enlarged view"
-              style={{ display: 'block', width: '100%', maxWidth: 'min(900px, 92vw)', maxHeight: '92vh', objectFit: 'contain', background: '#0f172a' }}
-            />
-          </div>
-        </div>
-      )}
+      <ProfileImageModal isOpen={!!activeImage} imageSrc={activeImage} onClose={closeImageViewer} />
 
       <style>{`
         /* ═══ TOPBAR — SKY BLUE THEME ═══════════════════════════════ */

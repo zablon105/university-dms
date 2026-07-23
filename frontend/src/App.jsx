@@ -7,6 +7,7 @@ import Register from './pages/auth/Register'
 import ForgotPassword from './pages/auth/ForgotPassword'
 import AdminLogin from './pages/auth/AdminLogin'
 import AdminRegister from './pages/auth/AdminRegister'
+import NotificationsPage from './pages/NotificationsPage'
 
 // Dashboards
 import StudentDashboard from './pages/student/Dashboard'
@@ -85,6 +86,11 @@ export default function App() {
       <Route path="/settings" element={
         <ProtectedRoute allowedRoles={['student', 'staff', 'admin']}>
           <Settings />
+        </ProtectedRoute>
+      } />
+      <Route path="/notifications" element={
+        <ProtectedRoute allowedRoles={['student', 'staff', 'admin']}>
+          <NotificationsPage />
         </ProtectedRoute>
       } />
 
