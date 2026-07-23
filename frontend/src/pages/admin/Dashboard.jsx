@@ -277,7 +277,7 @@ export default function AdminDashboard() {
           padding: '10px 14px', borderRadius: 12,
           border: '1px solid var(--gray-200)',
           fontSize: 13, color: 'var(--gray-700)',
-          background: 'white', cursor: 'pointer'
+          background: 'var(--bg-card)', cursor: 'pointer'
         }}>
           {['All Departments', 'Science', 'Arts & Humanities', 'Mathematics', 'Computer Science', 'Engineering'].map(option => (
             <option key={option}>{option}</option>
@@ -287,7 +287,7 @@ export default function AdminDashboard() {
           padding: '10px 14px', borderRadius: 12,
           border: '1px solid var(--gray-200)',
           fontSize: 13, color: 'var(--gray-700)',
-          background: 'white', cursor: 'pointer'
+          background: 'var(--bg-card)', cursor: 'pointer'
         }}>
           {['All Types', 'Reports', 'Policies', 'Forms', 'Archives'].map(option => (
             <option key={option}>{option}</option>
@@ -297,7 +297,7 @@ export default function AdminDashboard() {
           padding: '10px 14px', borderRadius: 12,
           border: '1px solid var(--gray-200)',
           fontSize: 13, color: 'var(--gray-700)',
-          background: 'white', cursor: 'pointer'
+          background: 'var(--bg-card)', cursor: 'pointer'
         }}>
           {['Last 30 Days', 'Last 7 Days', 'Last 90 Days', 'Year to Date'].map(option => (
             <option key={option}>{option}</option>
@@ -307,7 +307,7 @@ export default function AdminDashboard() {
           padding: '10px 14px', borderRadius: 12,
           border: '1px solid var(--primary)',
           fontSize: 13, color: 'var(--primary)',
-          background: 'white', cursor: 'pointer', fontWeight: 600
+          background: 'var(--bg-card)', cursor: 'pointer', fontWeight: 600
         }}>Reset Filters</button>
       </div>
 
@@ -347,7 +347,7 @@ export default function AdminDashboard() {
 
       {/* Department & storage summary */}
       <div className="reveal" style={{ display: 'grid', gridTemplateColumns: '1fr 360px', gap: 20, marginBottom: 24 }}>
-        <div style={{ background: 'white', borderRadius: 12, border: '1px solid var(--border)', padding: 20, boxShadow: 'var(--shadow-sm)' }}>
+        <div style={{ background: 'var(--bg-card)', borderRadius: 12, border: '1px solid var(--border)', padding: 20, boxShadow: 'var(--shadow-sm)' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
             <div>
               <h3 style={{ fontSize: 16, fontWeight: 600, margin: 0 }}>Departmental Activity</h3>
@@ -370,7 +370,7 @@ export default function AdminDashboard() {
           ))}
         </div>
 
-        <div style={{ background: 'white', borderRadius: 12, border: '1px solid var(--border)', padding: 20, boxShadow: 'var(--shadow-sm)' }}>
+        <div style={{ background: 'var(--bg-card)', borderRadius: 12, border: '1px solid var(--border)', padding: 20, boxShadow: 'var(--shadow-sm)' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
             <div>
               <h3 style={{ fontSize: 16, fontWeight: 600, margin: 0 }}>Active Storage Infrastructure</h3>
@@ -408,7 +408,7 @@ export default function AdminDashboard() {
 
         {/* Left: Recent Documents */}
         <div style={{
-          background: 'white', borderRadius: 12,
+          background: 'var(--bg-card)', borderRadius: 12,
           border: '1px solid var(--border)',
           boxShadow: 'var(--shadow-sm)', overflow: 'hidden'
         }}>
@@ -448,7 +448,7 @@ export default function AdminDashboard() {
               ) : recentActivity.map((doc) => (
                 <tr key={doc.id} style={{ borderBottom: '1px solid var(--gray-100)' }}
                   onMouseEnter={e => e.currentTarget.style.background = 'var(--gray-50)'}
-                  onMouseLeave={e => e.currentTarget.style.background = 'white'}
+                  onMouseLeave={e => e.currentTarget.style.background = 'var(--bg-card)'}
                 >
                   <td style={{ padding: '14px 16px' }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
@@ -488,7 +488,7 @@ export default function AdminDashboard() {
 
           {/* Compliance Alerts */}
           <div style={{
-            background: 'white', borderRadius: 12,
+            background: 'var(--bg-card)', borderRadius: 12,
             border: '1px solid var(--border)',
             boxShadow: 'var(--shadow-sm)', padding: 20
           }}>
@@ -506,7 +506,7 @@ export default function AdminDashboard() {
                   <MdDescription /> Missing Signatures
                 </div>
                 <span style={{
-                  background: '#DC2626', color: 'white',
+                  background: '#DC2626', color: 'var(--hero-text)',
                   padding: '2px 8px', borderRadius: 20, fontSize: 10, fontWeight: 700
                 }}>Critical</span>
               </div>
@@ -523,7 +523,7 @@ export default function AdminDashboard() {
                   <MdCalendarToday /> Expiring Certifications
                 </div>
                 <span style={{
-                  background: '#D97706', color: 'white',
+                  background: '#D97706', color: 'var(--hero-text)',
                   padding: '2px 8px', borderRadius: 20, fontSize: 10, fontWeight: 700
                 }}>Warning</span>
               </div>
@@ -535,7 +535,7 @@ export default function AdminDashboard() {
 
           {/* Pending User Approvals */}
           <div style={{
-            background: 'white', borderRadius: 12,
+            background: 'var(--bg-card)', borderRadius: 12,
             border: '1px solid var(--border)',
             boxShadow: 'var(--shadow-sm)', padding: 20
           }}>
@@ -572,7 +572,7 @@ export default function AdminDashboard() {
                       flex: 1, padding: '6px 0',
                       border: '1px solid var(--gray-300)',
                       borderRadius: 6, fontSize: 12,
-                      color: 'var(--danger)', background: 'white',
+                      color: 'var(--danger)', background: 'var(--bg-card)',
                       cursor: 'pointer', fontWeight: 500
                     }}>Deny</button>
                   <button
@@ -580,7 +580,7 @@ export default function AdminDashboard() {
                     style={{
                       flex: 1, padding: '6px 0',
                       border: 'none', borderRadius: 6,
-                      fontSize: 12, color: 'white',
+                      fontSize: 12, color: 'var(--hero-text)',
                       background: 'var(--primary)',
                       cursor: 'pointer', fontWeight: 500
                     }}>Approve</button>
@@ -594,13 +594,13 @@ export default function AdminDashboard() {
                 width: '100%', marginTop: 12, padding: '8px',
                 border: '1px solid var(--border)', borderRadius: 8,
                 fontSize: 13, color: 'var(--primary)',
-                background: 'white', cursor: 'pointer', fontWeight: 500
+                background: 'var(--bg-card)', cursor: 'pointer', fontWeight: 500
               }}>View All Requests →</button>
           </div>
 
           {/* Recent Activity */}
           <div style={{
-            background: 'white', borderRadius: 12,
+            background: 'var(--bg-card)', borderRadius: 12,
             border: '1px solid var(--border)',
             boxShadow: 'var(--shadow-sm)', padding: 20
           }}>

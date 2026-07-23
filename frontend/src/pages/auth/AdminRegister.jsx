@@ -118,12 +118,12 @@ export default function AdminRegister() {
               </span>
             </div>
 
-            <h1 style={{ fontFamily: 'Oswald, sans-serif', color: 'white', fontSize: 38, fontWeight: 700, lineHeight: 1.2, marginBottom: 14, letterSpacing: '0.02em' }}>
+            <h1 style={{ fontFamily: 'Oswald, sans-serif', color: 'var(--hero-text)', fontSize: 38, fontWeight: 700, lineHeight: 1.2, marginBottom: 14, letterSpacing: '0.02em' }}>
               Admin Central:<br />
               <span style={{ color: '#93c5fd' }}>Account<br />Creation</span>
             </h1>
 
-            <p style={{ color: 'rgba(255,255,255,0.62)', fontSize: 13.5, lineHeight: 1.75, marginBottom: 28, maxWidth: 360 }}>
+            <p style={{ color: 'var(--hero-muted)', fontSize: 13.5, lineHeight: 1.75, marginBottom: 28, maxWidth: 360 }}>
               Join the institutional governance network to oversee records, compliance, and systems.
             </p>
 
@@ -136,7 +136,7 @@ export default function AdminRegister() {
                   borderRadius: 4, padding: '6px 12px',
                 }}>
                   <Icon size={14} style={{ color: '#93c5fd', flexShrink: 0 }} />
-                  <span style={{ color: 'rgba(255,255,255,0.75)', fontSize: 12, fontFamily: 'Oswald, sans-serif', letterSpacing: '0.04em' }}>
+                  <span style={{ color: 'var(--hero-muted)', fontSize: 12, fontFamily: 'Oswald, sans-serif', letterSpacing: '0.04em' }}>
                     {text}
                   </span>
                 </div>

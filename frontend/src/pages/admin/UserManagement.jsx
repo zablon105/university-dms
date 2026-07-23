@@ -333,7 +333,7 @@ export default function UserManagement() {
                     {!u.is_approved ? (
                       <div style={{ display: 'flex', gap: 6 }}>
                         <button onClick={() => handleAction(u.id, 'deny')}
-                          style={{ padding: '5px 10px', borderRadius: 6, border: '1px solid var(--danger)', background: 'white', color: 'var(--danger)', fontSize: 11, cursor: 'pointer', fontWeight: 500 }}>
+                          style={{ padding: '5px 10px', borderRadius: 6, border: '1px solid var(--danger)', background: 'var(--bg-card)', color: 'var(--danger)', fontSize: 11, cursor: 'pointer', fontWeight: 500 }}>
                           Deny
                         </button>
                         <button onClick={() => handleAction(u.id, 'approve')}
@@ -347,7 +347,7 @@ export default function UserManagement() {
                       <button onClick={() => handleToggleActive(u.id, u.is_active)}
                         style={{
                           padding: '5px 10px', borderRadius: 6, border: `1px solid ${u.is_active ? 'var(--danger)' : 'var(--success)'}`,
-                          background: 'white', color: u.is_active ? 'var(--danger)' : 'var(--success)',
+                          background: 'var(--bg-card)', color: u.is_active ? 'var(--danger)' : 'var(--success)',
                           fontSize: 11, cursor: 'pointer', fontWeight: 500
                         }}>
                         {u.is_active ? 'Deactivate' : 'Reactivate'}
@@ -383,7 +383,7 @@ export default function UserManagement() {
                 </div>
                 <div style={{ display: 'flex', gap: 8 }}>
                   <button onClick={() => handleAction(u.id, 'deny')}
-                    style={{ flex: 1, padding: '7px', border: '1px solid var(--gray-300)', borderRadius: 6, fontSize: 12, color: 'var(--danger)', background: 'white', cursor: 'pointer', fontWeight: 500 }}>
+                    style={{ flex: 1, padding: '7px', border: '1px solid var(--gray-300)', borderRadius: 6, fontSize: 12, color: 'var(--danger)', background: 'var(--bg-card)', cursor: 'pointer', fontWeight: 500 }}>
                     Deny
                   </button>
                   <button onClick={() => handleAction(u.id, 'approve')}
@@ -416,7 +416,7 @@ export default function UserManagement() {
 
       {showAddUserModal && (
         <div style={{ position: 'fixed', inset: 0, background: 'rgba(15, 23, 42, 0.6)', zIndex: 200, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 20 }}>
-          <div style={{ width: '100%', maxWidth: 700, background: 'white', borderRadius: 16, overflow: 'hidden', boxShadow: '0 24px 60px rgba(15,23,42,0.18)' }}>
+          <div style={{ width: '100%', maxWidth: 700, background: 'var(--bg-card)', borderRadius: 16, overflow: 'hidden', boxShadow: '0 24px 60px rgba(15,23,42,0.18)' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '18px 24px', borderBottom: '1px solid var(--border)' }}>
               <div>
                 <h2 style={{ fontSize: 18, margin: 0 }}>Add New User</h2>
@@ -464,7 +464,7 @@ export default function UserManagement() {
 
       {showImportModal && (
         <div style={{ position: 'fixed', inset: 0, background: 'rgba(15, 23, 42, 0.6)', zIndex: 200, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 20 }}>
-          <div style={{ width: '100%', maxWidth: 620, background: 'white', borderRadius: 16, overflow: 'hidden', boxShadow: '0 24px 60px rgba(15,23,42,0.18)' }}>
+          <div style={{ width: '100%', maxWidth: 620, background: 'var(--bg-card)', borderRadius: 16, overflow: 'hidden', boxShadow: '0 24px 60px rgba(15,23,42,0.18)' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '18px 24px', borderBottom: '1px solid var(--border)' }}>
               <div>
                 <h2 style={{ fontSize: 18, margin: 0 }}>Bulk CSV Import</h2>

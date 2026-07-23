@@ -142,7 +142,7 @@ export default function Register() {
 
             <h1 style={{
               fontFamily: 'Oswald, sans-serif',
-              color: 'white', fontSize: 40, fontWeight: 700,
+              color: 'var(--hero-text)', fontSize: 40, fontWeight: 700,
               lineHeight: 1.15, marginBottom: 16, letterSpacing: '0.02em'
             }}>
               Create Your<br />
@@ -150,7 +150,7 @@ export default function Register() {
               Account
             </h1>
 
-            <p style={{ color: 'rgba(255,255,255,0.65)', fontSize: 14, lineHeight: 1.75, marginBottom: 28, maxWidth: 360 }}>
+            <p style={{ color: 'var(--hero-muted)', fontSize: 14, lineHeight: 1.75, marginBottom: 28, maxWidth: 360 }}>
               Join our robust document management ecosystem with full role-based access control and end-to-end security.
             </p>
 
@@ -163,7 +163,7 @@ export default function Register() {
                   borderRadius: 4, padding: '6px 12px',
                 }}>
                   <Icon size={14} style={{ color: '#93c5fd', flexShrink: 0 }} />
-                  <span style={{ color: 'rgba(255,255,255,0.75)', fontSize: 12, fontFamily: 'Oswald, sans-serif', letterSpacing: '0.04em' }}>
+                  <span style={{ color: 'var(--hero-muted)', fontSize: 12, fontFamily: 'Oswald, sans-serif', letterSpacing: '0.04em' }}>
                     {text}
                   </span>
                 </div>

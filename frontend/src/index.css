@@ -37,6 +37,12 @@
   --font-body: 'Inter', sans-serif;
   --font: 'Inter', sans-serif;
 
+  /* Semantic text colors */
+  --text-primary: var(--gray-900);
+  --text-secondary: var(--gray-600);
+  --hero-text: white;
+  --hero-muted: rgba(255,255,255,0.75);
+
   /* Layout */
   --sidebar-width: 248px;
   --topbar-height: 62px;
@@ -95,11 +101,17 @@
   --gray-900: #f8fafc;
 
   --primary-light: #0c3a52;
+
+  /* Semantic text colors for dark theme */
+  --text-primary: var(--gray-100);
+  --text-secondary: var(--gray-400);
+  --hero-text: white;
+  --hero-muted: rgba(255,255,255,0.75);
 }
 
 [data-theme="dark"] body {
   background-color: var(--bg-page);
-  color: var(--gray-900);
+  color: var(--text-primary);
 }
 
 [data-theme="dark"] .card,
@@ -269,7 +281,7 @@ html {
 body {
   font-family: var(--font-body);
   background-color: var(--bg-page);
-  color: var(--gray-900);
+  color: var(--text-primary);
   font-size: 1rem;
   line-height: 1.6;
   -webkit-font-smoothing: antialiased;

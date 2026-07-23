@@ -126,7 +126,7 @@ export default function AdminDocuments() {
       </div>
 
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 380px', gap: 20, marginBottom: 24 }}>
-        <div style={{ background: 'white', borderRadius: 12, border: '1px solid var(--border)', padding: 20, boxShadow: 'var(--shadow-sm)' }}>
+        <div style={{ background: 'var(--bg-card)', borderRadius: 12, border: '1px solid var(--border)', padding: 20, boxShadow: 'var(--shadow-sm)' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
             <div>
               <h3 style={{ fontSize: 16, fontWeight: 600, margin: 0 }}>Content Distribution</h3>
@@ -149,7 +149,7 @@ export default function AdminDocuments() {
           </div>
         </div>
 
-        <div style={{ background: 'white', borderRadius: 12, border: '1px solid var(--border)', padding: 20, boxShadow: 'var(--shadow-sm)' }}>
+        <div style={{ background: 'var(--bg-card)', borderRadius: 12, border: '1px solid var(--border)', padding: 20, boxShadow: 'var(--shadow-sm)' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
             <div>
               <h3 style={{ fontSize: 16, fontWeight: 600, margin: 0 }}>Cleanup Recommendations</h3>

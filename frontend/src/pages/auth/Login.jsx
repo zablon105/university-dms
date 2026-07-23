@@ -128,7 +128,7 @@ export default function Login() {
 
             <h1 style={{
               fontFamily: 'Oswald, sans-serif',
-              color: 'white', fontSize: 40, fontWeight: 700,
+              color: 'var(--hero-text)', fontSize: 40, fontWeight: 700,
               lineHeight: 1.15, marginBottom: 16, letterSpacing: '0.02em'
             }}>
               Welcome to Your<br />
@@ -136,7 +136,7 @@ export default function Login() {
               Resource Hub
             </h1>
 
-            <p style={{ color: 'rgba(255,255,255,0.65)', fontSize: 14, lineHeight: 1.75, marginBottom: 28, maxWidth: 360 }}>
+            <p style={{ color: 'var(--hero-muted)', fontSize: 14, lineHeight: 1.75, marginBottom: 28, maxWidth: 360 }}>
               Access your documents, assignments, and academic records in a secure, organized space designed for cognitive ease.
             </p>
 
@@ -149,7 +149,7 @@ export default function Login() {
                   borderRadius: 4, padding: '6px 12px',
                 }}>
                   <Icon size={14} style={{ color: '#93c5fd', flexShrink: 0 }} />
-                  <span style={{ color: 'rgba(255,255,255,0.75)', fontSize: 12, fontFamily: 'Oswald, sans-serif', letterSpacing: '0.04em' }}>
+                  <span style={{ color: 'var(--hero-muted)', fontSize: 12, fontFamily: 'Oswald, sans-serif', letterSpacing: '0.04em' }}>
                     {text}
                   </span>
                 </div>

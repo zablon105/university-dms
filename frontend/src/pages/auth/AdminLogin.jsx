@@ -93,11 +93,11 @@ export default function AdminLogin() {
           <div style={{ position: 'absolute', inset: 0, zIndex: 1, backgroundImage: `repeating-linear-gradient(0deg, rgba(255,255,255,0.015) 0px, rgba(255,255,255,0.015) 1px, transparent 1px, transparent 40px), repeating-linear-gradient(90deg, rgba(255,255,255,0.015) 0px, rgba(255,255,255,0.015) 1px, transparent 1px, transparent 40px)` }} />
 
           {/* Logo */}
-          <div style={{ position: 'absolute', top: 36, left: 40, zIndex: 2, display: 'flex', alignItems: 'center', gap: 10 }}>
+            <div style={{ position: 'absolute', top: 36, left: 40, zIndex: 2, display: 'flex', alignItems: 'center', gap: 10 }}>
             <div style={{ width: 36, height: 36, borderRadius: 6, background: '#1e3a8a', display: 'flex', alignItems: 'center', justifyContent: 'center', border: '1px solid rgba(255,255,255,0.15) ', boxShadow: '0 4px 14px rgba(0,0,0,0.4)' }}>
-              <MdAdminPanelSettings style={{ color: 'white', fontSize: 20 }} />
+              <MdAdminPanelSettings style={{ color: 'var(--hero-text)', fontSize: 20 }} />
             </div>
-            <span style={{ color: 'white', fontFamily: 'Oswald, sans-serif', fontWeight: 600, fontSize: 15, letterSpacing: '0.06em' }}>
+            <span style={{ color: 'var(--hero-text)', fontFamily: 'Oswald, sans-serif', fontWeight: 600, fontSize: 15, letterSpacing: '0.06em' }}>
               KAFU Admin Central
             </span>
           </div>
@@ -111,11 +111,11 @@ export default function AdminLogin() {
               </span>
             </div>
 
-            <h1 style={{ fontFamily: 'Oswald, sans-serif', color: 'white', fontSize: 38, fontWeight: 700, lineHeight: 1.2, marginBottom: 14, letterSpacing: '0.02em' }}>
+            <h1 style={{ fontFamily: 'Oswald, sans-serif', color: 'var(--hero-text)', fontSize: 38, fontWeight: 700, lineHeight: 1.2, marginBottom: 14, letterSpacing: '0.02em' }}>
               Admin Central:<br />
               <span style={{ color: '#93c5fd' }}>Institutional<br />Oversight</span>
             </h1>
-            <p style={{ color: 'rgba(255,255,255,0.62)', fontSize: 13.5, lineHeight: 1.75, marginBottom: 28, maxWidth: 360 }}>
+            <p style={{ color: 'var(--hero-muted)', fontSize: 13.5, lineHeight: 1.75, marginBottom: 28, maxWidth: 360 }}>
               Manage institutional records, monitor compliance, and oversee system logistics from one secure dashboard.
             </p>
 
@@ -123,7 +123,7 @@ export default function AdminLogin() {
               {features.map(({ icon: Icon, text }) => (
                 <div key={text} style={{ display: 'flex', alignItems: 'center', gap: 6, background: 'rgba(255,255,255,0.07)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 4, padding: '6px 12px' }}>
                   <Icon size={14} style={{ color: '#93c5fd', flexShrink: 0 }} />
-                  <span style={{ color: 'rgba(255,255,255,0.7)', fontSize: 12, fontFamily: 'Oswald, sans-serif', letterSpacing: '0.04em' }}>{text}</span>
+                  <span style={{ color: 'var(--hero-muted)', fontSize: 12, fontFamily: 'Oswald, sans-serif', letterSpacing: '0.04em' }}>{text}</span>
                 </div>
               ))}
             </div>
@@ -170,7 +170,7 @@ export default function AdminLogin() {
                 <label className="input-label">Administrator ID</label>
                 <div style={{ position: 'relative' }}>
                   <MdAdminPanelSettings style={{ position: 'absolute', left: 11, top: '50%', transform: 'translateY(-50%)', color: 'var(--gray-400)', fontSize: 17 }} />
-                  <input className="input-field" style={{ paddingLeft: 36, background: 'white' }}
+                  <input className="input-field" style={{ paddingLeft: 36, background: 'var(--bg-card)' }}
                     type="text" placeholder="e.g. KAFU-ADM-0000"
                     value={form.username}
                     onChange={e => setForm({ ...form, username: e.target.value })} required />
@@ -184,7 +184,7 @@ export default function AdminLogin() {
                 </div>
                 <div style={{ position: 'relative' }}>
                   <MdLock style={{ position: 'absolute', left: 11, top: '50%', transform: 'translateY(-50%)', color: 'var(--gray-400)', fontSize: 17 }} />
-                  <input className="input-field" style={{ paddingLeft: 36, paddingRight: 42, background: 'white' }}
+                  <input className="input-field" style={{ paddingLeft: 36, paddingRight: 42, background: 'var(--bg-card)' }}
                     type={showPassword ? 'text' : 'password'} placeholder="••••••••••••"
                     value={form.password}
                     onChange={e => setForm({ ...form, password: e.target.value })} required />
@@ -204,7 +204,7 @@ export default function AdminLogin() {
               </label>
 
               {/* CAPTCHA */}
-              <div style={{ background: 'white', border: `1.5px solid ${captchaError ? '#fca5a5' : 'var(--gray-200)'}`, borderRadius: 6, padding: '14px 16px', marginBottom: 18, transition: 'border-color 0.2s' }}>
+              <div style={{ background: 'var(--bg-card)', border: `1.5px solid ${captchaError ? '#fca5a5' : 'var(--gray-200)'}`, borderRadius: 6, padding: '14px 16px', marginBottom: 18, transition: 'border-color 0.2s' }}>
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 10 }}>
                   <span style={{ fontFamily: 'Oswald, sans-serif', fontSize: 11, fontWeight: 600, color: 'var(--gray-500)', letterSpacing: '0.08em', textTransform: 'uppercase' }}>Human Verification</span>
                   <button type="button" onClick={() => { setCaptcha(generateQuestion()); setCaptchaInput(''); setCaptchaError(false) }}
@@ -219,7 +219,7 @@ export default function AdminLogin() {
                   <span style={{ color: 'var(--gray-400)', fontSize: 18 }}>→</span>
                   <input type="number" value={captchaInput}
                     onChange={e => { setCaptchaInput(e.target.value); setCaptchaError(false) }}
-                    placeholder="?" style={{ width: 80, padding: '9px 12px', border: `2px solid ${captchaError ? 'var(--danger)' : captchaInput && parseInt(captchaInput) === captcha.answer ? 'var(--success)' : 'var(--gray-200)'}`, borderRadius: 5, fontSize: 16, fontWeight: 700, textAlign: 'center', outline: 'none', background: captchaError ? 'var(--danger-light)' : 'white', transition: 'border-color 0.2s' }} />
+                    placeholder="?" style={{ width: 80, padding: '9px 12px', border: `2px solid ${captchaError ? 'var(--danger)' : captchaInput && parseInt(captchaInput) === captcha.answer ? 'var(--success)' : 'var(--gray-200)'}`, borderRadius: 5, fontSize: 16, fontWeight: 700, textAlign: 'center', outline: 'none', background: captchaError ? 'var(--danger-light)' : 'var(--bg-card)', transition: 'border-color 0.2s' }} />
                 </div>
                 {captchaError && <div style={{ color: 'var(--danger)', fontSize: 12, marginTop: 8 }}><MdClose /> Wrong answer — new question generated.</div>}
                 {captchaInput && parseInt(captchaInput) === captcha.answer && <div style={{ color: 'var(--success)', fontSize: 12, marginTop: 8 }}><MdCheck /> Correct!</div>}
