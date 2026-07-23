@@ -1,4 +1,30 @@
+import { useEffect, useRef } from 'react'
+
 export default function ProfileImageModal({ isOpen, imageSrc, onClose }) {
+  const modalRef = useRef(null)
+
+  useEffect(() => {
+    if (!isOpen) return
+
+    const handlePointerDown = (event) => {
+      if (modalRef.current && !modalRef.current.contains(event.target)) {
+        onClose()
+      }
+    }
+
+    const handleKeyDown = (event) => {
+      if (event.key === 'Escape') onClose()
+    }
+
+    document.addEventListener('mousedown', handlePointerDown)
+    document.addEventListener('keydown', handleKeyDown)
+
+    return () => {
+      document.removeEventListener('mousedown', handlePointerDown)
+      document.removeEventListener('keydown', handleKeyDown)
+    }
+  }, [isOpen, onClose])
+
   if (!isOpen || !imageSrc) return null
 
   return (
@@ -19,6 +45,7 @@ export default function ProfileImageModal({ isOpen, imageSrc, onClose }) {
       }}
     >
       <div
+        ref={modalRef}
         onClick={e => e.stopPropagation()}
         style={{
           position: 'relative',

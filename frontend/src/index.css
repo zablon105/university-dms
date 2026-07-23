@@ -103,8 +103,8 @@
   --primary-light: #0c3a52;
 
   /* Semantic text colors for dark theme */
-  --text-primary: var(--gray-100);
-  --text-secondary: var(--gray-400);
+  --text-primary: var(--gray-900);
+  --text-secondary: var(--gray-700);
   --hero-text: white;
   --hero-muted: rgba(255,255,255,0.75);
 }
@@ -200,38 +200,36 @@
 
 [data-theme="dark"] .dd-item,
 [data-theme="dark"] .page-title,
-[data-theme="dark"] .page-subtitle,
 [data-theme="dark"] .card-title,
 [data-theme="dark"] .form-section-title,
 [data-theme="dark"] .input-label,
 [data-theme="dark"] .stat-label,
 [data-theme="dark"] .table th,
-[data-theme="dark"] .table td,
 [data-theme="dark"] .notif-title,
-[data-theme="dark"] .notif-text,
-[data-theme="dark"] .notif-time,
 [data-theme="dark"] .dd-user-name,
-[data-theme="dark"] .dd-user-email,
 [data-theme="dark"] .tb-date,
 [data-theme="dark"] .tb-user-role,
 [data-theme="dark"] .btn-ghost,
 [data-theme="dark"] .badge-gray {
-  color: var(--gray-100) !important;
+  color: var(--text-primary) !important;
 }
 
 [data-theme="dark"] .table th {
   background: var(--bg-card) !important;
-  color: var(--gray-100) !important;
+  color: var(--text-primary) !important;
   border-color: var(--border) !important;
 }
 
 [data-theme="dark"] .table td,
 [data-theme="dark"] .page-subtitle,
+[data-theme="dark"] .notif-text,
+[data-theme="dark"] .notif-time,
+[data-theme="dark"] .dd-user-email,
 [data-theme="dark"] .form-section-title,
 [data-theme="dark"] .input-label,
 [data-theme="dark"] .stat-label,
 [data-theme="dark"] .badge-gray {
-  color: var(--gray-200) !important;
+  color: var(--text-secondary) !important;
 }
 
 [data-theme="dark"] .badge-gray {
