@@ -25,6 +25,7 @@ THIRD_PARTY_APPS = [
     'corsheaders',
     'cloudinary',
     'cloudinary_storage',
+    'anymail',
 ]
 
 LOCAL_APPS = [
@@ -181,17 +182,9 @@ LOGGING = {
 }
 
 # ── Email Configuration ──────────────────────────────────────────
-EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-EMAIL_HOST = 'smtp.gmail.com'
-EMAIL_PORT = 587
-EMAIL_USE_TLS = True
-EMAIL_TIMEOUT = 10
-EMAIL_HOST_USER = config('EMAIL_HOST_USER', default='')
-EMAIL_HOST_PASSWORD = config('EMAIL_HOST_PASSWORD', default='')
-DEFAULT_FROM_EMAIL = config('EMAIL_HOST_USER', default='noreply@kafu.ac.ke')
+EMAIL_BACKEND = 'anymail.backends.resend.EmailBackend'
+ANYMAIL = {
+    'RESEND_API_KEY': config('RESEND_API_KEY', default=''),
+}
+DEFAULT_FROM_EMAIL = config('DEFAULT_FROM_EMAIL', default='onboarding@resend.dev')
 ADMIN_EMAIL = config('ADMIN_EMAIL', default='')
-
-# During development — print emails to console instead of sending
-# Comment this out in production and use SMTP above
-if config('DEBUG', default=True, cast=bool):
-    EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
